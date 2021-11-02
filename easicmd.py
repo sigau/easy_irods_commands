@@ -11,7 +11,7 @@ import pkg_resources
 ## two # (##) mean a commentary and one # (#) mean a option you can change at your own risk 
 
 ##########################################################################################################################################################################################################################################################################################
-####  install dependancy (bad and temporary methods)
+####  install dependancy (bad and temporary methods) 
 ##########################################################################################################################################################################################################################################################################################
 
 required = {"prompt_toolkit"}
@@ -35,7 +35,7 @@ def main() :
             if len(sys.argv)>2 :
                 PUSH(sys.argv[2])
             else:
-                print("Give a path to upload to irods")
+                print("Give a local path to upload to irods")
         
         elif sys.argv[1] == "pull":
             if len(sys.argv)>3 :
@@ -59,23 +59,75 @@ def main() :
             if len(sys.argv)>2 :
                 ADD_META(sys.argv[2])
             else :
-                ask=input("add metadata to folder (C) or file (f) : ")
-                if ask != "f" or ask != "C" :
-                    print("possible options are C for a folder or f for a file")
-                    sys.exit()
-                else:
-                    ask="-"+ask
-                call_iobject(ask) 
+                asking("add metadata to")
                 ADD_META(iobject)
 
+        elif sys.argv[1]=="rm_meta":
+            if len(sys.argv)>2 :
+                IRM_META(sys.argv[2])
+            else:
+                asking("remove metadata from")
+                IRM_META(iobject)
+
+        elif sys.argv[1]=="imkdir":
+            IMKDIR()
+
+        elif sys.argv[1]=="irm":
+            if len(sys.argv)>2 :
+                if sys.argv[2] != "-f" and sys.argv[2] != "-C":
+                    print("possible options are [-C] for a folder or [-f] for a file")
+                    sys.exit()
+                else :
+                    print("you can use * as wildcard")
+                    call_iobject(sys.argv[2])
+                    IRM(sys.argv[2], iobject)
+            else :
+                print("you can use * as wildcard while giving the file/folder name")
+                asking('remove')
+                IRM(ask, iobject)
+
+        elif sys.argv[1] == "idush" :
+            IDUSH()
+
+        elif sys.argv[1] == "show_meta" :
+            if len(sys.argv)>2 :
+                if sys.argv[2] != "-f" and sys.argv[2] != "-C":
+                    print("possible options are [-C] for a folder or [-f] for a file")
+                    sys.exit()
+                else :
+                    call_iobject(sys.argv[2])
+                    SHOW_META(sys.argv[2])
+            else:
+                asking("show metadata associate with a")
+                SHOW_META(iobject)
+
+        elif sys.argv[1] == "search_by_meta":
+            if len(sys.argv)>2 :
+                if sys.argv[2] != "-f" and sys.argv[2] != "-C" and sys.argv[2] != "-u" and sys.argv[2] != "-d":
+                    print("possible options are [-C] for a folder , [-f] for a file or [-u] for a user")
+                    sys.exit()
+                else :
+                    type_iobject=sys.argv[2]
+                    if type_iobject == "-f":
+                        type_iobject = "-d"
+                    SEARCH_BY_META(type_iobject)
+            else:
+                type_iobject=input("search for a folder [-C], a file [-f] or a user [-u] : ")
+                if type_iobject != "-f" and type_iobject != "-C" and type_iobject != "-u" :
+                    print("possible options are [-C] for a folder , [-f] for a file or [-u] for a user")
+                    sys.exit()
+                else :
+                    if type_iobject == "-f":
+                        type_iobject = "-d"
+                    SEARCH_BY_META(type_iobject)
         
+        elif sys.argv[1] == "search_name":
+            SEARCH_BY_NAME()
+
         else :
             help()
     else :
         help()
-        
-    
-
 
 ##########################################################################################################################################################################################################################################################################################
 ### fonction help 
@@ -87,7 +139,13 @@ def help():
     print("\tpush\t: irsync/iput folder/file (given by a path) from local to irods with auto completion")
     print("\tpull\t: pull [option] [local path]\n\t\t  irsync/iget folder/file from irods to local with auto completion\n\t\t  For a file add option -f\n\t\t  For a folder add option -C\n\n\t\t  path can be full path or '.' for current folder\n\t\t  if no path given, a list of all the folder from root will be proposed (can be very long if you have many)") 
     print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion ")
-    
+    print("\trm_meta\t: rm_meta or rm_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion")
+    print("\timkdir\t : imkdir -p reinforce by auto completion")
+    print("\tirm\t: irm [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion")
+    print("\tidush\t: equivalent to du -sh for an irods folder")
+    print("\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder ")
+    print("\tsearch_by_meta\t: search_by_meta [option] or search_by_meta\n\t\t option are [-f] for a file, [-C] for a folder and [-u] for a user")
+    print("\tsearch_name\t: search for a file (FILE ONLY) in irods ")
 ##########################################################################################################################################################################################################################################################################################
 #### tools function's definition (function that will only be use by over function to avoid redundancy )
 ##########################################################################################################################################################################################################################################################################################
@@ -95,6 +153,7 @@ def help():
 def irods_collection():
     ##create a list with all the collection in irods for autocompletion later 
     global icol_completer
+    global list_of_icollection
     list_of_icollection=[]
     cmd_ils="ils -r" ##list all the collection from your irods root
     ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8") #keep the output of a cmd in a variable
@@ -107,6 +166,7 @@ def irods_collection():
 def list_ifile(ifolder):
     ##list with all the ifile of a collection in irods for autocompletion later
     global ifile_completer
+    global ifile
     ifile=[]
     cmd_ils=f"ils {ifolder}"
     ils=(subprocess.run(cmd_ils.split(), capture_output=True).stdout).decode("utf-8")
@@ -195,6 +255,15 @@ def sizeof_fmt(num, suffix="B"):
         num /= 1024.0
     return f"{num:.1f}Yi{suffix}" 
 
+def asking(string):
+    ask=input(f"{string} folder (C) or file (f) : ")
+    if ask != "f" and ask != "C" :
+        print("possible options are [C] for a folder or [f] for a file")
+        sys.exit()
+    else:
+        ask="-"+ask
+        call_iobject(ask)
+
 
 ##########################################################################################################################################################################################################################################################################################
 #### called function's definition (function that will be "called" by the user/main )
@@ -225,6 +294,7 @@ def PUSH(local_object) :
         new_iobject=(f"{irods_path}/{local_object}").replace("//", "/")
         ADD_META(new_iobject)
 
+
 def PULL(type_iobject,local_path) :
     ##get back an object from irods and copy it on local folder or on a given path
     call_iobject(type_iobject)
@@ -236,8 +306,8 @@ def PULL(type_iobject,local_path) :
     else :
         cmd_pull=f"irsync -rKV i:{iobject} {local_path}".replace("//", "/")
     subprocess.run(cmd_pull.split())
-
     
+
 def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
     attribut="placeholder"
@@ -253,27 +323,107 @@ def ADD_META(iobject):
 
 def IRM_META(iobject):
     ##easy way of removing metadata from a object (remove all, one attribut)
-    print()
+    attribut=input("attribut (empty for all): ")
+    if attribut =="":   
+        attribut="%" ## % is the wildcards of irods
+    cmd_irm_meta=f"imeta rmw {identify_iobject(iobject)} {iobject} {attribut} % %"
+    subprocess.run(cmd_irm_meta.split())
+
 
 def IMKDIR():
     ##easy way for creating an irods collection helped with autocompletion if you don't know the exact tree view
-    print()
+    irods_collection()
+    mkdir=prompt("create : ",completer=icol_completer)
+    cmd_imkdir=f"imkdir -p {mkdir}" ##-p create parents folder if needed
+    subprocess.run(cmd_imkdir.split())
 
-def IRM(type_iobject):
+
+def IRM(type_iobject,iobject):
     ##easy way for deleting an object on irods helped with autocompletion. 
-    ##can be collection(folder) or Data_Object(file)
-    print()
+    ##can be collection(folder) or one/multiple Data_Object(file)
+    if type_iobject == "-C":
+        option="-rf"
+    else :
+        option="-f"
+    if "*" in iobject:
+        if type_iobject == "-C":
+            count_slash=iobject.count("/")
+            for i in list_of_icollection:
+                if fnmatch.fnmatch(i,iobject) and i.count("/") == count_slash: ##ifiobject match in i and don't consider the subfolder of i 
+                    cmd_irm=f"irm {option} {i}"
+                    subprocess.run(cmd_irm.split())
+        else :
+            path=(iobject.split("/"))[:-1]
+            path="/".join(path)
+            for j in ifile:
+                full_path=path+"/"+j
+                if fnmatch.fnmatch(full_path, iobject): 
+                    cmd_irm=f"irm {option} {full_path}"
+                    subprocess.run(cmd_irm.split())                
+    else :
+        cmd_irm=f"irm {option} {iobject}"
+        subprocess.run(cmd_irm.split())
+        
 
-def SHOW_META(type_iobject):
+def SHOW_META(iobject):
     ##easy way for showing the meta data associate with an irods object helped with autocompletion
     ##can be collection(folder), Data_Object(file) or user
-    print()
+    cmd_imeta_ls=f"imeta ls {identify_iobject(iobject)} {iobject}"
+    subprocess.run(cmd_imeta_ls.split())
 
-def SEARCH_BY_META():
+
+def SEARCH_BY_META(type_iobject):
     ##Search for an object(s) in irods by query the metadata associate with it/them
     ##The attributes exiting in irods are save in a dictionary as key with the (metadata) values associate with this attribute as (dictionary) values
     ##so the user can't ask for nonexistent attribut/values
+    dico_attribute={}
+    ##building the dictionary
+    irods_collection()
+    for ifolder in list_of_icollection:
+        cmd_imetaLsD=f"imeta ls -C {ifolder}"
+        imetaLsD=(subprocess.run(cmd_imetaLsD.split(),capture_output=True).stdout).decode("utf-8")
+        for line in imetaLsD.split("\n"):
+            if "attribute:" in line :
+                attribut=line.split(":")[1]
+            if "value:" in line :
+                value=line.split(":")[1]
+                if attribut not in dico_attribute:
+                    dico_attribute[attribut]=set()
+                    dico_attribute[attribut].add(value)
+                else :
+                    dico_attribute[attribut].add(value)
+        list_ifile(ifolder)
+        for irods_file in ifile:
+            cmd_imetaLsF=f"imeta ls -d {irods_file}"
+            imetaLsF=(subprocess.run(cmd_imetaLsF.split(),capture_output=True).stdout).decode("utf-8")
+            for ligne in imetaLsF.split("\n"):
+                if "attribute:" in ligne :
+                    attribut=ligne.split(":")[1]
+                if "value:" in ligne :
+                    value=ligne.split(":")[1]
+                    if attribut not in dico_attribute:
+                        dico_attribute[attribut]=set()
+                        dico_attribute[attribut].add(value)
+                    else :
+                        dico_attribute[attribut].add(value)
+    ##building the query
+    qu_attribute_completer=WordCompleter(dico_attribute.keys)
+    qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
+    qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
+    qu_value=prompt("value (% as *): ",completer=qu_value_completer)
+    if "%" in qu_value :
+        operation="like"
+    else:
+        operation= "="
+    ##run the query
+    cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
+    subprocess.run(cmd_imetaQu.split())
+
+def SEARCH_BY_NAME():
     print()
+    search=input("your query(% as *)")
+    cmd_ilocate=f"ilocate {search}"
+    subprocess.run(cmd_ilocate.split())
 
 def SYNCHRONISE(local_folder):
     ##synchronyse a local folder with irods vault by checking the sha256.
@@ -283,7 +433,19 @@ def SYNCHRONISE(local_folder):
 def IDUSH():
     ##equivalent of the unix du -sh but on irods
     ##get the size (in bites) of all the file containing in a folder, add them and convert to human readable 
-    print() 
+    irods_collection()
+    irods_path=prompt("ifolder (empty = /zone/home/user ): ",completer=icol_completer)
+    if irods_path=="": 
+        irods_path=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "/")
+    cmd_ils=f"ils -rl {irods_path}"
+    ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8")
+    total_bits=0
+    for line in ils.split("\n"):
+        if "/" not in line and line !="":
+            bits=int(line.split()[3])
+            total_bits += bits
+    print(sizeof_fmt(total_bits))
+
 ##########################################################################################################################################################################################################################################################################################
 #### if __name__ == "__main__" 
 ##########################################################################################################################################################################################################################################################################################
