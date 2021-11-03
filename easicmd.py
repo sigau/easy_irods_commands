@@ -76,7 +76,7 @@ def main() :
             if len(sys.argv)>2 :
                 if sys.argv[2] != "-f" and sys.argv[2] != "-C":
                     print("possible options are [-C] for a folder or [-f] for a file")
-                    sys.exit()
+
                 else :
                     print("you can use * as wildcard")
                     call_iobject(sys.argv[2])
@@ -93,7 +93,7 @@ def main() :
             if len(sys.argv)>2 :
                 if sys.argv[2] != "-f" and sys.argv[2] != "-C":
                     print("possible options are [-C] for a folder or [-f] for a file")
-                    sys.exit()
+
                 else :
                     call_iobject(sys.argv[2])
                     SHOW_META(sys.argv[2])
@@ -105,7 +105,7 @@ def main() :
             if len(sys.argv)>2 :
                 if sys.argv[2] != "-f" and sys.argv[2] != "-C" and sys.argv[2] != "-u" and sys.argv[2] != "-d":
                     print("possible options are [-C] for a folder , [-f] for a file or [-u] for a user")
-                    sys.exit()
+
                 else :
                     type_iobject=sys.argv[2]
                     if type_iobject == "-f":
@@ -115,14 +115,35 @@ def main() :
                 type_iobject=input("search for a folder [-C], a file [-f] or a user [-u] : ")
                 if type_iobject != "-f" and type_iobject != "-C" and type_iobject != "-u" :
                     print("possible options are [-C] for a folder , [-f] for a file or [-u] for a user")
-                    sys.exit()
+
                 else :
                     if type_iobject == "-f":
                         type_iobject = "-d"
                     SEARCH_BY_META(type_iobject)
         
         elif sys.argv[1] == "search_name":
-            SEARCH_BY_NAME()
+            if len(sys.argv)>2 :
+                if sys.argv[2] == "-f" or sys.argv[2] == "-C" :
+                    SEARCH_BY_NAME(sys.argv[2])
+                else:
+                    print("possible options are [-C] for a folder or [-f] for a file")
+            else:
+                ask=input("search for a file [f] or a folder [C] :")
+                if ask == "-f" or ask == "-C" :
+                    SEARCH_BY_NAME(ask)
+                else :
+                    print("possible options are [-C] for a folder or [-f] for a file")
+        
+        elif sys.argv[1] == "synchro" :
+            if len(sys.argv)>2 :
+                path=sys.argv[2]
+                os.chdir(f"{path}/..")
+                if path[-1] == "/":
+                    path=path[:-1]
+                basename=(path.split("/"))[-1]
+                SYNCHRONISE(basename)
+            else :
+                print("Give a local path to upload to irods")
 
         else :
             help()
@@ -135,17 +156,41 @@ def main() :
 
 def help():
     print("\nPossible OPTION :\n")
+    print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
     print("\thelp\t: print this help and leave")
-    print("\tpush\t: irsync/iput folder/file (given by a path) from local to irods with auto completion")
-    print("\tpull\t: pull [option] [local path]\n\t\t  irsync/iget folder/file from irods to local with auto completion\n\t\t  For a file add option -f\n\t\t  For a folder add option -C\n\n\t\t  path can be full path or '.' for current folder\n\t\t  if no path given, a list of all the folder from root will be proposed (can be very long if you have many)") 
-    print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion ")
-    print("\trm_meta\t: rm_meta or rm_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion")
-    print("\timkdir\t : imkdir -p reinforce by auto completion")
-    print("\tirm\t: irm [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion")
-    print("\tidush\t: equivalent to du -sh for an irods folder")
-    print("\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder ")
-    print("\tsearch_by_meta\t: search_by_meta [option] or search_by_meta\n\t\t option are [-f] for a file, [-C] for a folder and [-u] for a user")
-    print("\tsearch_name\t: search for a file (FILE ONLY) in irods ")
+    print("\tidush\t: equivalent to du -sh for an irods folder\n")
+    print("\timkdir\t : imkdir -p reinforce by auto completion\n")
+    print("\tirm\t: irm [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion\n")
+    print("\tpull\t: pull [option] [local path]\n\t\t  irsync/iget folder/file from irods to local with auto completion\n\t\t  For a file add option -f\n\t\t  For a folder add option -C\n\t\t  path can be full path or '.' for current folder\n\t\t  if no path given, a list of all the folder from root will be proposed (can be very long if you have many)\n")     
+    print("\tpush\t: irsync/iput folder/file (given by a path) from local to irods with auto completion\n")
+    print("\trm_meta\t: rm_meta or rm_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
+    print("\tsearch_by_meta\t: search_by_meta [option] or search_by_meta\n\t\t option are [-f] for a file, [-C] for a folder and [-u] for a user\n")
+    print("\tsearch_name\t: search_name [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t search for a file or a folder in irods\n")    
+    print("\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder\n ")
+    print("\tsynchro\t: synchro [local path to folder]\n\t\t synchronise the contain of a local folder with irods based on the sha256\n\t\t the folder will be synchronise on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
+
+##########################################################################################################################################################################################################################################################################################
+####             It's dangerous to go alone, take coder
+##########################################################################################################################################################################################################################################################################################
+
+#                                   /   \
+#  _                        )      ((   ))     (
+# (@)                      /|\      ))_((     /|\
+# |-|                     / | \    (/\|/\)   / | \                      (@)
+# | | -------------------/--|-voV---\`|'/--Vov-|--\---------------------|-|
+# |-|                         '^`   (o o)  '^`                          | |
+# | |                               `\Y/'                               |-|
+# |-|                        |_|. _   _    _ _|_                        | |
+# | |                        | ||(_  _\|_|| | |                         |-|
+# |-|                                                                   | |
+# | |                        _| _ _  _ _  _  _  _                       |-|
+# |-|                       (_|| (_|(_(_)| |(/__\                       | |
+# |_|___________________________________________________________________| |
+# (@)              l   /\ /         ( (       \ /\   l                `\|-|
+#                  l /   V           \ \       V   \ l                  (@)
+#                  l/                _) )_          \I
+#                                    `\ /'
+
 ##########################################################################################################################################################################################################################################################################################
 #### tools function's definition (function that will only be use by over function to avoid redundancy )
 ##########################################################################################################################################################################################################################################################################################
@@ -419,16 +464,48 @@ def SEARCH_BY_META(type_iobject):
     cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
     subprocess.run(cmd_imetaQu.split())
 
-def SEARCH_BY_NAME():
-    print()
-    search=input("your query(% as *)")
-    cmd_ilocate=f"ilocate {search}"
-    subprocess.run(cmd_ilocate.split())
+def SEARCH_BY_NAME(type_iobject):
+    ##search a file (with ilocate) or a folder store in the irods vault 
+    if type_iobject == "-f" :
+        search=input("your query(% as *) : ")
+        cmd_ilocate=f"ilocate {search}"
+        subprocess.run(cmd_ilocate.split())
+    else :
+        irods_collection()
+        search=input("your query (you can use *): ")
+        for i in list_of_icollection:
+            if fnmatch.fnmatch(i, search) : ##if search match in i
+                print(i)
 
 def SYNCHRONISE(local_folder):
     ##synchronyse a local folder with irods vault by checking the sha256.
     ##If the folder doesn't exit on irods it's created then synchronised
-    print()
+    #automate with https://github.com/joh/when-changed ?
+    irods_collection()
+    list_sha_irods()
+    dir_content=os.listdir(local_folder)
+    for i in dir_content:
+        if os.path.isfile(f"{local_folder}/{i}"):
+            path_to_file=f"{local_folder}/{i}"
+            cmd_sha=f"sha256sum {path_to_file} | awk '{{print $1}}' | xxd -r -p | base64"
+            sha_256=(subprocess.check_output(cmd_sha, shell=True,text=True )).rstrip()
+            if sha_256 not in list_isha:
+                exist=False
+                ### the (sub)folder is already in irods 
+                for content in list_of_icollection:
+                    if local_folder in content :
+                        exist=True
+                        break
+                ### the (sub)folder is not yet in irods
+                if exist==False :
+                    cmd_imkdir=f"imkdir -p {local_folder}"
+                    subprocess.run(cmd_imkdir.split())
+                    irods_collection()
+                cmd_iput=f"irsync -K {path_to_file} i:{local_folder}" #input need -f (force) to update an already existing file (aka modify file)
+                subprocess.run(cmd_iput.split())
+        else :
+            SYNCHRONISE(f"{local_folder}/{i}") #if folder recursive function
+
 
 def IDUSH():
     ##equivalent of the unix du -sh but on irods
