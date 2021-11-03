@@ -33,7 +33,10 @@ def main() :
     if len(sys.argv)>1:
         if sys.argv[1] == "push":
             if len(sys.argv)>2 :
-                PUSH(sys.argv[2])
+                if os.path.isfile(sys.argv[2]) or os.path.isdir(sys.argv[2]) :
+                    PUSH(sys.argv[2])
+                else :
+                    print("Give a correct local path to upload to irods")    
             else:
                 print("Give a local path to upload to irods")
         
@@ -44,16 +47,16 @@ def main() :
                 elif sys.argv[2] == "-C" or sys.argv[2] == "C":
                     PULL("-C",sys.argv[3])
                 else:
-                    print("possible option for type is -f or -C" )
+                    print("possible option for type is -f or -C\n command should look like easicmd.py pull -f/-C local/path/to/download" )
             elif len(sys.argv)>2:
                 if sys.argv[2] == "-f" or sys.argv[2] == "f":
                     PULL("-f",False)
                 elif sys.argv[2] == "C" or sys.argv[2] == "C":
                     PULL("-C",False)
                 else:
-                    print("possible option for type is -f or -C" )
+                    print("possible option for type is -f or -C\n command should look like easicmd.py pull -f/-C local/path/to/download" )
             else :
-                print("you need to give at least the type of data you want to download from irods (-f or -C ) \nyou can also give the path to which you want to download the object")
+                print("you need to give at least the type of data you want to download from irods (-f or -C ) \nyou can also give the path to which you want to download the object\n command should look like easicmd.py pull -f/-C local/path/to/download")
 
         elif sys.argv[1] == "add_meta":
             if len(sys.argv)>2 :
@@ -155,7 +158,7 @@ def main() :
 ##########################################################################################################################################################################################################################################################################################
 
 def help():
-    print("\nPossible OPTION :\n")
+    print("\nPossible COMMANDS :\n")
     print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
     print("\thelp\t: print this help and leave")
     print("\tidush\t: equivalent to du -sh for an irods folder\n")
@@ -167,10 +170,11 @@ def help():
     print("\tsearch_by_meta\t: search_by_meta [option] or search_by_meta\n\t\t option are [-f] for a file, [-C] for a folder and [-u] for a user\n")
     print("\tsearch_name\t: search_name [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t search for a file or a folder in irods\n")    
     print("\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder\n ")
-    print("\tsynchro\t: synchro [local path to folder]\n\t\t synchronise the contain of a local folder with irods based on the sha256\n\t\t the folder will be synchronise on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
+    print("\tsynchro\t: synchro [local path to folder]\n\t\t synchronise the contain of a local folder with irods based on the sha256\n\t\t the folder will be synchronise on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
+    print("\n\tSee some examples on https://github.com/sigau/easy_irods_commands ")
 
 ##########################################################################################################################################################################################################################################################################################
-####             It's dangerous to go alone, take coder
+####             It's dangerous to go alone, take a coder
 ##########################################################################################################################################################################################################################################################################################
 
 #                                   /   \
@@ -321,23 +325,25 @@ def PUSH(local_object) :
 
     irods_path=prompt("ifolder (empty = /zone/home/user ): ",completer=icol_completer)
     if irods_path=="": 
-        irods_path=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "/")
+        irods_root=True
     if is_file:
-        cmd_push=f"irsync -KV {local_object} i:{irods_path}"
+        cmd_push=f"iput -PKVf {local_object} {irods_path}"
     else:
-        cmd_push=f"irsync -rKV {local_object} i:{irods_path}"
+        cmd_push=f"iput -rPKVf {local_object} {irods_path}"
     subprocess.run(cmd_push.split())
     
     ##add meta 
-    ask_add_meta=input("add metadata ?(y/n)")
-    if ask_add_meta == "y" or ask_add_meta == "Y" or ask_add_meta == "yes" or ask_add_meta == "YES" or ask_add_meta == "Yes":
-        if local_object[-1] == "/": ## if the user just put the files from the folder in a alreday existing
-            ADD_META(irods_path) ## collection we add meta to this already existing collection
-            sys.exit()
-        if "/" in local_object: ##when path (path/to/object) given we keep only the end as in irods  
-            local_object=(local_object.split("/"))[-1] ## the new path will be irods_path/object
-        new_iobject=(f"{irods_path}/{local_object}").replace("//", "/")
-        ADD_META(new_iobject)
+    #ask_add_meta=input("add metadata ?(y/n): ")
+    #if ask_add_meta == "y" or ask_add_meta == "Y" or ask_add_meta == "yes" or ask_add_meta == "YES" or ask_add_meta == "Yes":
+        #if object is an object
+        #if is_file :
+        # if local_object[-1] == "/": ## if the user just put the files from the folder in a alreday existing
+        #     ADD_META(irods_path) ## collection we add meta to this already existing collection
+        #     sys.exit()
+        # if "/" in local_object: ##when path (path/to/object) given we keep only the end as in irods  
+        #     local_object=(local_object.split("/"))[-1] ## the new path will be irods_path/object
+        # new_iobject=(f"{irods_path}/{local_object}").replace("//", "/")
+        # ADD_META(new_iobject)
 
 
 def PULL(type_iobject,local_path) :
@@ -346,10 +352,13 @@ def PULL(type_iobject,local_path) :
     if not local_path :
         local_collection()
         local_path=prompt("local folder :",completer=folder_completer)
-    if type_iobject == "f" :
-        cmd_pull=f"iget -PKV {iobject} {local_path}".replace("//", "/")
+    if type_iobject == "-f" :
+        if "%" in iobject :
+            cmd_pull=(f"irsync -rKV i:{iobject} {local_path}".replace("//", "/")).replace("%", "")
+        else :
+            cmd_pull=f"iget -PKV {iobject} {local_path}".replace("//", "/")
     else :
-        cmd_pull=f"irsync -rKV i:{iobject} {local_path}".replace("//", "/")
+        cmd_pull=f"iget -rPKV {iobject} {local_path}".replace("//", "/")
     subprocess.run(cmd_pull.split())
     
 
@@ -357,12 +366,13 @@ def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
     attribut="placeholder"
     while attribut !="":
-        attribut=input("attribut : " )
+        attribut=input("attribut (empty to stop) : " )
         if attribut =="" :
             break
         value=input("value : ")
         unit=input("unit : ") 
         cmd_add_meta=f"imeta add {identify_iobject(iobject)} {iobject} {attribut} {value} {unit}"
+        print(cmd_add_meta)
         subprocess.run(cmd_add_meta.split())
 
 
