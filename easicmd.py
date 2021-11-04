@@ -159,18 +159,18 @@ def main() :
 
 def help():
     print("\nPossible COMMANDS :\n")
-    print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
+    print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
     print("\thelp\t: print this help and leave")
     print("\tidush\t: equivalent to du -sh for an irods folder\n")
-    print("\timkdir\t : imkdir -p reinforce by auto completion\n")
+    print("\timkdir\t : imkdir -p reinforce by autocompletion\n")
     print("\tirm\t: irm [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion\n")
-    print("\tpull\t: pull [option] [local path]\n\t\t  irsync/iget folder/file from irods to local with auto completion\n\t\t  For a file add option -f\n\t\t  For a folder add option -C\n\t\t  path can be full path or '.' for current folder\n\t\t  if no path given, a list of all the folder from root will be proposed (can be very long if you have many)\n")     
+    print("\tpull\t: pull [option] [local path]\n\t\t  irsync/iget folder/file from irods to local with autocompletion\n\t\t  For a file add option -f\n\t\t  For a folder add option -C\n\t\t  path can be full path or '.' for current folder\n\t\t  if no path given, a list of all the folder from root will be proposed (can be very long if you have many)\n")     
     print("\tpush\t: irsync/iput folder/file (given by a path) from local to irods with auto completion\n")
-    print("\trm_meta\t: rm_meta or rm_meta [irods path]\n\t\t  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
+    print("\trm_meta\t: rm_meta or rm_meta [irods path]\n\t\t  if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
     print("\tsearch_by_meta\t: search_by_meta [option] or search_by_meta\n\t\t option are [-f] for a file, [-C] for a folder and [-u] for a user\n")
     print("\tsearch_name\t: search_name [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t search for a file or a folder in irods\n")    
     print("\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder\n ")
-    print("\tsynchro\t: synchro [local path to folder]\n\t\t synchronise the contain of a local folder with irods based on the sha256\n\t\t the folder will be synchronise on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
+    print("\tsynchro\t: synchro [local path to folder]\n\t\t synchronise the contain of a local folder with irods based on the sha256\n\t\t the folder will be synchronised on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
     print("\n\tSee some examples on https://github.com/sigau/easy_irods_commands ")
 
 ##########################################################################################################################################################################################################################################################################################

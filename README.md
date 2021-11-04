@@ -3,27 +3,27 @@
 easicmd is a python script written to facilitate/automate the use of irods for new users and add the autocompletion for some irods commands by using prompt_toolkit module.
 
 ## Dependancies
-- python 3.6 for the f-string (the script can be rewritten fo older version of python by replacing f-string by str.format()) 
-- [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time your run it if it's not already install)
+- python 3.6 for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) 
+- [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time you run it if it's not already install)
 
 ## Commands
 ```
 Possible COMMANDS :
 
 	add_meta	: add_meta or add_meta [irods path]
-		  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
+		  if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
 
 	help	: print this help and leave
 	idush	: equivalent to du -sh for an irods folder
 
-	imkdir	 : imkdir -p reinforce by auto completion
+	imkdir	 : imkdir -p reinforce by autocompletion
 
 	irm	: irm [option]
-		 option are [-f] for a file and [-C] for a folder 
+		 options are [-f] for a file and [-C] for a folder 
 		 allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion
 
 	pull	: pull [option] [local path]
-		  irsync/iget folder/file from irods to local with auto completion
+		  irsync/iget folder/file from irods to local with autocompletion
 		  For a file add option -f
 		  For a folder add option -C
 		  path can be full path or '.' for current folder
@@ -51,7 +51,7 @@ Possible COMMANDS :
 ```
 
 ## AUTOCOMPLETION
-As it is IRODS doesn't allow the autocompletion by using tab for data on irods (kind of with *i-commands-auto.bash* see in useful_stuff). The python module *prompt_toolkit* allow us to add some kind of autocompletion when it come to choosing data on irods. 
+As it is, IRODS doesn't allow the autocompletion by using tab for data on irods (kind of with *i-commands-auto.bash* see in useful_stuff). The python module *prompt_toolkit* allow us to add some kind of autocompletion when it comes to choosing data on irods. 
 When you will have to select a data from irods a list where you can navigate by using TAB or direction keys will be displayed on your screen :
 ![screenshot/example_1.png](screenshot/example_1.png)
 
@@ -96,7 +96,7 @@ $ ils -r MY_PROJECT
 ```
 ### PULL : GET BACK DATA FROM IRODS 
 To get back data from irods you have to give **a type ( [-f] for a file and [-C] for a folder )** and the **local path** where you want to download the data. 
-If you don't give a path the script will scan all your local data from the root-folder and ask you where you want to put it (it can take some time if you have many folder).
+If you don't give a path, the script will scan all your local data from the root-folder and ask you where you want to put it (it can take some time if you have many folder).
 ```
 ### PUT THE IRODS FOLDER "PROJECT_2" IN THE LOCAL FOLDER "MY_LOCAL_PROJECT"
 $ ./easicmd.py pull -C MY_LOCAL_PROJECT/
@@ -146,11 +146,11 @@ FAL56006_29db37dd_251.fast5 - 181.788/181.788 MB - 100.00% done   2021-11-03.17:
 $ls FAL56006_29db37dd_251.fast5
 FAL56006_29db37dd_251.fast5
 ```
-### SYNCHRO : SYNCHRONISE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS
-This command take as argument the path to a local folder you want to synchronise with irods. If the folder is not already on irods it will be created at the root (/zone/home/user) and synchronise using rsync.
-This command can be use when you create a new project and you know that it will be often modified. This command calculate the sha256 of the local file and look for their present in the icat, if they're not in the icat (the file doesn't exist yet in irods or had been edited in local) the file is send to irods
+### SYNCHRO : SYNCHRONIZE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS
+This command take as argument the path to a local folder you want to synchronize with irods. If the folder is not already on irods it will be created at the root (/zone/home/user) and synchronize using rsync.
+This command can be use when you create a new project and you know that it will often be modified. This command calculate the sha256 of the local file and look for their present in the icat, if they're not in the icat (the file doesn't exist yet in irods or had been edited in local) the file is sent to irods
 
-This command has been write to be associated with [when-changed](https://github.com/joh/when-changed) : everytime a change is detect in your folder by *when-changed* it run the command synchro on your folder.
+This command has been written to be associated with [when-changed](https://github.com/joh/when-changed) : every time a change is detected in your folder by *when-changed* it runs the command synchro on your folder.
 
 ```
 ### SYNCHRONISE THE LOCAL FOLDER "fast5"
@@ -173,7 +173,7 @@ $ ils
 ```
 
 ### IMKDIR : CREATE AN IRODS WITHOUT KNOWING THE FULL TREE VIEW
-When you want to create a new irods folder without knowing the full tree view. It had the "-p" option so you can create parents folder while creating a folder.
+When you want to create a new irods folder without knowing the full tree view. It had the "-p" option by default, so you can create parents folder while creating a folder.
 ```
 $ ils -r 
 
@@ -193,7 +193,7 @@ $ ils /lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2/
 ```
 
 ### IRM : REMOVE DATA FROM IRODS
-When you no longer need a data on irods or you need to make some place you can remove them by using *irm*. This command take as argument the type of the irods data you want to remove and then with the autocompletion you can choose which data you want to remove. You can use "*" to remove several irods objects.
+When you no longer need a data on irods, or you need to make some place, you can remove them by using *irm*. This command take as argument the type of the irods data you want to remove and then with the autocompletion you can choose which data you want to remove. You can use "*" to remove several irods objects.
 
 ```
 ### REMOVE ALL THE ".r" file from the "MY_project" irods folder
@@ -239,7 +239,8 @@ $ ils
 ```
 
 ### ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-Adding metadata to your irods objects is important and useful as irods is *originally* think to be metadata based and not base on tree view as unix. This metadata will be then use to search for your data on irods. If you didn't add metadata to your object when you put it in irods you can add then later on with add_meta. This command take as argument an irods path to your object. If you did not give a path you will be ask to choose an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion. It's a while loop so you can add all your metadata at once, to stop it just left the *attribut* empty .
+Adding metadata to your irods objects is important and useful as irods is *originally* thought to be metadata based and not base on tree view. This metadata will be then used to search for your data on irods. If you didn't add metadata to your object when you put it in irods you can add then later on with add_meta. This command take as argument an irods path to your object. If you did not give a path, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion. It's a while loop, so you can add all your metadata at once, to stop it just left the *attribute* empty.
+
 ```
 ### ADD METADATA TO IRODS FOLDER "sr_aselus"
 $ ./easicmd.py add_meta 
@@ -275,7 +276,7 @@ units:
 ```
 
 ### RM_META : REMOVING METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-If you made a mistake while adding metadata you can remove them with the command rm_meta. This command take as argument an irods path to your object. If you did not give a path you will be ask to choose an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
+If you made a mistake while adding metadata, you can remove them with the command rm_meta. This command take as argument an irods path to your object. If you did not give a path, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
 
 ```
 ### REMOVE METADATA FROM IRODS FOLDER "sr_aselus"
@@ -321,7 +322,7 @@ None
 ```
 
 ### SHOW_META : SHOW ALL THE METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-If you want to know the metadata associated with an irods object you can use the command show_meta. This command takes as argument an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
+If you want to know the metadata associated with an irods object, you can use the command show_meta. This command takes as argument an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
 ```
 $ ./easicmd.py show_meta -C
 ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/sr_aselus
@@ -337,8 +338,8 @@ units:
 ```
 
 ### SEARCH_BY_META : SEARCH FOR IRODS OBJECTS (FOLDER/FILE) BASED ON THE METADATA
-If you have associated metadata to your object you can find them later by making query based on this metadata. The command *search_by_meta* take as argument an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then ask you which attributes/values you want to query helped with the autocompletion. 
-The script create a dictionary where the key are the attributes and the values are the values(metadata) associates with this attribute, so you can't ask for attributes that do not existe or values not associates with an attribute.
+If you have associated metadata to your object, you can find them later by making query based on this metadata. The command *search_by_meta* take as argument an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then ask you which attributes/values you want to query helped with the autocompletion. 
+The script create a dictionary where the key are the attributes and the values are the values(metadata) associates with this attribute, so you can't ask for attributes that do not exist or values not associates with an attribute.
 
 ```
 ###SEARCH ALL THE IRODS FOLDER THAT HAVE THE ATTRIBUTE "technology"
@@ -358,7 +359,7 @@ collection: /lbbeZone/home/gdebaecker/sr_aselus
 ```
 
 ### SEARCH_NAME : SEARCH FOR IRODS OBJECT BASED ON (PARTS) OF THE OBJECT NAME
-If you forget to associated metadata to your object you can find them later by making query based on there name or a part of it. the comand *search_name* take as argument an option that can be **[f]** for a irods file and **[C]** for an irods folder, and t
+If you forget to associated metadata to your object, you can find them later by making query based on their name or a part of it. The command *search_name* take as argument an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you will be asked to give your query where **%** can be use as a wildcard.
 
 ```
 ### FIND ALL THE ".fast5" FILES ON IRODS
@@ -382,7 +383,7 @@ your query (you can use *): *fastQ
 ```
 
 ### IDUSH : AN IRODS EQUIVALENT TO du -sh  
-If you want to know the size of a folder on irods you can use idush. It make the sum of the size of all the irods files inside an irods folder and print it. If you don't known if you will have enough place on your disk before the download you can verify it with idush.
+If you want to know the size of a folder on irods you can use idush. It makes the sum of the size of all the irods files inside an irods folder and print it. If you don't know if you will have enough place on your disk before the download, you can verify it with idush.
 
 ```
 $ ./easicmd.py idush
@@ -397,6 +398,6 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 
 
 ## To-Do List
-- [ ] Update synchro function so it can synchronise irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronised target and not in all irods (for example now if you want to synchronised a new folder containing example.txt but that identic example.txt already exist somewhere in irods this file will not be synchronised. Initialy it was thinks for avoiding duplication of data but it can be upgrade).
+- [ ] Update synchro function, so it can synchronize irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronized target and not in all irods (for example now if you want to synchronize a new folder containing example.txt but that identical example.txt already exist somewhere in irods this file will not be synchronized. Initially it was thinks for avoiding duplication of data, but it can be upgrade).
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] 
