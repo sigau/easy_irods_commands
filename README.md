@@ -149,6 +149,9 @@ FAL56006_29db37dd_251.fast5
 ### SYNCHRO : SYNCHRONISE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS
 This command take as argument the path to a local folder you want to synchronise with irods. If the folder is not already on irods it will be created at the root (/zone/home/user) and synchronise using rsync.
 This command can be use when you create a new project and you know that it will be often modified. This command calculate the sha256 of the local file and look for their present in the icat, if they're not in the icat (the file doesn't exist yet in irods or had been edited in local) the file is send to irods
+
+This command has been write to be associated with [when-changed](https://github.com/joh/when-changed) : everytime a change is detect in your folder by *when-changed* it run the command synchro on your folder.
+
 ```
 ### SYNCHRONISE THE LOCAL FOLDER "fast5"
 $ ils
