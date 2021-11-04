@@ -1,4 +1,4 @@
-# easicmd
+# EASy-Irods-CoMmanDs (easicmd)
 ## Short description
 easicmd is a python script written to facilitate/automate the use of irods for new users and add the autocompletion for some irods commands by using prompt_toolkit module.
 
