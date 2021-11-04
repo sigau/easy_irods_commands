@@ -51,7 +51,7 @@ Possible COMMANDS :
 ```
 
 ## AUTOCOMPLETION
-As it is IRODS doesn't allow the autocompletion by using tab for data on irods (kind of with *i-commands-auto.bash* see in useful_stuff). The python module *prompt_toolkitC allow us to add some kind of autocompletion when it come to choosing data on irods. 
+As it is IRODS doesn't allow the autocompletion by using tab for data on irods (kind of with *i-commands-auto.bash* see in useful_stuff). The python module *prompt_toolkit* allow us to add some kind of autocompletion when it come to choosing data on irods. 
 When you will have to select a data from irods a list where you can navigate by using TAB or direction keys will be displayed on your screen :
 ![screenshot/example_1.png](screenshot/example_1.png)
 
@@ -395,5 +395,5 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 
 ## To-Do List
 - [ ] Update synchro function so it can synchronise irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronised target and not in all irods (for example now if you want to synchronised a new folder containing example.txt but that identic example.txt already exist somewhere in irods this file will not be synchronised. Initialy it was thinks for avoiding duplication of data but it can be upgrade).
-- [ ] 
+- [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] 
