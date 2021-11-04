@@ -147,14 +147,45 @@ $ls FAL56006_29db37dd_251.fast5
 FAL56006_29db37dd_251.fast5
 ```
 ### SYNCHRO : SYNCHRONISE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS
-
+This command take as argument the path to a local folder you want to synchronise with irods. If the folder is not already on irods it will be created at the root (/zone/home/user) and synchronise using rsync.
+This command can be use when you create a new project and you know that it will be often modified. This command calculate the sha256 of the local file and look for their present in the icat, if they're not in the icat (the file doesn't exist yet in irods or had been edited in local) the file is send to irods
 ```
+### SYNCHRONISE THE LOCAL FOLDER "fast5"
+$ ils
+/lbbeZone/home/gdebaecker:
+  C- /lbbeZone/home/gdebaecker/irods_test
+  C- /lbbeZone/home/gdebaecker/NeGa
+  C- /lbbeZone/home/gdebaecker/sr_aselus
+  C- /lbbeZone/home/gdebaecker/test_synchro
 
+$ ./easicmd.py synchro /beegfs/home/gdebaecker/irule/fast5/
+
+$ ils
+/lbbeZone/home/gdebaecker:
+  C- /lbbeZone/home/gdebaecker/fast5
+  C- /lbbeZone/home/gdebaecker/irods_test
+  C- /lbbeZone/home/gdebaecker/NeGa
+  C- /lbbeZone/home/gdebaecker/sr_aselus
+  C- /lbbeZone/home/gdebaecker/test_synchro
 ```
 
 ### IMKDIR : CREATE AN IRODS WITHOUT KNOWING THE FULL TREE VIEW
-
+When you want to create a new irods folder without knowing the full tree view. It had the "-p" option so you can create parents folder while creating a folder.
 ```
+$ ils -r 
+
+C- /lbbeZone/home/gdebaecker/irods_test
+/lbbeZone/home/gdebaecker/irods_test:
+  final_summary_FAL56006_29db37dd.txt
+  C- /lbbeZone/home/gdebaecker/NeGa
+  C- /lbbeZone/home/gdebaecker/sr_aselus
+
+$ ./easicmd.py imkdir
+create : /lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2/new_folder
+
+$ ils /lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2/
+/lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2:
+  C- /lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2/new_folder
 
 ```
 
@@ -174,7 +205,7 @@ $ ils ./MY_PROJECT/
   file.fastq
   C- /lbbeZone/home/gdebaecker/MY_PROJECT/PROJECT_2
 
-./easicmd.py irm -f
+$ ./easicmd.py irm -f
 you can use * as wildcard
 ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/MY_PROJECT
 irods file (tap tab) :*.r
@@ -205,32 +236,145 @@ $ ils
 ```
 
 ### ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-
+Adding metadata to your irods objects is important and useful as irods is *originally* think to be metadata based and not base on tree view as unix. This metadata will be then use to search for your data on irods. If you didn't add metadata to your object when you put it in irods you can add then later on with add_meta. This command take as argument an irods path to your object. If you did not give a path you will be ask to choose an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion. It's a while loop so you can add all your metadata at once, to stop it just left the *attribut* empty .
 ```
+### ADD METADATA TO IRODS FOLDER "sr_aselus"
+$ ./easicmd.py add_meta 
+add metadata to folder (C) or file (f) : C
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/sr_aselus
+attribut (empty to stop) : technology
+value : illumina
+unit : 150pb
+imeta add -C /lbbeZone/home/gdebaecker/sr_aselus technology illumina 150pb
+attribut (empty to stop) : Species
+value : Proasellus_coiffaiti            
+unit : 
+imeta add -C /lbbeZone/home/gdebaecker/sr_aselus Species Proasellus_coiffaiti 
+attribut (empty to stop) : Coverage
+value : 200X
+unit : 
+imeta add -C /lbbeZone/home/gdebaecker/sr_aselus Coverage 200X 
+attribut (empty to stop) : 
 
+$ imeta ls -C sr_aselus/
+AVUs defined for collection /lbbeZone/home/gdebaecker/sr_aselus:
+attribute: Species
+value: Proasellus_coiffaiti
+units: 
+----
+attribute: technology
+value: illumina
+units: 150pb
+----
+attribute: Coverage
+value: 200X
+units: 
 ```
 
 ### RM_META : REMOVING METADATA ASSOCIATED WITH AN OBJECT ON IRODS
+If you made a mistake while adding metadata you can remove them with the command rm_meta. This command take as argument an irods path to your object. If you did not give a path you will be ask to choose an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
 
 ```
+### REMOVE METADATA FROM IRODS FOLDER "sr_aselus"
+## REMOVE THE "species" METADATA
+$ imeta ls -C sr_aselus/
+AVUs defined for collection /lbbeZone/home/gdebaecker/sr_aselus:
+attribute: Species
+value: Proasellus_coiffaiti
+units: 
+----
+attribute: technology
+value: illumina
+units: 150pb
+----
+attribute: Coverage
+value: 200X
+units:
+
+$./easicmd.py rm_meta
+remove metadata from folder (C) or file (f) : C
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/sr_aselus
+attribut (empty for all): Species
+
+$ imeta ls -C sr_aselus/
+AVUs defined for collection /lbbeZone/home/gdebaecker/sr_aselus:
+attribute: technology
+value: illumina
+units: 150pb
+----
+attribute: Coverage
+value: 200X
+units: 
+
+$./easicmd.py rm_meta
+remove metadata from folder (C) or file (f) : C
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/sr_aselus
+attribut (empty for all):
+
+$ imeta ls -C sr_aselus/
+AVUs defined for collection /lbbeZone/home/gdebaecker/sr_aselus:
+None
 
 ```
 
 ### SHOW_META : SHOW ALL THE METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-
+If you want to know the metadata associated with an irods object you can use the command show_meta. This command takes as argument an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
 ```
+$ ./easicmd.py show_meta -C
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/sr_aselus
+AVUs defined for collection /lbbeZone/home/gdebaecker/sr_aselus:
+attribute: technology
+value: illumina
+units: 150pb
+----
+attribute: Species
+value: Proassellus_coifaiti
+units: 
 
 ```
 
 ### SEARCH_BY_META : SEARCH FOR IRODS OBJECTS (FOLDER/FILE) BASED ON THE METADATA
+If you have associated metadata to your object you can find them later by making query based on this metadata. The command *search_by_meta* take as argument an option that can be **[f]** for a irods file and **[C]** for an irods folder, and then ask you which attributes/values you want to query helped with the autocompletion. 
+The script create a dictionary where the key are the attributes and the values are the values(metadata) associates with this attribute, so you can't ask for attributes that do not existe or values not associates with an attribute.
 
 ```
+###SEARCH ALL THE IRODS FOLDER THAT HAVE THE ATTRIBUTE "technology"
+./easicmd.py search_by_meta -C
+attribute:  technology
+              auteur         
+              technology   
+              Species      
+value (% as *): %
+                   illumina  
+                   Nanopore  
+
+collection: /lbbeZone/home/gdebaecker/irods_test/raw_data/fast5
+----
+collection: /lbbeZone/home/gdebaecker/sr_aselus
 
 ```
 
 ### SEARCH_NAME : SEARCH FOR IRODS OBJECT BASED ON (PARTS) OF THE OBJECT NAME
+If you forget to associated metadata to your object you can find them later by making query based on there name or a part of it. the comand *search_name* take as argument an option that can be **[f]** for a irods file and **[C]** for an irods folder, and t
 
 ```
+### FIND ALL THE ".fast5" FILES ON IRODS
+$ ./easicmd.py search_name -f
+your query(% as *) : %.fast5
+/lbbeZone/home/gdebaecker/irods_test/raw_data/FAL56006_29db37dd_253.fast5
+/lbbeZone/home/gdebaecker/irods_test/raw_data/fast5/FAL56006_29db37dd_250.fast5
+/lbbeZone/home/gdebaecker/irods_test/raw_data/fast5/FAL56006_29db37dd_251.fast5
+/lbbeZone/home/gdebaecker/irods_test/raw_data/fast5/FAL56006_29db37dd_252.fast5
+/lbbeZone/home/gdebaecker/irods_test/raw_data/fast5/FAL56006_29db37dd_253.fast5
+/lbbeZone/home/gdebaecker/irods_test/raw_data/fast5/FAL56006_29db37dd_25.fast5
+/lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test3/FAL56006_29db37dd_253.fast5
+
+###FIND ALL THE "fastQ" FOLDER IN IRODS
+$ ./easicmd.py search_name -C
+your query (you can use *): *fastQ
+/lbbeZone/home/gdebaecker/irods_test/raw_data/UNICORN_AND_DRAGON/fastQ
+/lbbeZone/home/gdebaecker/NeGa/MY_2nd_PORJECT/TIGER/fastQ
+/lbbeZone/home/gdebaecker/NeGa/MY_PROJECT/Proasellus/fastQ
 
 ```
 
@@ -250,6 +394,6 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 
 
 ## To-Do List
-- [x] 
+- [ ] Update synchro function so it can synchronise irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronised target and not in all irods (for example now if you want to synchronised a new folder containing example.txt but that identic example.txt already exist somewhere in irods this file will not be synchronised. Initialy it was thinks for avoiding duplication of data but it can be upgrade).
 - [ ] 
 - [ ] 
