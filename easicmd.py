@@ -333,17 +333,14 @@ def PUSH(local_object) :
     subprocess.run(cmd_push.split())
     
     ##add meta 
-    #ask_add_meta=input("add metadata ?(y/n): ")
-    #if ask_add_meta == "y" or ask_add_meta == "Y" or ask_add_meta == "yes" or ask_add_meta == "YES" or ask_add_meta == "Yes":
-        #if object is an object
-        #if is_file :
-        # if local_object[-1] == "/": ## if the user just put the files from the folder in a alreday existing
-        #     ADD_META(irods_path) ## collection we add meta to this already existing collection
-        #     sys.exit()
-        # if "/" in local_object: ##when path (path/to/object) given we keep only the end as in irods  
-        #     local_object=(local_object.split("/"))[-1] ## the new path will be irods_path/object
-        # new_iobject=(f"{irods_path}/{local_object}").replace("//", "/")
-        # ADD_META(new_iobject)
+    ask_add_meta=input("add metadata ?(y/n): ")
+    if ask_add_meta == "y" or ask_add_meta == "Y" or ask_add_meta == "yes" or ask_add_meta == "YES" or ask_add_meta == "Yes":
+        if local_object[-1] == "/": #if a folder is given with the / in the end we remove it 
+            local_object=local_object[:-1]
+        if "/" in local_object: ##when path (path/to/object) given we keep only the end as in irods 
+            local_object=(local_object.split("/"))[-1] ## the new path will be irods_path/object
+        new_iobject=(f"{irods_path}/{local_object}").replace("//", "/")
+        ADD_META(new_iobject)
 
 
 def PULL(type_iobject,local_path) :
@@ -372,7 +369,6 @@ def ADD_META(iobject):
         value=input("value : ")
         unit=input("unit : ") 
         cmd_add_meta=f"imeta add {identify_iobject(iobject)} {iobject} {attribut} {value} {unit}"
-        print(cmd_add_meta)
         subprocess.run(cmd_add_meta.split())
 
 

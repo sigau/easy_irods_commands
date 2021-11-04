@@ -59,9 +59,11 @@ When you will have to select a data from irods a list where you can navigate by 
 **To simplify when we talk about irods file it refer to data_object and irods folder to collection.**
 ### PUSH : PUT LOCAL DATA ON IRODS
 To put a data (file or folder) on irods you just have to give a path to the data. Then you will be asked where in irods you want to put it. 
-When you use **push** to upload data the sha256 is calculated and stock in the icat (option -K in iput).  
+When you use **push** to upload data the sha256 is calculated and stock in the icat (option -K in iput).
+After "pushing" your data on irods you will be asked if you want to add metadata to your new irods object.
+
 ```
-### PUT THE LOCAL FOLDER "PROJECT_1" IN THE IRODS FOLDER "MY_PROJECT" 
+### PUT THE LOCAL FOLDER "PROJECT_1" IN THE IRODS FOLDER "MY_PROJECT" AND ADD METADATA
 $ ./easicmd.py push PROJECT_1
 ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/MY_PROJECT                             
                                /lbbeZone/home/gdebaecker/irods_test                                   
@@ -78,7 +80,12 @@ Processing file.fastq - 0.000 MB   2021-11-03.17:06:50
 1/2 - 50.00% of files done   0.000/0.000 MB -  0.00% of file sizes done
 Processing file.fasta - 0.000 MB   2021-11-03.17:06:50
    file.fasta                      0.000 MB | 0.041 sec | 0 thr |  0.000 MB/s
-                           
+
+add metadata ?(y/n): y
+attribut (empty to stop) : client
+value : MISTER_X
+unit : Top_Secret
+                       
 $ ils -r MY_PROJECT
 /lbbeZone/home/gdebaecker/MY_PROJECT:
   C- /lbbeZone/home/gdebaecker/MY_PROJECT/PROJECT_1
@@ -152,9 +159,49 @@ FAL56006_29db37dd_251.fast5
 ```
 
 ### IRM : REMOVE DATA FROM IRODS
+When you no longer need a data on irods or you need to make some place you can remove them by using *irm*. This command take as argument the type of the irods data you want to remove and then with the autocompletion you can choose which data you want to remove. You can use "*" to remove several irods objects.
 
 ```
+### REMOVE ALL THE ".r" file from the "MY_project" irods folder
+$ ils ./MY_PROJECT/
+/lbbeZone/home/gdebaecker/MY_PROJECT:
+  file_bis_2.r
+  file_bis_3.r
+  file_bis_4.r
+  file_bis_5.r
+  file_bis.r
+  file.fasta
+  file.fastq
+  C- /lbbeZone/home/gdebaecker/MY_PROJECT/PROJECT_2
 
+./easicmd.py irm -f
+you can use * as wildcard
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/MY_PROJECT
+irods file (tap tab) :*.r
+
+$ ils ./MY_PROJECT/
+/lbbeZone/home/gdebaecker/MY_PROJECT:
+  file.fasta
+  file.fastq
+  C- /lbbeZone/home/gdebaecker/MY_PROJECT/PROJECT_2
+
+REMOVE THE "MY_PROJECT" irods folder
+$ ils
+/lbbeZone/home/gdebaecker:
+  C- /lbbeZone/home/gdebaecker/irods_test
+  C- /lbbeZone/home/gdebaecker/MY_PROJECT
+  C- /lbbeZone/home/gdebaecker/NeGa
+  C- /lbbeZone/home/gdebaecker/sr_aselus
+
+$ ./easicmd.py irm -C
+you can use * as wildcard
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/MY_PROJECT
+
+$ ils
+/lbbeZone/home/gdebaecker:
+  C- /lbbeZone/home/gdebaecker/irods_test
+  C- /lbbeZone/home/gdebaecker/NeGa
+  C- /lbbeZone/home/gdebaecker/sr_aselus
 ```
 
 ### ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS
@@ -202,3 +249,7 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 ```
 
 
+## To-Do List
+- [x] 
+- [ ] 
+- [ ] 
