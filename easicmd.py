@@ -313,6 +313,42 @@ def asking(string):
         ask="-"+ask
         call_iobject(ask)
 
+def building_attributes_dictionnary():
+    global dico_attribute
+    dico_attribute={}
+    ##building the dictionary
+    irods_collection()
+    for ifolder in list_of_icollection:
+        cmd_imetaLsD=f"imeta ls -C {ifolder}"
+        imetaLsD=(subprocess.run(cmd_imetaLsD.split(),capture_output=True).stdout).decode("utf-8")
+        for line in imetaLsD.split("\n"):
+            if "attribute:" in line :
+                attribut=line.split(":")[1]
+            if "value:" in line :
+                value=line.split(":")[1]
+                if attribut not in dico_attribute:
+                    dico_attribute[attribut]=set()
+                    dico_attribute[attribut].add(value)
+                else :
+                    dico_attribute[attribut].add(value)
+        list_ifile(ifolder)
+        for irods_file in ifile:
+            cmd_imetaLsF=f"imeta ls -d {irods_file}"
+            imetaLsF=(subprocess.run(cmd_imetaLsF.split(),capture_output=True).stdout).decode("utf-8")
+            for ligne in imetaLsF.split("\n"):
+                if "attribute:" in ligne :
+                    attribut=ligne.split(":")[1]
+                if "value:" in ligne :
+                    value=ligne.split(":")[1]
+                    if attribut not in dico_attribute:
+                        dico_attribute[attribut]=set()
+                        dico_attribute[attribut].add(value)
+                    else :
+                        dico_attribute[attribut].add(value)
+
+def auto_parsing_meta():
+    ##automatically add metadata based on the parsing of the file/folder info like date/format/author
+    print()
 
 ##########################################################################################################################################################################################################################################################################################
 #### called function's definition (function that will be "called" by the user/main )
@@ -361,9 +397,12 @@ def PULL(type_iobject,local_path) :
 
 def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
+    building_attributes_dictionnary() ##if you don't want to have autocompletion on this command comment this
     attribut="placeholder"
     while attribut !="":
-        attribut=input("attribut (empty to stop) : " )
+        attribut_completer=WordCompleter(dico_attribute.keys) ##if you don't want to have autocompletion on this command comment this
+        attribut=prompt("attribut (empty to stop) : ",completer=attribut_completer) ##if you don't want to have autocompletion on this command comment this
+        #attribut=input("attribut (empty to stop) : " ) ##if you don't want to have autocompletion on this command UNcomment this
         if attribut =="" :
             break
         value=input("value : ")
@@ -427,36 +466,7 @@ def SEARCH_BY_META(type_iobject):
     ##Search for an object(s) in irods by query the metadata associate with it/them
     ##The attributes exiting in irods are save in a dictionary as key with the (metadata) values associate with this attribute as (dictionary) values
     ##so the user can't ask for nonexistent attribut/values
-    dico_attribute={}
-    ##building the dictionary
-    irods_collection()
-    for ifolder in list_of_icollection:
-        cmd_imetaLsD=f"imeta ls -C {ifolder}"
-        imetaLsD=(subprocess.run(cmd_imetaLsD.split(),capture_output=True).stdout).decode("utf-8")
-        for line in imetaLsD.split("\n"):
-            if "attribute:" in line :
-                attribut=line.split(":")[1]
-            if "value:" in line :
-                value=line.split(":")[1]
-                if attribut not in dico_attribute:
-                    dico_attribute[attribut]=set()
-                    dico_attribute[attribut].add(value)
-                else :
-                    dico_attribute[attribut].add(value)
-        list_ifile(ifolder)
-        for irods_file in ifile:
-            cmd_imetaLsF=f"imeta ls -d {irods_file}"
-            imetaLsF=(subprocess.run(cmd_imetaLsF.split(),capture_output=True).stdout).decode("utf-8")
-            for ligne in imetaLsF.split("\n"):
-                if "attribute:" in ligne :
-                    attribut=ligne.split(":")[1]
-                if "value:" in ligne :
-                    value=ligne.split(":")[1]
-                    if attribut not in dico_attribute:
-                        dico_attribute[attribut]=set()
-                        dico_attribute[attribut].add(value)
-                    else :
-                        dico_attribute[attribut].add(value)
+    building_attributes_dictionnary()
     ##building the query
     qu_attribute_completer=WordCompleter(dico_attribute.keys)
     qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
