@@ -361,7 +361,7 @@ def PUSH(local_object) :
 
     irods_path=prompt("ifolder (empty = /zone/home/user ): ",completer=icol_completer)
     if irods_path=="": 
-        irods_root=True
+        irods_path=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "/")
     if is_file:
         cmd_push=f"iput -PKVf {local_object} {irods_path}"
     else:
@@ -377,7 +377,8 @@ def PUSH(local_object) :
             local_object=(local_object.split("/"))[-1] ## the new path will be irods_path/object
         new_iobject=(f"{irods_path}/{local_object}").replace("//", "/")
         ADD_META(new_iobject)
-
+        print("\n")
+        SHOW_META(new_iobject)
 
 def PULL(type_iobject,local_path) :
     ##get back an object from irods and copy it on local folder or on a given path
@@ -398,14 +399,20 @@ def PULL(type_iobject,local_path) :
 def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
     building_attributes_dictionnary() ##if you don't want to have autocompletion on this command comment this
+    list_value=[]   
+    for i in dico_attribute.values():   ##AND THIS
+        for j in i : ## as every dictionary is a list we can't just use list(dict.values()) but use a loop on every list even if their compose of only one value
+            list_value.append(j)
     attribut="placeholder"
     while attribut !="":
-        attribut_completer=WordCompleter(dico_attribute.keys) ##if you don't want to have autocompletion on this command comment this
-        attribut=prompt("attribut (empty to stop) : ",completer=attribut_completer) ##if you don't want to have autocompletion on this command comment this
+        attribut_completer=WordCompleter(dico_attribute.keys()) ##if you don't want to have autocompletion on this command comment this
+        attribut=prompt("attribut (empty to stop) : ",completer=attribut_completer) ##AND THIS
         #attribut=input("attribut (empty to stop) : " ) ##if you don't want to have autocompletion on this command UNcomment this
         if attribut =="" :
             break
-        value=input("value : ")
+        value_completer=WordCompleter(list_value)   ##if you don't want to have autocompletion on this command comment this
+        value=prompt("value : ",completer=value_completer)  ##AND THIS
+        #value=input("value : ")    ##if you don't want to have autocompletion on this command UNcomment this
         unit=input("unit : ") 
         cmd_add_meta=f"imeta add {identify_iobject(iobject)} {iobject} {attribut} {value} {unit}"
         subprocess.run(cmd_add_meta.split())
