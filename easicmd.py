@@ -67,8 +67,9 @@ def main() :
                 ADD_META(iobject)
 
         elif sys.argv[1]=="rm_meta":
-            if len(sys.argv)>2  and sys.argv[2] != "-f" and sys.argv[2] != "-C" :
-                IRM_META(sys.argv[2])
+            if len(sys.argv)>2  and sys.argv[2] != "-f" or sys.argv[2] != "-C" :
+                call_iobject(sys.argv[2])
+                IRM_META(iobject)
             else:
                 asking("remove metadata from")
                 IRM_META(iobject)
@@ -133,7 +134,8 @@ def main() :
                     print("possible options are [-C] for a folder or [-f] for a file")
             else:
                 ask=input("search for a file [f] or a folder [C] :")
-                if ask == "-f" or ask == "-C" :
+                if ask == "f" or ask == "C" :
+                    ask="-"+ask
                     SEARCH_BY_NAME(ask)
                 else :
                     print("possible options are [-C] for a folder or [-f] for a file")
@@ -197,7 +199,7 @@ def help():
 #                                    `\ /'
 
 ##########################################################################################################################################################################################################################################################################################
-#### tools function's definition (function that will only be use by over function to avoid redundancy )
+#### tools function's definition (function that will only be use by other functions to avoid redundancy )
 ##########################################################################################################################################################################################################################################################################################
 
 def irods_collection():
@@ -306,6 +308,7 @@ def sizeof_fmt(num, suffix="B"):
     return f"{num:.1f}Yi{suffix}" 
 
 def asking(string):
+    global ask
     ask=input(f"{string} folder (C) or file (f) : ")
     if ask != "f" and ask != "C" :
         print("possible options are [C] for a folder or [f] for a file")
@@ -406,7 +409,7 @@ def ADD_META(iobject):
         for j in i : ## as every dictionary is a list we can't just use list(dict.values()) but use a loop on every list even if their compose of only one value
             if j not in list_value:
                 list_value.append(j)
-    for key in dico_attribute.keys():
+    for key in dico_attribute.keys(): ##AND THIS
         list_key.append(key)
     list_key.sort(key=str.lower)
     list_value.sort(key=str.lower)
@@ -482,17 +485,21 @@ def SEARCH_BY_META(type_iobject):
     ##so the user can't ask for nonexistent attribut/values
     building_attributes_dictionnary()
     ##building the query
-    qu_attribute_completer=WordCompleter(dico_attribute.keys)
-    qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
-    qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
-    qu_value=prompt("value (% as *): ",completer=qu_value_completer)
-    if "%" in qu_value :
-        operation="like"
-    else:
-        operation= "="
-    ##run the query
-    cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
-    subprocess.run(cmd_imetaQu.split())
+    try :
+        qu_attribute_completer=WordCompleter(dico_attribute.keys)
+        qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
+        qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
+        qu_value=prompt("value (% as *): ",completer=qu_value_completer)
+        if "%" in qu_value :
+            operation="like"
+        else:
+            operation= "="
+        ##run the query
+        cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
+        subprocess.run(cmd_imetaQu.split())
+    except KeyError:
+        print("Oops!  This attribute doesn't exist. Try again... (tap TAB to see the existing attributes)")
+
 
 def SEARCH_BY_NAME(type_iobject):
     ##search a file (with ilocate) or a folder store in the irods vault 

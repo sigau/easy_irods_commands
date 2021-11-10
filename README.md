@@ -277,7 +277,7 @@ units:
 ```
 
 ### RM_META : REMOVING METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-If you made a mistake while adding metadata, you can remove them with the command rm_meta. This command take as argument an irods path to your object. If you did not give a path, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
+If you made a mistake while adding metadata, you can remove them with the command rm_meta. This command take as argument an option ([-f] or [-C]). If you did not give one, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
 
 ```
 ### REMOVE METADATA FROM IRODS FOLDER "sr_aselus"
