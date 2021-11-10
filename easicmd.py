@@ -59,8 +59,9 @@ def main() :
                 print("you need to give at least the type of data you want to download from irods (-f or -C ) \nyou can also give the path to which you want to download the object\n command should look like easicmd.py pull -f/-C local/path/to/download")
 
         elif sys.argv[1] == "add_meta":
-            if len(sys.argv)>2 and sys.argv[2] != "-f" and sys.argv[2] != "-C":
-                ADD_META(sys.argv[2])
+            if len(sys.argv)>2 and sys.argv[2] != "-f" or sys.argv[2] != "-C":
+                call_iobject(sys.argv[2])
+                ADD_META(iobject)
             else :
                 asking("add metadata to")
                 ADD_META(iobject)
@@ -399,13 +400,19 @@ def PULL(type_iobject,local_path) :
 def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
     building_attributes_dictionnary() ##if you don't want to have autocompletion on this command comment this
-    list_value=[]   
+    list_value=[]
+    list_key=[]
     for i in dico_attribute.values():   ##AND THIS
         for j in i : ## as every dictionary is a list we can't just use list(dict.values()) but use a loop on every list even if their compose of only one value
-            list_value.append(j)
+            if j not in list_value:
+                list_value.append(j)
+    for key in dico_attribute.keys():
+        list_key.append(key)
+    list_key.sort(key=str.lower)
+    list_value.sort(key=str.lower)
     attribut="placeholder"
     while attribut !="":
-        attribut_completer=WordCompleter(dico_attribute.keys()) ##if you don't want to have autocompletion on this command comment this
+        attribut_completer=WordCompleter(list_key) ##if you don't want to have autocompletion on this command comment this
         attribut=prompt("attribut (empty to stop) : ",completer=attribut_completer) ##AND THIS
         #attribut=input("attribut (empty to stop) : " ) ##if you don't want to have autocompletion on this command UNcomment this
         if attribut =="" :
