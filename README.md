@@ -239,7 +239,7 @@ $ ils
 ```
 
 ### ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS
-Adding metadata to your irods objects is important and useful as irods is *originally* thought to be metadata based and not base on tree view. This metadata will be then used to search for your data on irods. If you didn't add metadata to your object when you put it in irods you can add then later on with add_meta. This command take as argument an irods path to your object. If you did not give a path, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion. It's a while loop, so you can add all your metadata at once, to stop it just left the *attribute* empty.
+Adding metadata to your irods objects is important and useful as irods is *originally* thought to be metadata based and not base on tree view. This metadata will be then used to search for your data on irods. If you didn't add metadata to your object when you put it in irods you can add then later on with add_meta. This command take as argument an option ([-f]/[-C]). If you don't give one, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion. It's a while loop, so you can add all your metadata at once, to stop it just left the *attribute* empty.
 You can use autocompletion for this command so if you reuse attribute it's more easy and less error-prone. If you want to gain time and doesn't need the autocompletion you can commant the line about attribute in ADD_META(). 
 
 ```
