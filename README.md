@@ -44,9 +44,8 @@ Possible COMMANDS :
 	show_meta	: show_meta [option] or show_meta
 		 option are [-f] for a file and [-C] for a folder
  
-	synchro	: synchro [local path to folder]
-		 synchronise the contain of a local folder with irods based on the sha256
-		 the folder will be synchronise on /zone/home/user/  
+	synchro	: synchro [local path to folder] [optional:irods path]
+		 synchronise the contain of a local folder with irods [in irods path if given or in /zone/home/user by default] based on the sha256 
 		 can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]'
 ```
 
@@ -147,29 +146,48 @@ $ls FAL56006_29db37dd_251.fast5
 FAL56006_29db37dd_251.fast5
 ```
 ### SYNCHRO : SYNCHRONIZE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS
-This command take as argument the path to a local folder you want to synchronize with irods. If the folder is not already on irods it will be created at the root (/zone/home/user) and synchronize using rsync.
+This command take as argument the path to a local folder you want to synchronize with irods and optionally a path in irods where you xwant to synchronise the folder. If the folder is not already on irods it will be created at the root (/zone/home/user) by default or where you give the path and synchronize using rsync.
+**If you have already put the folder in irods (with push or synchro) you don't need to give an irods path as the script will find it and do the synchronisation .**
 This command can be use when you create a new project and you know that it will often be modified. This command calculate the sha256 of the local file and look for their present in the icat, if they're not in the icat (the file doesn't exist yet in irods or had been edited in local) the file is sent to irods
 
 This command has been written to be associated with [when-changed](https://github.com/joh/when-changed) : every time a change is detected in your folder by *when-changed* it runs the command synchro on your folder.
 
 ```
-### SYNCHRONISE THE LOCAL FOLDER "fast5"
-$ ils
-/lbbeZone/home/gdebaecker:
-  C- /lbbeZone/home/gdebaecker/irods_test
-  C- /lbbeZone/home/gdebaecker/NeGa
-  C- /lbbeZone/home/gdebaecker/sr_aselus
-  C- /lbbeZone/home/gdebaecker/test_synchro
-
-$ ./easicmd.py synchro /beegfs/home/gdebaecker/irule/fast5/
+### SYNCHRONISE THE LOCAL FOLDER "Nanoplot" in irods folder "PROJECT_ASSELUS/ONT_READS"
 
 $ ils
 /lbbeZone/home/gdebaecker:
-  C- /lbbeZone/home/gdebaecker/fast5
-  C- /lbbeZone/home/gdebaecker/irods_test
   C- /lbbeZone/home/gdebaecker/NeGa
-  C- /lbbeZone/home/gdebaecker/sr_aselus
-  C- /lbbeZone/home/gdebaecker/test_synchro
+  C- /lbbeZone/home/gdebaecker/PROJECT_ASSELUS
+
+$ ls Nanoplot/
+full_report.pdf QC_porechop
+
+
+$ ./easicmd.py synchro /beegfs/home/gdebaecker/irule/Nanoplot /lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/ 
+
+$ ils ./PROJECT_ASSELUS/ONT_READS/Nanoplot/
+/lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/Nanoplot:
+  full_report.pdf
+  C- /lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/Nanoplot/QC
+
+
+### NOW WE MODIFY OUR LOCAL FOLDER AND WANT TO SYNCHRONISE IT WITH THE ONE IN IRODS
+$ cp -r /beegfs/data/gdebaecker/QC* /beegfs/home/gdebaecker/irule/Nanoplot/
+
+$ ls Nanoplot/
+full_report.pdf  QC  QC_3kb  QC_porechop
+
+$ ./easicmd.py synchro /beegfs/home/gdebaecker/irule/Nanoplot/
+
+$ ils ./PROJECT_ASSELUS/ONT_READS/Nanoplot/
+/lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/Nanoplot:
+  full_report.pdf
+  C- /lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/Nanoplot/QC
+  C- /lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/Nanoplot/QC_3kb
+  C- /lbbeZone/home/gdebaecker/PROJECT_ASSELUS/ONT_READS/Nanoplot/QC_porechop
+
+
 ```
 
 ### IMKDIR : CREATE AN IRODS WITHOUT KNOWING THE FULL TREE VIEW
@@ -399,6 +417,6 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 
 
 ## To-Do List
-- [ ] Update synchro function, so it can synchronize irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronized target and not in all irods (for example now if you want to synchronize a new folder containing example.txt but that identical example.txt already exist somewhere in irods this file will not be synchronized. Initially it was thinks for avoiding duplication of data, but it can be upgrade).
+- [X] ~~Update synchro function, so it can synchronize irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronized target and not in all irods (for example now if you want to synchronize a new folder containing example.txt but that identical example.txt already exist somewhere in irods this file will not be synchronized. Initially it was thinks for avoiding duplication of data, but it can be upgrade).~~
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] 

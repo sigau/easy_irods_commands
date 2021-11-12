@@ -141,16 +141,24 @@ def main() :
                     print("possible options are [-C] for a folder or [-f] for a file")
         
         elif sys.argv[1] == "synchro" :
-            if len(sys.argv)>2 :
+            if len(sys.argv) == 3 :
                 path=sys.argv[2]
                 os.chdir(f"{path}/..")
                 if path[-1] == "/":
                     path=path[:-1]
                 basename=(path.split("/"))[-1]
-                SYNCHRONISE(basename)
+                NEW_SYNCHRONISE(basename, None)
+            elif len(sys.argv) == 4 :
+                path=sys.argv[2]
+                os.chdir(f"{path}/..")
+                if path[-1] == "/":
+                    path=path[:-1]
+                basename=(path.split("/"))[-1]
+                NEW_SYNCHRONISE(basename, sys.argv[3])
             else :
                 print("Give a local path to upload to irods")
-
+        
+        
         else :
             help()
     else :
@@ -173,7 +181,7 @@ def help():
     print("\tsearch_by_meta\t: search_by_meta [option] or search_by_meta\n\t\t option are [-f] for a file, [-C] for a folder and [-u] for a user\n")
     print("\tsearch_name\t: search_name [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t search for a file or a folder in irods\n")    
     print("\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder\n ")
-    print("\tsynchro\t: synchro [local path to folder]\n\t\t synchronise the contain of a local folder with irods based on the sha256\n\t\t the folder will be synchronised on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
+    print("\tsynchro\t: synchro [local path to folder] [optional:irods path]\n\t\t synchronise the contain of a local folder with irods [in irods path if given or in /zone/home/user by default] based on the sha256\n\t\t the folder will be synchronised on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
     print("\n\tSee some examples on https://github.com/sigau/easy_irods_commands ")
 
 ##########################################################################################################################################################################################################################################################################################
@@ -261,6 +269,21 @@ def list_sha_irods():
         if "sha2:" in i :
             isha=i.split("sha2:")[1]
             list_isha.append(isha)
+    
+def list_sha_irods2():
+    #same as  list_sha_irods() but for testing new_synchro:
+    global list_isha2
+    list_isha2={}
+    cmd_ichecksum="ichksum ." ##get the modified sha for all the files in irods
+    ichksum=(subprocess.run(cmd_ichecksum.split(),capture_output=True).stdout).decode("utf-8")
+    for i in ichksum.split("\n"):
+        if i!= "" and i[0] == "C" :
+            collection=i.split()[1].replace(":", "")
+            list_isha2[collection]=[]
+        elif "sha2:" in i :
+            isha=i.split("sha2:")[1]
+            list_isha2[collection].append(isha)
+    #print(list_isha2)
 
 
 def identify_loc_object(object):
@@ -543,7 +566,43 @@ def SYNCHRONISE(local_folder):
         else :
             SYNCHRONISE(f"{local_folder}/{i}") #if folder recursive function
 
-
+def NEW_SYNCHRONISE(local_folder,irods_path):
+    irods_collection()
+    list_sha_irods2()
+    dir_content=os.listdir(local_folder)
+    ##is the folder in irods ?
+    exist=False
+    search=f"*/{local_folder}"
+    for collection in list_of_icollection :
+        if fnmatch.fnmatch(collection, search ) :
+            full_irods_path=collection
+            exist=True
+            break
+    if exist == False :
+        if irods_path :
+            full_irods_path=f"{irods_path}/{local_folder}".replace("//", "/")
+        else :
+            ipwd=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+            full_irods_path=f"{ipwd}/{local_folder}".replace("//", "/")
+        cmd_imkdir=f"imkdir -p {full_irods_path}"
+        subprocess.run(cmd_imkdir.split())
+        irods_collection() #refresh with the new values
+        list_sha_irods2() #same
+    
+    #synchronisation
+    for objects in dir_content:
+        objects_path=f"{local_folder}/{objects}".replace("//", "/")
+        if os.path.isfile(objects_path) :
+            cmd_sha=f"sha256sum {objects_path} | awk '{{print $1}}' | xxd -r -p | base64"
+            sha_256=(subprocess.check_output(cmd_sha, shell=True,text=True )).rstrip()
+            if sha_256 not in list_isha2[full_irods_path]:
+                cmd_iput=f"irsync -K {objects_path} i:{full_irods_path}"
+                subprocess.run(cmd_iput.split())
+        else:
+            size=len(objects_path.split("/"))-1 ## as we create each time from the same collection the new collection we need to give him always 
+            new_irods_path="/".join((full_irods_path.split("/"))[:-size]) ## the same collection as irods_path or it recreate the full folder in the collection
+            NEW_SYNCHRONISE(objects_path, new_irods_path)
+        
 def IDUSH():
     ##equivalent of the unix du -sh but on irods
     ##get the size (in bites) of all the file containing in a folder, add them and convert to human readable 
