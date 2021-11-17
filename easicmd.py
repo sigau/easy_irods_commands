@@ -522,6 +522,7 @@ def SEARCH_BY_META(type_iobject):
         subprocess.run(cmd_imetaQu.split())
     except KeyError:
         print("Oops!  This attribute doesn't exist. Try again... (tap TAB to see the existing attributes)")
+        SEARCH_BY_META(type_iobject)
 
 
 def SEARCH_BY_NAME(type_iobject):
@@ -564,7 +565,7 @@ def SYNCHRONISE(local_folder):
                 cmd_iput=f"irsync -K {path_to_file} i:{local_folder}" #input need -f (force) to update an already existing file (aka modify file)
                 subprocess.run(cmd_iput.split())
         else :
-            SYNCHRONISE(f"{local_folder}/{i}") #if folder recursive function
+            SYNCHRONISE(f"{local_folder}/{i}") ##if folder recursive function
 
 def NEW_SYNCHRONISE(local_folder,irods_path):
     irods_collection()
@@ -586,10 +587,10 @@ def NEW_SYNCHRONISE(local_folder,irods_path):
             full_irods_path=f"{ipwd}/{local_folder}".replace("//", "/")
         cmd_imkdir=f"imkdir -p {full_irods_path}"
         subprocess.run(cmd_imkdir.split())
-        irods_collection() #refresh with the new values
-        list_sha_irods2() #same
+        irods_collection() ##refresh with the new values
+        list_sha_irods2() ##same
     
-    #synchronisation
+    ##synchronisation
     for objects in dir_content:
         objects_path=f"{local_folder}/{objects}".replace("//", "/")
         if os.path.isfile(objects_path) :
