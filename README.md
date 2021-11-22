@@ -419,4 +419,4 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 ## To-Do List
 - [X] ~~Update synchro function, so it can synchronize irods folder already present in irods and not only in the root (/zone/home/user) + verify that the file is not only in the synchronized target and not in all irods (for example now if you want to synchronize a new folder containing example.txt but that identical example.txt already exist somewhere in irods this file will not be synchronized. Initially it was thinks for avoiding duplication of data, but it can be upgrade).~~
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
-- [ ] 
+- [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)

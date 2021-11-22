@@ -169,6 +169,7 @@ def main() :
 ##########################################################################################################################################################################################################################################################################################
 
 def help():
+    name()
     print("\nPossible COMMANDS :\n")
     print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
     print("\thelp\t: print this help and leave")
@@ -376,6 +377,14 @@ def building_attributes_dictionnary():
 def auto_parsing_meta():
     ##automatically add metadata based on the parsing of the file/folder info like date/format/author
     print()
+
+def name():
+    print("  ______               _____   _____    _____   __  __   _____  ")
+    print(" |  ____|     /\      / ____| |_   _|  / ____| |  \/  | |  __ \ ")
+    print(" | |__       /  \    | (___     | |   | |      | \  / | | |  | |")
+    print(" |  __|     / /\ \    \___ \    | |   | |      | |\/| | | |  | |")
+    print(" | |____   / ____ \   ____) |  _| |_  | |____  | |  | | | |__| |")
+    print(" |______| /_/    \_\ |_____/  |_____|  \_____| |_|  |_| |_____/\n")
 
 ##########################################################################################################################################################################################################################################################################################
 #### called function's definition (function that will be "called" by the user/main )
