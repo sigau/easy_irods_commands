@@ -59,17 +59,25 @@ def main() :
                 print("you need to give at least the type of data you want to download from irods (-f or -C ) \nyou can also give the path to which you want to download the object\n command should look like easicmd.py pull -f/-C local/path/to/download")
 
         elif sys.argv[1] == "add_meta":
-            if len(sys.argv)>2 and sys.argv[2] != "-f" or sys.argv[2] != "-C":
-                call_iobject(sys.argv[2])
-                ADD_META(iobject)
+            if len(sys.argv)>2 :
+                if sys.argv[2] == "-f" or sys.argv[2] == "-C":
+                    call_iobject(sys.argv[2])
+                    ADD_META(iobject)
+                else :
+                    asking("add metadata to")
+                    ADD_META(iobject)
             else :
                 asking("add metadata to")
                 ADD_META(iobject)
 
         elif sys.argv[1]=="rm_meta":
-            if len(sys.argv)>2  and sys.argv[2] != "-f" or sys.argv[2] != "-C" :
-                call_iobject(sys.argv[2])
-                IRM_META(iobject)
+            if len(sys.argv)>2 :
+                if sys.argv[2] == "-f" or sys.argv[2] == "-C" :
+                    call_iobject(sys.argv[2])
+                    IRM_META(iobject)
+                else :
+                    asking("remove metadata from")
+                    IRM_META(iobject)    
             else:
                 asking("remove metadata from")
                 IRM_META(iobject)
