@@ -525,18 +525,36 @@ def SEARCH_BY_META(type_iobject):
     ##so the user can't ask for nonexistent attribut/values
     building_attributes_dictionnary()
     ##building the query
+    list_operation=["=","like","\'>\'","\'<\'"]
+    list_liaison=["","and",'or']
+    liaison="placeholder"
     try :
-        qu_attribute_completer=WordCompleter(dico_attribute.keys)
-        qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
-        qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
-        qu_value=prompt("value (% as *): ",completer=qu_value_completer)
-        if "%" in qu_value :
-            operation="like"
-        else:
-            operation= "="
+        # qu_attribute_completer=WordCompleter(dico_attribute.keys)
+        # qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
+        # qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
+        # qu_value=prompt("value (% as *): ",completer=qu_value_completer)
+        # if "%" in qu_value :
+        #     operation="like"
+        # else:
+        #     operation= "="
+        # ##run the query
+        # cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
+        # subprocess.run(cmd_imetaQu.split())
+        cmd_imetaQu=f"imeta qu {type_iobject}"
+        while liaison != "" :
+            qu_attribute_completer=WordCompleter(dico_attribute.keys)
+            qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
+            qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
+            qu_value=prompt("value (% as *): ",completer=qu_value_completer)
+            operation_completer=WordCompleter(list_operation)
+            operation=prompt("operation (like if your value contain % as a *): ",completer=operation_completer)
+            liaison_completer=WordCompleter(list_liaison)
+            liaison=prompt("liaison (empty to stop): ",completer=liaison_completer)
+            cmd_imetaQu=f"{cmd_imetaQu} {qu_attribute} {operation} {qu_value} {liaison}"
         ##run the query
-        cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
-        subprocess.run(cmd_imetaQu.split())
+        qu_result=subprocess.check_output(cmd_imetaQu, shell=True,text=True )
+        print(f"\n{qu_result}")
+        #subprocess.run(cmd_imetaQu.split())
     except KeyError:
         print("Oops!  This attribute doesn't exist. Try again... (tap TAB to see the existing attributes)")
         SEARCH_BY_META(type_iobject)
