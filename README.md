@@ -361,7 +361,7 @@ If you have associated metadata to your object, you can find them later by makin
 The script create a dictionary where the key are the attributes and the values are the values(metadata) associates with this attribute, so you can't ask for attributes that do not exist or values not associates with an attribute.
 
 ```
-###SEARCH ALL THE IRODS FOLDER THAT HAVE THE ATTRIBUTE "technology"
+###SEARCH ALL THE IRODS FOLDER THAT HAVE THE ATTRIBUTE "technology" CREATED BEFORE  2020
 ./easicmd.py search_by_meta -C
 attribute:  technology
               auteur         
@@ -370,6 +370,12 @@ attribute:  technology
 value (% as *): %
                    illumina  
                    Nanopore  
+operation (like if your value contain % as a *): like 
+liaison (empty to stop): and
+attribute: year
+value (% as *): 2020
+operation (like if your value contain % as a *): '<'
+liaison (empty to stop):
 
 collection: /lbbeZone/home/gdebaecker/irods_test/raw_data/fast5
 ----
@@ -417,6 +423,6 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 
 
 ## To-Do List
-- [ ] Add graphical interface (Tkinter or other)
+- [ ] Add an option for graphical interface user (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)
