@@ -166,6 +166,14 @@ def main() :
             else :
                 print("Give a local path to upload to irods")
         
+        elif sys.argv[1] == "ichmod" :
+            asking("Give permission for a")
+            ICHMOD(iobject)
+
+
+        elif sys.argv[1] == "test" :
+            get_user()
+
         
         else :
             help()
@@ -181,6 +189,7 @@ def help():
     print("\nPossible COMMANDS :\n")
     print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
     print("\thelp\t: print this help and leave")
+    print("\tichmod\t: give right to other user/group over some of your data (e.g give read right over one iCollection)")
     print("\tidush\t: equivalent to du -sh for an irods folder\n")
     print("\timkdir\t : imkdir -p reinforce by autocompletion\n")
     print("\tirm\t: irm [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion\n")
@@ -279,6 +288,7 @@ def list_sha_irods():
             isha=i.split("sha2:")[1]
             list_isha.append(isha)
     
+
 def list_sha_irods2():
     #same as  list_sha_irods() but for testing new_synchro:
     global list_isha2
@@ -320,6 +330,7 @@ def identify_iobject(iobject):
         is_ifile=False
     return type_iobject
 
+
 def call_iobject(type_iobject):
     global iobject
     irods_collection()
@@ -339,6 +350,7 @@ def sizeof_fmt(num, suffix="B"):
         num /= 1024.0
     return f"{num:.1f}Yi{suffix}" 
 
+
 def asking(string):
     global ask
     ask=input(f"{string} folder (C) or file (f) : ")
@@ -348,6 +360,7 @@ def asking(string):
     else:
         ask="-"+ask
         call_iobject(ask)
+
 
 def building_attributes_dictionnary():
     global dico_attribute
@@ -382,10 +395,24 @@ def building_attributes_dictionnary():
                     else :
                         dico_attribute[attribut].add(value)
 
-def auto_parsing_meta():
-    ##automatically add metadata based on the parsing of the file/folder info like date/format/author
-    print()
 
+def building_attributes_dictionnary_sql():
+    global dico_attribute
+    dico_attribute={}
+    cmd_meta_attr=f"y | iquest \"SELECT META_DATA_ATTR_NAME\""
+    meta_attribute=subprocess.check_output(cmd_meta_attr, shell=True,text=True )
+    for line in meta_attribute.split("\n"):
+        if line != "" and line[0] != "-" :
+            attribute=line.split("META_DATA_ATTR_NAME = ")[1]
+            dico_attribute[attribute]=[]
+            cmd_meta_value=f"y | iquest \"SELECT META_DATA_ATTR_VALUE WHERE META_DATA_ATTR_NAME = \'{attribute}\' \""
+            meta_value_list=subprocess.check_output(cmd_meta_value, shell=True,text=True )
+            for linebis in meta_value_list.split("\n"):
+                if linebis != "" and linebis[0] != "-" :
+                    value=linebis.split("META_DATA_ATTR_VALUE = ")[1]
+                    dico_attribute[attribute].append(value)
+
+   
 def name():
     print("  ______               _____   _____    _____   __  __   _____  ")
     print(" |  ____|     /\      / ____| |_   _|  / ____| |  \/  | |  __ \ ")
@@ -394,6 +421,26 @@ def name():
     print(" | |____   / ____ \   ____) |  _| |_  | |____  | |  | | | |__| |")
     print(" |______| /_/    \_\ |_____/  |_____|  \_____| |_|  |_| |_____/\n")
 
+
+def get_user():
+    global list_user
+    list_user=[]
+    cmd_user=subprocess.check_output("iquest \"SELECT USER_NAME \"",shell=True,text=True )
+    for line in cmd_user.splitlines():
+        if "USER_NAME = " in line :
+            list_user.append(line.split("USER_NAME = ")[1])
+
+def get_group():
+    global list_group
+    list_group=[]
+    cmd_group=subprocess.check_output("iquest \"SELECT USER_GROUP_NAME\"",shell=True,text=True )
+    for line in cmd_group.splitlines():
+        if "USER_GROUP_NAME = " in line :
+            list_group.append(line.split("USER_GROUP_NAME = ")[1])
+
+def auto_parsing_meta():
+    ##automatically add metadata based on the parsing of the file/folder info like date/format/author
+    print()
 ##########################################################################################################################################################################################################################################################################################
 #### called function's definition (function that will be "called" by the user/main )
 ##########################################################################################################################################################################################################################################################################################
@@ -573,6 +620,7 @@ def SEARCH_BY_NAME(type_iobject):
             if fnmatch.fnmatch(i, search) : ##if search match in i
                 print(i)
 
+
 def SYNCHRONISE(local_folder):
     ##synchronyse a local folder with irods vault by checking the sha256.
     ##If the folder doesn't exit on irods it's created then synchronised
@@ -601,6 +649,7 @@ def SYNCHRONISE(local_folder):
                 subprocess.run(cmd_iput.split())
         else :
             SYNCHRONISE(f"{local_folder}/{i}") ##if folder recursive function
+
 
 def NEW_SYNCHRONISE(local_folder,irods_path):
     irods_collection()
@@ -639,6 +688,7 @@ def NEW_SYNCHRONISE(local_folder,irods_path):
             new_irods_path="/".join((full_irods_path.split("/"))[:-size]) ## the same collection as irods_path or it recreate the full folder in the collection
             NEW_SYNCHRONISE(objects_path, new_irods_path)
         
+        
 def IDUSH():
     ##equivalent of the unix du -sh but on irods
     ##get the size (in bites) of all the file containing in a folder, add them and convert to human readable 
@@ -654,6 +704,33 @@ def IDUSH():
             bits=int(line.split()[3])
             total_bits += bits
     print(sizeof_fmt(total_bits))
+
+
+def ICHMOD(iobject):
+    first_choice=["group","user"]
+    list_right=["read","write","own","remove/null"]
+    group_or_user_completer=WordCompleter(first_choice)
+    group_or_user=prompt("group or user : ",completer=group_or_user_completer)
+    if group_or_user == "group" :
+        get_group()
+        list_receiver=list_group
+    elif group_or_user == "user" :
+        get_user()
+        list_receiver=list_user
+    else :
+        ICHMOD(iobject)
+
+    receiver_completer=WordCompleter(list_receiver)
+    receiver=prompt("give acces to : ",completer=receiver_completer)
+    right_completer=WordCompleter(list_right)
+    right=prompt("which right : ",completer=right_completer)
+    if right == "remove/null" :
+        right="null"
+    if identify_iobject(iobject) == "-C" :
+        option="-r"
+    else :
+        option=""
+    print(f"ichmod {option} {right} {receiver} {iobject} ")
 
 ##########################################################################################################################################################################################################################################################################################
 #### if __name__ == "__main__" 

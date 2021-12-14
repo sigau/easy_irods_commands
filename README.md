@@ -14,6 +14,9 @@ Possible COMMANDS :
 		  if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
 
 	help	: print this help and leave
+  
+  ichmod	: give right to other user/group over some of your data (e.g give read right over one iCollection)
+
 	idush	: equivalent to du -sh for an irods folder
 
 	imkdir	 : imkdir -p reinforce by autocompletion
@@ -421,6 +424,50 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 
 ```
 
+### ICHMOD : SHARE YOUR DATA DIRECTLY IN IRODS
+With this command you can give (or remove with *null*) write/read/owner right to another iRODS user or group. You will be ask if you want to give the acces from a collection or a file and have to choose it. Then if you want to give acces to a user or a group and choose it with the autocompletion. Finally you will have to choose hich right you want to give (read/write/own/remove).
+
+```
+### GIVE WRITE PERMISSION OVER PROJECT_1 TO COLLABORATOR_1
+$ ./easicmd.py ichmod
+Give permission for a folder (C) or file (f) : C
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/Project_1
+                                                               /lbbeZone/home/gdebaecker/fast5  
+                                                               /lbbeZone/home/gdebaecker/NeGa   
+                                                               /lbbeZone/home/gdebaecker/Project_1 
+group or user : user
+give acces to : COLLABORATOR_1
+                 MISTER_X         
+                 MJACKSON
+                 COLLABORATOR_1        
+
+which right : write
+               read         
+               write        
+               own          
+               remove/null  
+
+### REMOVE RIGHT OVER PROJECT_X TO TRAITOR GROUP
+$ ./easicmd.py ichmod
+Give permission for a folder (C) or file (f) : C
+ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/Project_X
+                                                               /lbbeZone/home/gdebaecker/fast5  
+                                                               /lbbeZone/home/gdebaecker/NeGa   
+                                                               /lbbeZone/home/gdebaecker/Project_X 
+group or user : group
+give acces to : TRAITOR
+                 hufflepuff         
+                 ravenclaw
+                 gryffindor
+                 TRAITOR
+
+which right : remove/null
+               read         
+               write        
+               own          
+               remove/null  
+
+```
 
 ## To-Do List
 - [ ] Add an option for graphical interface user (Tkinter or other)
