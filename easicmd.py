@@ -431,6 +431,10 @@ def read_attributes_dictionnary():
     if os.path.isfile(file_name):
         with open(file_name,"rb") as f:
             dico_attribute=pickle.load(f)
+    else:
+        f=open(file_name,"wb")
+        f.close()
+
 
 
 
