@@ -14,8 +14,8 @@ Possible COMMANDS :
 		  if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
 
 	build_dico_meta : create a file in your home directory containing the dictionary with your metadata attribute and value.
-  As it's in local you just to have to run this the first time and when you add metadata it will be update.
-  This is usefull because when you have many file in your irods vault it take a very long time to get this dictionary if you have to do it every time you need the autocompletion for metadata 
+                    As it's in local you just to have to run this the first time and when you add metadata it will be update.
+                    This is usefull because when you have many file in your irods vault it take a very long time to get this dictionary if you have to do it every time you need the autocompletion for metadata 
 
 	help	: print this help and leave
   
