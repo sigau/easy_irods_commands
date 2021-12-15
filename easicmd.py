@@ -5,6 +5,8 @@ import sys,os,re, time, csv
 import subprocess
 import fnmatch
 import pkg_resources
+import pickle
+
 #from prompt_toolkit import prompt
 #from prompt_toolkit.completion import WordCompleter
 
@@ -170,6 +172,8 @@ def main() :
             asking("Give permission for a")
             ICHMOD(iobject)
 
+        elif sys.argv[1] == "build_dico_meta":
+            building_attributes_dictionnary()
 
         elif sys.argv[1] == "test" :
             get_user()
@@ -188,6 +192,7 @@ def help():
     name()
     print("\nPossible COMMANDS :\n")
     print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
+    print("\tbuild_dico_meta\t: create a file in your home directory containing the dictionary with your metadata attribute and value.\n\t\tAs it's in local you just to have to run this the first time and when you add metadata it will be update.\n\t\tThis is usefull because when you have many file in your irods vault it take a very long time to get this dictionary if you have to do it every time you need the autocompletion for metadata  ")
     print("\thelp\t: print this help and leave")
     print("\tichmod\t: give right to other user/group over some of your data (e.g give read right over one iCollection)")
     print("\tidush\t: equivalent to du -sh for an irods folder\n")
@@ -394,6 +399,12 @@ def building_attributes_dictionnary():
                         dico_attribute[attribut].add(value)
                     else :
                         dico_attribute[attribut].add(value)
+    ## Save the dictionary in an extern text file 
+    ## If the user have many file the creation of the dictionary will time consuming everytime 
+    file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    with open(file_name,"wb") as f :
+        pickle.dump(dico_attribute, f)
+    print(f"Dictionary have been save in {file_name}")
 
 
 def building_attributes_dictionnary_sql():
@@ -412,7 +423,17 @@ def building_attributes_dictionnary_sql():
                     value=linebis.split("META_DATA_ATTR_VALUE = ")[1]
                     dico_attribute[attribute].append(value)
 
-   
+
+def read_attributes_dictionnary():
+    global dico_attribute
+    dico_attribute={}
+    file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    if os.path.isfile(file_name):
+        with open(file_name,"rb") as f:
+            dico_attribute=pickle.load(f)
+
+
+
 def name():
     print("  ______               _____   _____    _____   __  __   _____  ")
     print(" |  ____|     /\      / ____| |_   _|  / ____| |  \/  | |  __ \ ")
@@ -489,7 +510,9 @@ def PULL(type_iobject,local_path) :
 
 def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
-    building_attributes_dictionnary() ##if you don't want to have autocompletion on this command comment this
+    read_attributes_dictionnary() ##if you don't want to have autocompletion on this command comment this
+    print(dico_attribute)
+    change=False
     list_value=[]
     list_key=[]
     for i in dico_attribute.values():   ##AND THIS
@@ -513,6 +536,22 @@ def ADD_META(iobject):
         unit=input("unit : ") 
         cmd_add_meta=f"imeta add {identify_iobject(iobject)} {iobject} {attribut} {value} {unit}"
         subprocess.run(cmd_add_meta.split())
+        if attribut not in dico_attribute:
+            dico_attribute[attribut]=set()
+            dico_attribute[attribut].add(value)
+            change=True
+        else:
+            if value not in dico_attribute[attribut]:
+                dico_attribute[attribut].add(value)
+                change=True
+    
+    ###UPDATE dictionary file
+    if change == True :
+        file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+        with open(file_name,"wb") as f :
+            pickle.dump(dico_attribute, f)
+        print(f"Dictionary have been update in {file_name}")
+
 
 
 def IRM_META(iobject):
@@ -570,7 +609,7 @@ def SEARCH_BY_META(type_iobject):
     ##Search for an object(s) in irods by query the metadata associate with it/them
     ##The attributes exiting in irods are save in a dictionary as key with the (metadata) values associate with this attribute as (dictionary) values
     ##so the user can't ask for nonexistent attribut/values
-    building_attributes_dictionnary()
+    read_attributes_dictionnary()
     ##building the query
     list_operation=["=","like","\'>\'","\'<\'"]
     list_liaison=["","and",'or']
@@ -730,7 +769,8 @@ def ICHMOD(iobject):
         option="-r"
     else :
         option=""
-    print(f"ichmod {option} {right} {receiver} {iobject} ")
+    ichmod_cmd(f"ichmod {option} {right} {receiver} {iobject} ")
+    subprocess.run(ichmod_cmd.split())
 
 ##########################################################################################################################################################################################################################################################################################
 #### if __name__ == "__main__" 

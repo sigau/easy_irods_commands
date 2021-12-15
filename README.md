@@ -13,6 +13,10 @@ Possible COMMANDS :
 	add_meta	: add_meta or add_meta [irods path]
 		  if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
 
+  build_dico_meta : create a file in your home directory containing the dictionary with your metadata attribute and value.
+  As it's in local you just to have to run this the first time and when you add metadata it will be update.
+  This is usefull because when you have many file in your irods vault it take a very long time to get this dictionary if you have to do it every time you need the autocompletion for metadata 
+
 	help	: print this help and leave
   
   ichmod	: give right to other user/group over some of your data (e.g give read right over one iCollection)
@@ -59,6 +63,16 @@ When you will have to select a data from irods a list where you can navigate by 
 
 ## Examples 
 **To simplify when we talk about irods file it refer to data_object and irods folder to collection.**
+
+### BUILD_DICO_META : CREATE A DICTIONARY OF METADATA IN YOUR LOCAL HOME
+This command create a file (*.irods_metadata_local_save.pkl*) in your local home folder. This usefull because to have the autocompletion when working on metadata you have to loop on all your file that can be very timeconsumming when you have many or have to do it many time. This dictionary will be update when you add new metadata. 
+The good pratice would be to create this dictionnary before puting any data on irods or if you already have data on irods with metadata associated you can run this command and wait that the dictionary is built.
+
+```
+### BUILD THE DICTIONARY IN LOCAL TO ACCES AUTOCOMPLETION ON METADATA
+$ ./easicmd.py build_dico_meta
+Dictionary have been save in /beegfs/home/gdebaecker/.irods_metadata_local_save.pkl
+```
 ### PUSH : PUT LOCAL DATA ON IRODS
 To put a data (file or folder) on irods you just have to give a path to the data. Then you will be asked where in irods you want to put it. 
 When you use **push** to upload data the sha256 is calculated and stock in the icat (option -K in iput).
