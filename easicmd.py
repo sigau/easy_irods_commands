@@ -9,7 +9,7 @@ import pickle
 
 #from prompt_toolkit import prompt
 #from prompt_toolkit.completion import WordCompleter
-
+#test dev
 ## two # (##) mean a commentary and one # (#) mean a option you can change at your own risk 
 
 ##########################################################################################################################################################################################################################################################################################
@@ -515,7 +515,6 @@ def PULL(type_iobject,local_path) :
 def ADD_META(iobject):
     ##loop to add meta data to a given object on irods that can be collection(folder), DataObject(file) or user
     read_attributes_dictionnary() ##if you don't want to have autocompletion on this command comment this
-    print(dico_attribute)
     change=False
     list_value=[]
     list_key=[]
@@ -619,17 +618,6 @@ def SEARCH_BY_META(type_iobject):
     list_liaison=["","and",'or']
     liaison="placeholder"
     try :
-        # qu_attribute_completer=WordCompleter(dico_attribute.keys)
-        # qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
-        # qu_value_completer=WordCompleter(dico_attribute[qu_attribute])
-        # qu_value=prompt("value (% as *): ",completer=qu_value_completer)
-        # if "%" in qu_value :
-        #     operation="like"
-        # else:
-        #     operation= "="
-        # ##run the query
-        # cmd_imetaQu=f"imeta qu {type_iobject} {qu_attribute} {operation} {qu_value}"
-        # subprocess.run(cmd_imetaQu.split())
         cmd_imetaQu=f"imeta qu {type_iobject}"
         while liaison != "" :
             qu_attribute_completer=WordCompleter(dico_attribute.keys)
