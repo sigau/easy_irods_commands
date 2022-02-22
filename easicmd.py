@@ -400,7 +400,7 @@ def building_attributes_dictionnary():
                     else :
                         dico_attribute[attribut].add(value)
     ## Save the dictionary in an extern text file 
-    ## If the user have many file the creation of the dictionary will time consuming everytime 
+    ## If the user have many file the creation of the dictionary will be time consuming everytime 
     file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
     with open(file_name,"wb") as f :
         pickle.dump(dico_attribute, f)
