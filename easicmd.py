@@ -244,6 +244,7 @@ def irods_collection():
         if "  C- " in i :
             list_of_icollection.append(i.replace("  C- ", "")) ##keep only the collection represent by C- in irods
     icol_completer=WordCompleter(list_of_icollection)
+    #return(list_of_icollection)
 
 
 def list_ifile(ifolder):
