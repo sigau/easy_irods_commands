@@ -16,7 +16,7 @@ import pickle
 ####  install dependancy (bad and temporary methods) 
 ##########################################################################################################################################################################################################################################################################################
 
-required = {"prompt_toolkit"}
+required = {"prompt_toolkit","ttkwidgets","pillow"}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 

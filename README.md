@@ -484,6 +484,6 @@ which right : remove/null
 ```
 
 ## To-Do List
-- [ ] Add an option for graphical interface user (Tkinter or other)
+- [ ] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)
