@@ -12,6 +12,9 @@ from easicmd import *
 import time
 import ttkwidgets
 from ttkwidgets.autocomplete import AutocompleteEntry
+import subprocess
+
+
 
 #ssh -X to activate Xwindow
 # autocompletion sudo apt-get install python3-pil python3-pil.imagetk
@@ -43,7 +46,7 @@ def GUITEST():
 def GUI_TYPE_OBJECT(otype):
     global type_object
     if otype == "file":
-        type_object="-f"
+        type_object="-d"
     else :
         type_object="-C"
     return type_object
@@ -57,12 +60,10 @@ def GUI_GET_LOCAL_OBJECT(otype) :
     else :
         local_object=askdirectory(title="Which folder (verify the path in selection before validate)")
     return local_object
-    print(local_object)
-
 
 def to_irods_and_beyond():
     irods_path=gui_list_of_icollection.get(gui_list_of_icollection.curselection())
-    if type_object == "-f":
+    if type_object == "-d":
         cmd_push=f"iput -PKVf {local_object} {irods_path}"
     else :
         cmd_push=f"iput -rPKVf {local_object} {irods_path}"
@@ -76,7 +77,6 @@ def WHERE_TO_IRODS():
     win_where.title("WHERE TO SEND DATA")
     win_where.geometry('1080x500')
     easicmd.irods_collection()
-    #print(easicmd.list_of_icollection)
     gui_list_of_icollection= Listbox(win_where)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
@@ -87,7 +87,7 @@ def INIT_PUSH():
 
     win = Toplevel()
     win.title('warning')
-    win.geometry('250x200')
+    win.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
     Label(win, text=message).pack()
     Button(win, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win.destroy(),GUI_GET_LOCAL_OBJECT("file"),WHERE_TO_IRODS()]).pack(side=LEFT)
@@ -154,7 +154,7 @@ def PULL_FROM_IRODS(itype):
 def INIT_PULL() :
     win_pull = Toplevel()
     win_pull.title('warning pull')
-    win_pull.geometry('250x200')
+    win_pull.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
     Label(win_pull, text=message).pack()
     Button(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),PULL_FROM_IRODS("-f")]).pack(side=LEFT)
@@ -242,7 +242,7 @@ def IRM_GET_FOLDER():
 def INIT_IRM():
     win_pull = Toplevel()
     win_pull.title('warning IRM')
-    win_pull.geometry('250x200')
+    win_pull.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
     Label(win_pull, text=message).pack()
     Button(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),IRM_GET_FOLDER()]).pack(side=LEFT)
@@ -366,11 +366,345 @@ def ADDMETA_GET_IRODS_PATH():
 def INIT_ADD_META():
     win_addmeta = Toplevel()
     win_addmeta.title('warning ADD METADATA')
-    win_addmeta.geometry('250x200')
+    win_addmeta.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
     Label(win_addmeta, text=message).pack()
     Button(win_addmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=LEFT)
     Button(win_addmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=RIGHT)
+
+
+############
+### rm_meta
+############
+def RM_META_CMD():
+    att=str(attribut.get()).replace("*", "%")
+    val=str(value.get()).replace("*", "%")
+    if type_object == "-C":
+        cmd_rm=f"imeta rmw {type_object} {irods_path} {att} {val} %"
+    else :
+        cmd_rm=f"imeta rmw {type_object} {irods_path_file} {att} {val} %"
+    #print(cmd_rm)
+    subprocess.run(cmd_rm.split())
+
+def GET_RM_ATTR():
+    global attribut
+    global value 
+    global units
+    easicmd.read_attributes_dictionnary()
+    list_value=[]
+    list_attr=[]
+    for i in easicmd.dico_attribute.values():
+        for j in i : ## as every dictionary is a list we can't just use list(dict.values()) but use a loop on every list even if their compose of only one value
+            if j not in list_value:
+                list_value.append(j)
+    for attr in easicmd.dico_attribute.keys(): 
+        list_attr.append(attr)
+    list_attr.sort(key=str.lower)
+    list_value.sort(key=str.lower) 
+    win_name_addmeta= Toplevel()
+    win_name_addmeta.title("REMOVE METADATA (* for all)")
+    Label(win_name_addmeta,text="attribut : ").grid(row=0)
+    Label(win_name_addmeta,text="value : ").grid(row=1)
+    attribut = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_attr)
+    attribut.grid(row=0, column=1)
+    value = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_value)
+    value.grid(row=1, column=1)
+    units = Entry(win_name_addmeta, width=20)
+    validate_button = Button(win_name_addmeta,text="validate",command=lambda:[RM_META_CMD(),CLEAR_TEXT()])
+    validate_button.grid(row=0, column=2)
+    exit_button = Button(win_name_addmeta,text="exit",command=lambda:[win_name_addmeta.destroy()])
+    exit_button.grid(row=3, column=2)  
+
+def GET_RMMETA_FILE_NAME():
+    global gui_list_of_ifile
+    win_where = Toplevel()
+    win_where.geometry('1080x500')
+    win_where.title("SELECT THE FILE")
+    easicmd.list_ifile(irods_path)
+    gui_list_of_ifile=Listbox(win_where)
+    for i in easicmd.ifile :
+        gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
+    gui_list_of_ifile.pack(fill="both",expand="yes")
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')    
+
+def RMMETA_GET_IRODS_PATH():
+    easicmd.irods_collection()
+    global gui_list_of_icollection
+    win_where = Toplevel()
+    if type_object == "-C":
+        win_where.title("WHICH FOLDER ?")
+    else :
+        win_where.title("FIRST CHOOSE THE FOLDER ?")
+    win_where.geometry('1080x500')
+    gui_list_of_icollection= Listbox(win_where)    
+    for i in easicmd.list_of_icollection:
+        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    gui_list_of_icollection.pack(fill="both",expand="yes")
+    if type_object == "-C":
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')
+    else :
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RMMETA_FILE_NAME()]).pack(side='bottom')  
+
+def INIT_RM_META():
+    win_rmmeta= Toplevel()
+    win_rmmeta.title('warning ADD METADATA')
+    win_rmmeta.geometry('500x200')
+    message = "The data you want to remove metadata is a FILE or a FOLDER ?"
+    Label(win_rmmeta, text=message).pack()
+    Button(win_rmmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_rmmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=RIGHT)    
+
+##################
+##SHOW META
+##################
+def PRINT_META():
+    win_meta= Toplevel()
+    t= Text(win_meta, height = 25, width = 52)
+    Label(win_meta,text="Your meta data :").pack()
+    t.insert(tk.END, meta_to_show)
+    t.pack()
+    button_close= Button(win_meta, text="close", command=win_meta.destroy)
+    button_close.pack(side=BOTTOM)
+
+def GUI_SHOW_META():
+    global meta_to_show
+    if type_object == "-C":
+        cmd=f"imeta ls {type_object} {irods_path}"
+    else :
+        cmd=f"imeta ls {type_object} {irods_path_file}"
+    meta_to_show=subprocess.check_output(cmd, shell=True,text=True )
+    PRINT_META()
+
+
+def GET_SHOW_META_FILE_NAME():
+    global gui_list_of_ifile
+    win_where = Toplevel()
+    win_where.geometry('1080x500')
+    win_where.title("SELECT THE FILE")
+    easicmd.list_ifile(irods_path)
+    gui_list_of_ifile=Listbox(win_where)
+    for i in easicmd.ifile :
+        gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
+    gui_list_of_ifile.pack(fill="both",expand="yes")
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom') 
+
+def SHOWMETA_GET_IRODS_PATH():
+    easicmd.irods_collection()
+    global gui_list_of_icollection
+    win_where = Toplevel()
+    if type_object == "-C":
+        win_where.title("WHICH FOLDER ?")
+    else :
+        win_where.title("FIRST CHOOSE THE FOLDER ?")
+    win_where.geometry('1080x500')
+    gui_list_of_icollection= Listbox(win_where)    
+    for i in easicmd.list_of_icollection:
+        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    gui_list_of_icollection.pack(fill="both",expand="yes")
+    if type_object == "-C":
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom')
+    else :
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_SHOW_META_FILE_NAME()]).pack(side='bottom')
+        
+def INIT_SHOW_META():
+    win_showmeta= Toplevel()
+    win_showmeta.title('warning ADD METADATA')
+    win_showmeta.geometry('500x200')
+    message = "The data you want to show metadata is a FILE or a FOLDER ?"
+    Label(win_showmeta, text=message).pack()
+    Button(win_showmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_showmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=RIGHT)
+
+####################
+##search by meta
+####################
+
+def CLEAR_SEARCH_TEXT():
+    attribut.delete(0,END)
+    value.delete(0,END)
+    liaison.delete(0,END)
+    operator.delete(0,END)
+
+
+def SEARCH_GET_CMD():
+    global attribut
+    global value 
+    global liaison
+    global operator
+    global search_meta_cmd
+
+    search_meta_cmd=f"imeta qu {type_object}"
+    list_operation=["=","like","\'>\'","\'<\'"]
+    list_liaison=["","and",'or']
+
+    easicmd.read_attributes_dictionnary()
+    list_value=[]
+    list_attr=[]
+    
+    for i in easicmd.dico_attribute.values():
+        for j in i : ## as every dictionary is a list we can't just use list(dict.values()) but use a loop on every list even if their compose of only one value
+            if j not in list_value:
+                list_value.append(j)
+    for attr in easicmd.dico_attribute.keys(): 
+        list_attr.append(attr)
+    list_attr.sort(key=str.lower)
+    list_value.sort(key=str.lower) 
+    
+    win_searchcmd= Toplevel()
+    win_searchcmd.title("SEARCH FOR (* is mandatory)")
+    Label(win_searchcmd,text="attribut* : ").grid(row=0)
+    Label(win_searchcmd,text="operator* (=, like, >, <,) : ").grid(row=1)
+    Label(win_searchcmd,text="value* : ").grid(row=2)
+    Label(win_searchcmd,text="liaison (and/or): ").grid(row=3)
+
+    attribut = AutocompleteEntry(win_searchcmd, width=20,completevalues=list_attr)
+    attribut.grid(row=0, column=1)
+    operator= AutocompleteEntry(win_searchcmd, width=20,completevalues=list_operation)
+    operator.grid(row=1, column=1)
+    value = AutocompleteEntry(win_searchcmd, width=20,completevalues=list_value)
+    value.grid(row=2, column=1)
+    liaison=AutocompleteEntry(win_searchcmd, width=20,completevalues=list_liaison)
+    liaison.grid(row=3,column=1)
+    
+    add_button = Button(win_searchcmd,text="add",command=lambda:[BUILD_SEARCH_CMD(),CLEAR_SEARCH_TEXT()])
+    add_button.grid(row=0,column=2)
+    validate_button = Button(win_searchcmd,text="validate",command=lambda:[EXEC_SEARCH_CMD(),win_searchcmd.destroy()])
+    validate_button.grid(row=1, column=2)
+    exit_button = Button(win_searchcmd,text="exit",command=lambda:[win_searchcmd.destroy()])
+    exit_button.grid(row=3, column=2) 
+
+
+def EXEC_SEARCH_CMD():
+    global searched_data
+    search_meta_cmd_final=f"{search_meta_cmd} {attribut.get()} {operator.get()} {value.get()} {liaison.get()}"
+    try :
+        searched_data=subprocess.check_output(search_meta_cmd_final, shell=True,text=True )
+    except CalledProcessError :
+        searched_data=f"NO DATA ASSOCIATED WITH THE REQUEST \n\n{search_meta_cmd_final}"
+    PRINT_SEARCH()
+
+def PRINT_SEARCH():
+    win_meta= Toplevel()
+    t= Text(win_meta, height = 25, width = 52)
+    Label(win_meta,text="Your searched data are :").pack()
+    t.insert(tk.END, searched_data)
+    t.pack()
+    button_close= Button(win_meta, text="close", command=win_meta.destroy)
+    button_close.pack(side=BOTTOM)
+
+def BUILD_SEARCH_CMD():
+    global search_meta_cmd
+    new_cmd=f"{search_meta_cmd} {attribut.get()} {operator.get()} {value.get()} {liaison.get()}"
+    search_meta_cmd = new_cmd
+
+
+def INIT_SEARCH_META():
+    win_searchmeta= Toplevel()
+    win_searchmeta.title('warning SEARCH BY METADATA')
+    win_searchmeta.geometry('500x200')
+    message = "The data you're searching is a FILE or a FOLDER ?"
+    Label(win_searchmeta, text=message).pack()
+    Button(win_searchmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=LEFT)
+    Button(win_searchmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=RIGHT)
+
+########################
+# SEARCH BY NAME
+########################
+def SEARCH_FILE_NAME():
+    global name
+    win_namesearch = Toplevel()
+    win_namesearch.title('warning SEARCH BY NAME')
+    Label(win_namesearch,text="your query (you can use *): ").pack()
+    name=Entry(win_namesearch, width=50)
+    name.pack(padx=5, pady=5, side=LEFT)
+    Btt_search= Button(win_namesearch,text="search",command=lambda:[FILE_NAME_CMD(),win_namesearch.destroy()])
+    Btt_search.pack(side=BOTTOM)
+
+def FILE_NAME_CMD():
+    global result
+    search=name.get()
+    search=str(search).replace("*", "%")
+    cmd_search=f"ilocate {search}"
+    try :
+        result=subprocess.check_output(cmd_search, shell=True,text=True )
+    except subprocess.CalledProcessError :
+        result=f"NO DATA ASSOCIATED WITH THE REQUEST \n\n{cmd_search}"
+    PRINT_NAME()
+    
+def PRINT_NAME():
+    win_printname= Toplevel()
+    t= Text(win_printname, height = 50, width = 150)
+    Label(win_printname,text="Your searched data are :").pack()
+    t.insert(tk.END, result)
+    t.pack()
+    button_close= Button(win_printname, text="close", command=win_printname.destroy)
+    button_close.pack(side=BOTTOM)
+
+
+def FOLDER_NAME_CMD():
+    global result
+    result=""
+    easicmd.irods_collection()
+    search=f"*/*{name.get()}"
+    for i in easicmd.list_of_icollection:
+        if fnmatch.fnmatch(i, search) :
+            result=f"{result}\n{i}"
+    PRINT_NAME()
+
+def SEARCH_FOLDER_NAME():
+    global name
+    win_namesearch = Toplevel()
+    win_namesearch.title('warning SEARCH BY NAME')
+    Label(win_namesearch,text="your query (you can use *): ").pack()
+    name=Entry(win_namesearch, width=50)
+    name.pack(padx=5, pady=5, side=LEFT)
+    Btt_search= Button(win_namesearch,text="search",command=lambda:[FOLDER_NAME_CMD(),win_namesearch.destroy()])
+    Btt_search.pack(side=BOTTOM)
+
+
+def INIT_SEARCH_NAME():
+    win_searchname= Toplevel()
+    win_searchname.title('warning SEARCH BY NAME')
+    win_searchname.geometry('500x200')
+    message = "The data you're searching is a FILE or a FOLDER ?"
+    Label(win_searchname, text=message).pack()
+    Button(win_searchname, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchname.destroy(),SEARCH_FILE_NAME()]).pack(side=LEFT)
+    Button(win_searchname, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchname.destroy(),SEARCH_FOLDER_NAME()]).pack(side=RIGHT)    
+
+###########
+##idush
+###########
+def GUI_IDUSH():
+    global result_size
+    cmd_ils=f"ils -rl {irods_path}"
+    ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8")
+    total_bits=0
+    for line in ils.split("\n"):
+        if "/" not in line and line !="":
+            bits=int(line.split()[3])
+            total_bits += bits
+    result_size=easicmd.sizeof_fmt(total_bits)
+    PRINT_IDUST()
+
+def PRINT_IDUST():
+    win_meta= Toplevel()
+    t= Text(win_meta, height = 25, width = 52)
+    Label(win_meta,text=f"The size of your folder is : {result_size}").pack()
+    button_close= Button(win_meta, text="close", command=win_meta.destroy)
+    button_close.pack(side=BOTTOM)
+
+def INIT_IDUST():
+    easicmd.irods_collection()
+    global gui_list_of_icollection
+    win_where = Toplevel()
+    win_where.title("WHICH FOLDER ?")
+    win_where.geometry('1080x500')
+    gui_list_of_icollection= Listbox(win_where)    
+    for i in easicmd.list_of_icollection:
+        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    gui_list_of_icollection.pack(fill="both",expand="yes")
+    select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_IDUSH()]).pack(side='bottom')
+
 
 ######################################################################################################################################## 
 ### creation of the main window (putting the form)                  
@@ -391,107 +725,131 @@ class FullScreenApp(object):
         self.master.geometry(self._geom)
         self._geom=geom        
 
-root = tk.Tk()
-app=FullScreenApp(root)
-root.title("easicmd : easy irods commands graphical edition")
+class Test(Text):  ###allow control c/v/x in tkinter 
+    def __init__(self, master, **kw):
+        Text.__init__(self, master, **kw)
+        self.bind('<Control-c>', self.copy)
+        self.bind('<Control-x>', self.cut)
+        self.bind('<Control-v>', self.paste)
+        
+    def copy(self, event=None):
+        self.clipboard_clear()
+        text = self.get("sel.first", "sel.last")
+        self.clipboard_append(text)
+    
+    def cut(self, event):
+        self.copy()
+        self.delete("sel.first", "sel.last")
 
-##################################################################################################
-### Work with data (push,pull,imkdir,irm)
-##################################################################################################
-data = LabelFrame(root, text="Work with DATA", padx=30, pady=30)
-data.pack(fill="both", expand="yes")
-Label(data, text="A l'intérieure de la frame DATA").pack()
+    def paste(self, event):
+        text = self.selection_get(selection='CLIPBOARD')
+        self.insert('insert', text)
 
-##PUSH DATA TO IRODS
-push_frame= LabelFrame(data, text="PUSH",padx=30, pady=30, relief=RAISED)
-push_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(push_frame, text="A l'intérieure de la frame PUSH").pack()
-push_bouton=Button(push_frame, text="PUSH", command=GUIPUSH).pack(side=BOTTOM)
+try :
+    root = tk.Tk()
+    app=FullScreenApp(root)
+    root.title("easicmd : easy irods commands graphical edition")
 
-## PULL DATA TO IRODS
-pull_frame= LabelFrame(data, text="PULL",padx=30, pady=30, relief=RAISED)
-pull_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(pull_frame, text="A l'intérieure de la frame PULL").pack()
-pull_bouton=Button(pull_frame, text="PULL", command=GUIPULL).pack(side=BOTTOM)
+    ##################################################################################################
+    ### Work with data (push,pull,imkdir,irm)
+    ##################################################################################################
+    data = LabelFrame(root, text="Work with DATA", padx=30, pady=30)
+    data.pack(fill="both", expand="yes")
+    Label(data, text="Here you can work with your data like send it to irods, recover it from irods, create ifolders or delete data on irods").pack()
 
-## CREATE A DIRECTORY IN IRODS
-imkdir_frame= LabelFrame(data, text="IMKDIR",padx=30, pady=30, relief=RAISED)
-imkdir_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(imkdir_frame, text="A l'intérieure de la frame IMKDIR").pack()
-imkdir_bouton=Button(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).pack(side=BOTTOM)
+    ##PUSH DATA TO IRODS
+    push_frame= LabelFrame(data, text="PUSH",padx=30, pady=30, relief=RAISED)
+    push_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(push_frame, text="Send local data to irods").pack()
+    push_bouton=Button(push_frame, text="PUSH", command=GUIPUSH).pack(side=BOTTOM)
 
-## REMOVE A DATA FROM IRODS
-irm_frame= LabelFrame(data, text="IRM",padx=30, pady=30, relief=RAISED)
-irm_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(irm_frame, text="A l'intérieure de la frame IRM").pack()
-irm_bouton=Button(irm_frame, text="IRM", command=GUIIRM).pack(side=BOTTOM)
+    ## PULL DATA TO IRODS
+    pull_frame= LabelFrame(data, text="PULL",padx=30, pady=30, relief=RAISED)
+    pull_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(pull_frame, text="Get data from irods to a local folder").pack()
+    pull_bouton=Button(pull_frame, text="PULL", command=GUIPULL).pack(side=BOTTOM)
 
-##################################################################################################
-### Work with metadata (add_meta,rm_meta,show_meta)
-##################################################################################################
-metadata = LabelFrame(root, text="Work with METADATA", padx=30, pady=30)
-metadata.pack(fill="both", expand="yes")
-Label(metadata, text="A l'intérieure de la frame METADATA").pack()
+    ## CREATE A DIRECTORY IN IRODS
+    imkdir_frame= LabelFrame(data, text="IMKDIR",padx=30, pady=30, relief=RAISED)
+    imkdir_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(imkdir_frame, text="Create a ifolder in irods").pack()
+    imkdir_bouton=Button(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).pack(side=BOTTOM)
 
-## ADD METADATA TO DATA ALREADY ON IRODS
-addmeta_frame= LabelFrame(metadata, text="add metadata",padx=30, pady=30, relief=RAISED)
-addmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(addmeta_frame, text="A l'intérieure de la frame addmeta").pack()
-addmeta_bouton=Button(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(side=BOTTOM)
+    ## REMOVE A DATA FROM IRODS
+    irm_frame= LabelFrame(data, text="IRM",padx=30, pady=30, relief=RAISED)
+    irm_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(irm_frame, text="Remove data frome Irods").pack()
+    irm_bouton=Button(irm_frame, text="IRM", command=GUIIRM).pack(side=BOTTOM)
 
-## REMOVE METADATA TO DATA ALREADY ON IRODS
-rmmeta_frame= LabelFrame(metadata, text="remove metadata",padx=30, pady=30, relief=RAISED)
-rmmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(rmmeta_frame, text="A l'intérieure de la frame rmmeta").pack()
-rmmeta_bouton=Button(rmmeta_frame, text="remove meta", command=GUITEST).pack(side=BOTTOM)
+    ##################################################################################################
+    ### Work with metadata (add_meta,rm_meta,show_meta)
+    ##################################################################################################
+    metadata = LabelFrame(root, text="Work with METADATA", padx=30, pady=30)
+    metadata.pack(fill="both", expand="yes")
+    Label(metadata, text="Here you can work with the metadata associated with your data on irods such as add, delete,see metadate or edit the metadata dictionary (soon)").pack()
 
-## SHOW METADATA ASSOCIATE WITH A DATA
-showmeta_frame= LabelFrame(metadata, text="show metadata",padx=30, pady=30, relief=RAISED)
-showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(showmeta_frame, text="A l'intérieure de la frame showmeta").pack()
-showmeta_bouton=Button(showmeta_frame, text="show meta", command=GUITEST).pack(side=BOTTOM)
+    ## ADD METADATA TO DATA ALREADY ON IRODS
+    addmeta_frame= LabelFrame(metadata, text="add metadata",padx=30, pady=30, relief=RAISED)
+    addmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(addmeta_frame, text="Add metadata to a data (file or folder) already present on irods").pack()
+    addmeta_bouton=Button(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(side=BOTTOM)
 
-##################################################################################################
-### Get info on data (serach_by_meta,search_by_name,idush,ichmod)
-##################################################################################################
-infodata = LabelFrame(root, text="INFO on data", padx=30, pady=30)
-infodata.pack(fill="both", expand="yes")
-Label(infodata, text="A l'intérieure de la frame INFODATA").pack()
+    ## REMOVE METADATA TO DATA ALREADY ON IRODS
+    rmmeta_frame= LabelFrame(metadata, text="remove metadata",padx=30, pady=30, relief=RAISED)
+    rmmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(rmmeta_frame, text="Remove metadata to a data (file or folder) already present on irods").pack()
+    rmmeta_bouton=Button(rmmeta_frame, text="remove meta", command=INIT_RM_META).pack(side=BOTTOM)
 
-## SEARCH A DATA BY USING METADATA
-searchmeta_frame=LabelFrame(infodata, text="searchmeta",padx=30, pady=30, relief=RAISED)
-searchmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(searchmeta_frame, text="A l'intérieure de la frame searchmeta").pack()
-searchmeta_bouton=Button(searchmeta_frame, text="search_by_meta", command=GUITEST).pack(side=BOTTOM)
+    ## SHOW METADATA ASSOCIATE WITH A DATA
+    showmeta_frame= LabelFrame(metadata, text="show metadata",padx=30, pady=30, relief=RAISED)
+    showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(showmeta_frame, text="Show metadata to a data (file or folder) already present on irods").pack()
+    showmeta_bouton=Button(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(side=BOTTOM)
 
-## SEARCH A DATA BY IT'S NAME
-searchname_frame=LabelFrame(infodata, text="searchname",padx=30, pady=30, relief=RAISED)
-searchname_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(searchname_frame, text="A l'intérieure de la frame searchname").pack()
-searchname_bouton=Button(searchname_frame, text="search_by_name", command=GUITEST).pack(side=BOTTOM)
+    ##################################################################################################
+    ### Get info on data (serach_by_meta,search_by_name,idush,ichmod)
+    ##################################################################################################
+    infodata = LabelFrame(root, text="INFO on data", padx=30, pady=30)
+    infodata.pack(fill="both", expand="yes")
+    Label(infodata, text="Here you can search for data present on irods from their name or associated metadata, get the size that a folder occupied on irods or allow to give/remove rights to other users on your data on irods").pack()
 
-## GET THE SIZE OF A IFOLDER
-idush_frame=LabelFrame(infodata, text="idush",padx=30, pady=30, relief=RAISED)
-idush_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(idush_frame, text="A l'intérieure de la frame idush").pack()
-idush_bouton=Button(idush_frame, text="search_by_name", command=GUITEST).pack(side=BOTTOM)
+    ## SEARCH A DATA BY USING METADATA
+    searchmeta_frame=LabelFrame(infodata, text="searchmeta",padx=30, pady=30, relief=RAISED)
+    searchmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(searchmeta_frame, text="Search for data from the associated metadata (SQL-like)").pack()
+    searchmeta_bouton=Button(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(side=BOTTOM)
 
-## GIVE ACCES TO THE DATA TO OTHER USER 
-ichmod_frame=LabelFrame(infodata, text="ichmod",padx=30, pady=30, relief=RAISED)
-ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
-Label(ichmod_frame, text="A l'intérieure de la frame ichmod").pack()
-ichmod_bouton=Button(ichmod_frame, text="search_by_name", command=GUITEST).pack(side=BOTTOM)
+    ## SEARCH A DATA BY IT'S NAME
+    searchname_frame=LabelFrame(infodata, text="searchname",padx=30, pady=30, relief=RAISED)
+    searchname_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(searchname_frame, text="Search for data based on their name").pack()
+    searchname_bouton=Button(searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME).pack(side=BOTTOM)
 
-## EXIT
-quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)
+    ## GET THE SIZE OF A IFOLDER
+    idush_frame=LabelFrame(infodata, text="idush",padx=30, pady=30, relief=RAISED)
+    idush_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(idush_frame, text="Get the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)").pack()
+    idush_bouton=Button(idush_frame, text="idush", command=INIT_IDUST).pack(side=BOTTOM)
 
-save_dict=os.path.expanduser("~/.irods_metadata_local_save.pkl")
-if not os.path.isfile(save_dict) :
-    showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files")
-    easicmd.building_attributes_dictionnary()
-    #print("easicmd.building_attributes_dictionnary()")
-    showwarning(title="missing dictionary",message=f"It's done\nthanks for the wait")
+    ## GIVE ACCES TO THE DATA TO OTHER USER 
+    ichmod_frame=LabelFrame(infodata, text="ichmod",padx=30, pady=30, relief=RAISED)
+    ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(ichmod_frame, text="With this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group").pack()
+    ichmod_bouton=Button(ichmod_frame, text="ichmod", command=GUITEST).pack(side=BOTTOM)
+
+    ## EXIT
+    quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)
+
+    save_dict=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    if not os.path.isfile(save_dict) :
+        showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files")
+        easicmd.building_attributes_dictionnary()
+        #print("easicmd.building_attributes_dictionnary()")
+        showwarning(title="missing dictionary",message=f"It's done\nthanks for the wait")
 
 
 
-root.mainloop()
+    root.mainloop()
+
+except TclError:
+    print("Oops!! It's seem you try to use the graphical interface on a computer without display if you're connected through SSH try re-connect using ssh -X")

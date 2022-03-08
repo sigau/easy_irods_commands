@@ -648,6 +648,7 @@ def SEARCH_BY_NAME(type_iobject):
     else :
         irods_collection()
         search=input("your query (you can use *): ")
+        search=f"*/*{search}"
         for i in list_of_icollection:
             if fnmatch.fnmatch(i, search) : ##if search match in i
                 print(i)
