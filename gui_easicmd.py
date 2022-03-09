@@ -383,7 +383,6 @@ def RM_META_CMD():
         cmd_rm=f"imeta rmw {type_object} {irods_path} {att} {val} %"
     else :
         cmd_rm=f"imeta rmw {type_object} {irods_path_file} {att} {val} %"
-    #print(cmd_rm)
     subprocess.run(cmd_rm.split())
 
 def GET_RM_ATTR():
@@ -706,6 +705,103 @@ def INIT_IDUST():
     select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_IDUSH()]).pack(side='bottom')
 
 
+#############
+###ICHMOD
+#############
+def CLEAN_ICHMOD():
+    TO.delete(0,END)
+    right.delete(0,END)
+
+def ICHMOD_CMD():
+    r=right.get()
+    if r == "remove/null" :
+        r="null"
+    t=TO.get()
+
+    if type_object == "-C":
+        cmd_ichmod=f"ichmod -r {r} {t} {irods_path}"
+        path=irods_path
+    else :
+        cmd_ichmod=f"ichmod {r} {t} {irods_path_file}"
+        path=irods_path_file
+    subprocess.run(cmd_ichmod.split())
+    showinfo(message=f"You just give {r} acces for {path} to {t}")
+
+def ICHMOD_BUILD_CMD(type):
+    global TO
+    global right
+    list_right=["read","write","own","remove/null"]
+    if type == "group" :
+        easicmd.get_group()
+        list_to_show=easicmd.list_group
+    else :
+        easicmd.get_user()
+        list_to_show=easicmd.list_user
+
+    win_cmdichmod=Toplevel()
+    win_cmdichmod.title("warning ICHMOD")
+
+    Label(win_cmdichmod,text="give : ").grid(row=0)
+    Label(win_cmdichmod,text="to : ").grid(row=1)
+    right=AutocompleteEntry(win_cmdichmod, width=20,completevalues=list_right)
+    right.grid(column=1,row=0)
+    TO=AutocompleteEntry(win_cmdichmod, width=20,completevalues=list_to_show)
+    TO.grid(column=1,row=1)
+
+    BTT_cmd=Button(win_cmdichmod,text="select",command=lambda:[ICHMOD_CMD(),CLEAN_ICHMOD()])
+    BTT_cmd.grid(column=2,row=0)
+    BTT_exit=Button(win_cmdichmod,text="exit",command=lambda:[win_cmdichmod.destroy()])
+    BTT_exit.grid(column=2,row=2)
+
+def USER_OR_GROUP():
+    win_ichmod= Toplevel()
+    win_ichmod.title('warning ICHMOD')
+    win_ichmod.geometry('500x200')
+    message = "Share your data with a GROUP or a USER ?"
+    Label(win_ichmod, text=message).pack()
+    Button(win_ichmod, text='USER', command=lambda:[ICHMOD_BUILD_CMD("user"),win_ichmod.destroy(),]).pack(side=LEFT)
+    Button(win_ichmod, text='GROUP', command=lambda:[ICHMOD_BUILD_CMD("group"),win_ichmod.destroy()]).pack(side=RIGHT)
+
+def GET_ICHMOD_FILE_NAME():
+    global gui_list_of_ifile
+    win_where = Toplevel()
+    win_where.geometry('1080x500')
+    win_where.title("SELECT THE FILE")
+    easicmd.list_ifile(irods_path)
+    gui_list_of_ifile=Listbox(win_where)
+    for i in easicmd.ifile :
+        gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
+    gui_list_of_ifile.pack(fill="both",expand="yes")
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')     
+
+def ICHMOD_IRODS_PATH():
+    easicmd.irods_collection()
+    global gui_list_of_icollection
+    win_where = Toplevel()
+    if type_object == "-C":
+        win_where.title("WHICH FOLDER ?")
+    else :
+        win_where.title("FIRST CHOOSE THE FOLDER ?")
+    win_where.geometry('1080x500')
+    gui_list_of_icollection= Listbox(win_where)    
+    for i in easicmd.list_of_icollection:
+        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    gui_list_of_icollection.pack(fill="both",expand="yes")
+    if type_object == "-C":
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')
+    else :
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_ICHMOD_FILE_NAME()]).pack(side='bottom')
+
+def INIT_ICHMOD():
+    win_ichmod= Toplevel()
+    win_ichmod.title('warning ICHMOD')
+    win_ichmod.geometry('500x200')
+    message = "The data you're want to share is a FILE or a FOLDER ?"
+    Label(win_ichmod, text=message).pack()
+    Button(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_ichmod, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=RIGHT)
+
+
 ######################################################################################################################################## 
 ### creation of the main window (putting the form)                  
 ########################################################################################################################################
@@ -835,7 +931,7 @@ try :
     ichmod_frame=LabelFrame(infodata, text="ichmod",padx=30, pady=30, relief=RAISED)
     ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
     Label(ichmod_frame, text="With this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group").pack()
-    ichmod_bouton=Button(ichmod_frame, text="ichmod", command=GUITEST).pack(side=BOTTOM)
+    ichmod_bouton=Button(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(side=BOTTOM)
 
     ## EXIT
     quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)

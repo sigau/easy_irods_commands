@@ -6,6 +6,14 @@ easicmd is a python script written to facilitate/automate the use of irods for n
 - python 3.6 for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) 
 - [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time you run it if it's not already install)
 
+For graphical user interface
+- tkinter (sudo apt-get install python3-tk)
+- [ttkwidgets](https://ttkwidgets.readthedocs.io/en/latest/installation.html) (for the autocompletion in the GUI)
+
+## COMMAND LINE OR GRAPHICAL USER INTERFACE (GUI)
+- ./easicmd.py --> run the command line version
+- ./gui_easicmd.py --> launch the GUI version
+
 ## Commands
 ```
 Possible COMMANDS :
@@ -110,6 +118,10 @@ $ ils -r MY_PROJECT
   file.fastq
 
 ```
+**With the GUI**:
+
+![screenshot/push_data.webm.gif](screenshot/push_data.webm.gif)
+
 ### PULL : GET BACK DATA FROM IRODS 
 To get back data from irods you have to give **a type ( [-f] for a file and [-C] for a folder )** and the **local path** where you want to download the data. 
 If you don't give a path, the script will scan all your local data from the root-folder and ask you where you want to put it (it can take some time if you have many folder).
@@ -162,6 +174,10 @@ FAL56006_29db37dd_251.fast5 - 181.788/181.788 MB - 100.00% done   2021-11-03.17:
 $ls FAL56006_29db37dd_251.fast5
 FAL56006_29db37dd_251.fast5
 ```
+**With the GUI**:
+
+![screenshot/pull_data.webm.gif](screenshot/pull_data.webm.gif)
+
 ### SYNCHRO : SYNCHRONIZE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS
 This command take as argument the path to a local folder you want to synchronize with irods and optionally a path in irods where you xwant to synchronise the folder. If the folder is not already on irods it will be created at the root (/zone/home/user) by default or where you give the path and synchronize using rsync.
 **If you have already put the folder in irods (with push or synchro) you don't need to give an irods path as the script will find it and do the synchronisation .**
@@ -226,6 +242,9 @@ $ ils /lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2/
   C- /lbbeZone/home/gdebaecker/irods_test/test_C-test/raw_test/raw_test2/new_folder
 
 ```
+**With the GUI**:
+
+![screenshot/imkdir.webm.gif](screenshot/imkdir.webm.gif)
 
 ### IRM : REMOVE DATA FROM IRODS
 When you no longer need a data on irods, or you need to make some place, you can remove them by using *irm*. This command take as argument the type of the irods data you want to remove and then with the autocompletion you can choose which data you want to remove. You can use "*" to remove several irods objects.
@@ -272,6 +291,9 @@ $ ils
   C- /lbbeZone/home/gdebaecker/NeGa
   C- /lbbeZone/home/gdebaecker/sr_aselus
 ```
+**With the GUI**:
+
+![screenshot/irm_data.webm.gif](screenshot/irm_data.webm.gif)
 
 ### ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS
 Adding metadata to your irods objects is important and useful as irods is *originally* thought to be metadata based and not base on tree view. This metadata will be then used to search for your data on irods. If you didn't add metadata to your object when you put it in irods you can add then later on with add_meta. This command take as argument an option ([-f]/[-C]). If you don't give one, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion. It's a while loop, so you can add all your metadata at once, to stop it just left the *attribute* empty.
@@ -310,6 +332,9 @@ attribute: Coverage
 value: 200X
 units: 
 ```
+**With the GUI**:
+
+![screenshot/add_meta.webm.gif](screenshot/add_meta.webm.gif)
 
 ### RM_META : REMOVING METADATA ASSOCIATED WITH AN OBJECT ON IRODS
 If you made a mistake while adding metadata, you can remove them with the command rm_meta. This command take as argument an option ([-f] or [-C]). If you did not give one, you will be asked to choose an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
@@ -356,6 +381,9 @@ AVUs defined for collection /lbbeZone/home/gdebaecker/sr_aselus:
 None
 
 ```
+**With the GUI**:
+
+![screenshot/irm_meta.webm.gif](screenshot/irm_meta.webm.gif)
 
 ### SHOW_META : SHOW ALL THE METADATA ASSOCIATED WITH AN OBJECT ON IRODS
 If you want to know the metadata associated with an irods object, you can use the command show_meta. This command takes as argument an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you can select your irods object with the autocompletion.
@@ -372,6 +400,9 @@ value: Proassellus_coifaiti
 units: 
 
 ```
+**With the GUI**:
+
+![screenshot/show_meta.webm.gif](screenshot/show_meta.webm.gif)
 
 ### SEARCH_BY_META : SEARCH FOR IRODS OBJECTS (FOLDER/FILE) BASED ON THE METADATA
 If you have associated metadata to your object, you can find them later by making query based on this metadata. The command *search_by_meta* take as argument an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then ask you which attributes/values you want to query helped with the autocompletion. 
@@ -399,6 +430,9 @@ collection: /lbbeZone/home/gdebaecker/irods_test/raw_data/fast5
 collection: /lbbeZone/home/gdebaecker/sr_aselus
 
 ```
+**With the GUI**:
+
+![screenshot/search_meta.webm.gif](screenshot/search_meta.webm.gif)
 
 ### SEARCH_NAME : SEARCH FOR IRODS OBJECT BASED ON (PARTS) OF THE OBJECT NAME
 If you forget to associated metadata to your object, you can find them later by making query based on their name or a part of it. The command *search_name* take as argument an option that can be **[f]** for an irods file and **[C]** for an irods folder, and then you will be asked to give your query where **%** can be use as a wildcard.
@@ -423,6 +457,9 @@ your query (you can use *): *fastQ
 /lbbeZone/home/gdebaecker/NeGa/MY_PROJECT/Proasellus/fastQ
 
 ```
+**With the GUI**:
+
+![screenshot/search_name.webm.gif](screenshot/search_name.webm.gif)
 
 ### IDUSH : AN IRODS EQUIVALENT TO du -sh  
 If you want to know the size of a folder on irods you can use idush. It makes the sum of the size of all the irods files inside an irods folder and print it. If you don't know if you will have enough place on your disk before the download, you can verify it with idush.
@@ -437,6 +474,10 @@ ifolder (empty = /zone/home/user ): /lbbeZone/home/gdebaecker/irods_test/raw_dat
 913.7MiB
 
 ```
+
+**With the GUI**:
+
+![screenshot/idush.webm.gif](screenshot/idush.webm.gif)
 
 ### ICHMOD : SHARE YOUR DATA DIRECTLY IN IRODS
 With this command you can give (or remove with *null*) write/read/owner right to another iRODS user or group. You will be ask if you want to give the acces from a collection or a file and have to choose it. Then if you want to give acces to a user or a group and choose it with the autocompletion. Finally you will have to choose hich right you want to give (read/write/own/remove).
@@ -483,7 +524,10 @@ which right : remove/null
 
 ```
 
+**With the GUI**:
+
+![screenshot/ichmod.webm.gif](screenshot/ichmod.webm.gif)
 ## To-Do List
-- [ ] Add an option for graphical user interface (Tkinter or other)
+- [X] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)
