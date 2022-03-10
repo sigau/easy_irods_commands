@@ -78,6 +78,8 @@ def WHERE_TO_IRODS():
     win_where.geometry('1080x500')
     easicmd.irods_collection()
     gui_list_of_icollection= Listbox(win_where)
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -141,6 +143,8 @@ def PULL_FROM_IRODS(itype):
         win_where.title("FIRST SELECT THE FOLDER")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -191,7 +195,9 @@ def INIT_IMKDIR():
     win_where = Toplevel()
     win_where.title("WHERE DO YOU WANT TO CREATE YOUR FOLDER")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)    
+    gui_list_of_icollection= Listbox(win_where) 
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)   
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -229,7 +235,9 @@ def IRM_GET_FOLDER():
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)    
+    gui_list_of_icollection= Listbox(win_where)  
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)  
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -355,6 +363,8 @@ def ADDMETA_GET_IRODS_PATH():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)    
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -436,6 +446,8 @@ def RMMETA_GET_IRODS_PATH():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)    
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -496,7 +508,9 @@ def SHOWMETA_GET_IRODS_PATH():
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)    
+    gui_list_of_icollection= Listbox(win_where)
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)    
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -698,7 +712,9 @@ def INIT_IDUST():
     win_where = Toplevel()
     win_where.title("WHICH FOLDER ?")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)    
+    gui_list_of_icollection= Listbox(win_where)
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)    
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -783,7 +799,9 @@ def ICHMOD_IRODS_PATH():
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)    
+    gui_list_of_icollection= Listbox(win_where)
+    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    gui_list_of_icollection.insert(0,home)    
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
