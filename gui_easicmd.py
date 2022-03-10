@@ -80,7 +80,7 @@ def to_irods_and_beyond():
         cmd_push=f"iput -rPKVf {local_object} {irods_path}"
     showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish")
     subprocess.run(cmd_push.split())
-    showinfo(title="End of Transfer",message="The data should be on irods now")
+    showinfo(title="All Your Are Bytes Belong To Us",message="End of Transfer : The data should be on irods now")
 
 def WHERE_TO_IRODS():
     global gui_list_of_icollection
@@ -471,7 +471,7 @@ def INIT_RM_META():
     win_rmmeta= Toplevel()
     win_rmmeta.title('warning ADD METADATA')
     win_rmmeta.geometry('500x200')
-    message = "The data you want to remove metadata is a FILE or a FOLDER ?"
+    message = "The data you want to remove metadata from is a FILE or a FOLDER ?"
     Label(win_rmmeta, text=message).pack()
     Button(win_rmmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=LEFT)
     Button(win_rmmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=RIGHT)    
@@ -482,7 +482,7 @@ def INIT_RM_META():
 def PRINT_META():
     win_meta= Toplevel()
     t= Text(win_meta, height = 25, width = 52)
-    Label(win_meta,text="Your meta data :").pack()
+    Label(win_meta,text="Your metadata :").pack()
     t.insert(tk.END, meta_to_show)
     t.pack()
     button_close= Button(win_meta, text="close", command=win_meta.destroy)
@@ -626,7 +626,7 @@ def INIT_SEARCH_META():
     win_searchmeta= Toplevel()
     win_searchmeta.title('warning SEARCH BY METADATA')
     win_searchmeta.geometry('500x200')
-    message = "The data you're searching is a FILE or a FOLDER ?"
+    message = "The data you're looking for is a FILE or a FOLDER ?"
     Label(win_searchmeta, text=message).pack()
     Button(win_searchmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=LEFT)
     Button(win_searchmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=RIGHT)
@@ -713,7 +713,7 @@ def GUI_IDUSH():
 def PRINT_IDUST():
     win_meta= Toplevel()
     t= Text(win_meta, height = 25, width = 52)
-    Label(win_meta,text=f"The size of your folder is : {result_size}").pack()
+    Label(win_meta,text=f"Your folder's size is : {result_size}").pack()
     button_close= Button(win_meta, text="close", command=win_meta.destroy)
     button_close.pack(side=BOTTOM)
 
@@ -752,7 +752,7 @@ def ICHMOD_CMD():
         cmd_ichmod=f"ichmod {r} {t} {irods_path_file}"
         path=irods_path_file
     subprocess.run(cmd_ichmod.split())
-    showinfo(message=f"You just give {r} acces for {path} to {t}")
+    showinfo(message=f"You just give {r} access for {path} to {t}")
 
 def ICHMOD_BUILD_CMD(type):
     global TO
@@ -825,7 +825,7 @@ def INIT_ICHMOD():
     win_ichmod= Toplevel()
     win_ichmod.title('warning ICHMOD')
     win_ichmod.geometry('500x200')
-    message = "The data you're want to share is a FILE or a FOLDER ?"
+    message = "The data you want to share is a FILE or a FOLDER ?"
     Label(win_ichmod, text=message).pack()
     Button(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
     Button(win_ichmod, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=RIGHT)
