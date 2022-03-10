@@ -819,6 +819,20 @@ def INIT_ICHMOD():
     Button(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
     Button(win_ichmod, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=RIGHT)
 
+############
+## HELP
+############
+
+def help_gui():
+    win_help= Toplevel()
+    win_help.title('help')
+    win_help.geometry('500x200')
+    message = "For any help go see the README on :"
+    Label(win_help,text=message).pack()
+    t=Text(win_help, height = 5, width = 50)
+    t.insert(tk.END, "https://github.com/sigau/easy_irods_commands")
+    t.pack()
+    Button(win_help,text="exit",command=lambda:[win_help.destroy()]).pack(side=BOTTOM)
 
 ######################################################################################################################################## 
 ### creation of the main window (putting the form)                  
@@ -954,6 +968,11 @@ try :
     ## EXIT
     quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)
 
+    ##HELP
+    help_bouton=Button(root,text="help", command=help_gui)
+    help_bouton.pack(side=BOTTOM)
+
+    ### IF no metadata dictionary found create it 
     save_dict=os.path.expanduser("~/.irods_metadata_local_save.pkl")
     if not os.path.isfile(save_dict) :
         showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files")

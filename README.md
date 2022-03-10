@@ -14,6 +14,8 @@ For graphical user interface
 - ./easicmd.py --> run the command line version
 - ./gui_easicmd.py --> launch the GUI version
 
+**In any case activate irods before running the script --> iinit**
+
 ## Commands
 ```
 Possible COMMANDS :
