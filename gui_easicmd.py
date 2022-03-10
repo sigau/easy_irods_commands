@@ -10,11 +10,22 @@ from tkinter.filedialog import *
 import easicmd as easicmd
 from easicmd import *
 import time
-import ttkwidgets
-from ttkwidgets.autocomplete import AutocompleteEntry
 import subprocess
 
+##########################################################################################################################################################################################################################################################################################
+####  install dependancy (bad and temporary methods) 
+##########################################################################################################################################################################################################################################################################################
 
+required = {"ttkwidgets"}
+installed = {pkg.key for pkg in pkg_resources.working_set}
+missing = required - installed
+
+if missing:
+    python = sys.executable
+    subprocess.check_call([python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
+
+import ttkwidgets
+from ttkwidgets.autocomplete import AutocompleteEntry
 
 #ssh -X to activate Xwindow
 # autocompletion sudo apt-get install python3-pil python3-pil.imagetk
