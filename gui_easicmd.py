@@ -80,7 +80,7 @@ def to_irods_and_beyond():
         cmd_push=f"iput -rPKVf {local_object} {irods_path}"
     showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish")
     subprocess.run(cmd_push.split())
-    showinfo(title="All Your Are Bytes Belong To Us",message="End of Transfer : The data should be on irods now")
+    showinfo(title="All Your Bytes Are Belong To Us",message="End of Transfer : The data should be on irods now")
 
 def WHERE_TO_IRODS():
     global gui_list_of_icollection
@@ -120,7 +120,7 @@ def DOWNLOAD(itype):
 
 def WHERE_IN_LOCAL():
     global local_path
-    local_path=askdirectory(title="where do you want to download it")
+    local_path=askdirectory(title="Where do you want to download it")
 
 def GET_IRODS_PATH():
     global irods_path
@@ -274,7 +274,6 @@ def CLEAR_TEXT():
     attribut.delete(0,END)
     value.delete(0,END)
     units.delete(0,END)
-
 
 def ADD_META_CMD():
     if type_object == "-C":
