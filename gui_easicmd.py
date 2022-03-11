@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*
 
 import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 import os, sys, re, gzip 
 from tkinter import *
@@ -61,9 +62,7 @@ def GUI_TYPE_OBJECT(otype):
     else :
         type_object="-C"
     return type_object
-############
-### PULL
-###########
+
 def GUI_GET_LOCAL_OBJECT(otype) :
     global local_object
     if otype == "file" :
@@ -72,14 +71,41 @@ def GUI_GET_LOCAL_OBJECT(otype) :
         local_object=askdirectory(title="Which folder (verify the path in selection before validate)")
     return local_object
 
+def WHERE_IN_LOCAL():
+    global local_path
+    local_path=askdirectory(title="Where do you want to download it")
+
+def GET_IRODS_PATH():
+    global irods_path
+    irods_path=gui_list_of_icollection.get(gui_list_of_icollection.curselection())
+    #print(irods_path)
+
+def GET_IRODS_FILE_PATH():
+    global irods_path_file
+    irods_path_file=f"{irods_path}/{gui_list_of_ifile.get(gui_list_of_ifile.curselection())}"
+    #print(irods_path_file)
+
+def PROGRESS_BAR(command):
+    global pb
+    win_pb=Toplevel()
+    pb=ttk.Progressbar(win_pb,orient="horizontal",mode="indeterminate",length=280)
+    pb.pack(padx=10, pady=20)
+    pb.start()
+    command
+    pb.stop()
+
+############
+### PULL
+###########
+
 def to_irods_and_beyond():
     irods_path=gui_list_of_icollection.get(gui_list_of_icollection.curselection())
     if type_object == "-d":
         cmd_push=f"iput -PKVf {local_object} {irods_path}"
     else :
         cmd_push=f"iput -rPKVf {local_object} {irods_path}"
-    showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish")
-    subprocess.run(cmd_push.split())
+    showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish") 
+    subprocess.run(cmd_push.split())   
     showinfo(title="All Your Bytes Are Belong To Us",message="End of Transfer : The data should be on irods now")
 
 def WHERE_TO_IRODS():
@@ -118,19 +144,6 @@ def DOWNLOAD(itype):
     subprocess.run(cmd_pull.split())
     showinfo(title="End of Transfer",message="The data should be on your local now")
 
-def WHERE_IN_LOCAL():
-    global local_path
-    local_path=askdirectory(title="Where do you want to download it")
-
-def GET_IRODS_PATH():
-    global irods_path
-    irods_path=gui_list_of_icollection.get(gui_list_of_icollection.curselection())
-    #print(irods_path)
-
-def GET_IRODS_FILE_PATH():
-    global irods_path_file
-    irods_path_file=f"{irods_path}/{gui_list_of_ifile.get(gui_list_of_ifile.curselection())}"
-    #print(irods_path_file)
 
 def GET_IRODS_FILE():
     global gui_list_of_ifile
@@ -257,7 +270,6 @@ def IRM_GET_FOLDER():
     else :
         select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_IRM_FILE_NAME()]).pack(side='bottom')
     
-
 def INIT_IRM():
     win_pull = Toplevel()
     win_pull.title('warning IRM')
