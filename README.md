@@ -69,7 +69,7 @@ Possible COMMANDS :
 ## AUTOCOMPLETION
 As it is, IRODS doesn't allow the autocompletion by using tab for data on irods (kind of with *i-commands-auto.bash* see in useful_stuff). The python module *prompt_toolkit* allow us to add some kind of autocompletion when it comes to choosing data on irods. 
 When you will have to select a data from irods a list where you can navigate by using TAB or direction keys will be displayed on your screen :
-![screenshot/example_1.png](screenshot/example_1.png)
+![screenshot/autocompletion.gif](screenshot/autocompletion.gif)
 
 ## Examples 
 **To simplify when we talk about irods file it refer to data_object and irods folder to collection.**
