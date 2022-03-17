@@ -529,6 +529,26 @@ which right : remove/null
 **With the GUI**:
 
 ![screenshot/ichmod.webm.gif](screenshot/ichmod.webm.gif)
+
+### EDITING THE AUTOCOMPLETION DICTIONARY
+The autocompletion dictionary is store in your home as a pickle file (.irods_metadata_local_save.pkl). It contain the python dictionary composed of your IRODS attributes as key and your IRODS values as ... value in a list.
+You can edit it with this function, you can create a new key/attribut and add values associated with it, modifying the list of value associated with an already existing key/attribute (remove or add value) and erase a key/attribut with all its associated value.
+
+
+**With the GUI**:
+
+**CREATE A NEW KEY/ATTRIBUTE**
+
+![screenshot/editing_add.webm.gif](screenshot/editing_add.webm.gif)
+
+**MODIFY THE LIST OF VALUE OF AN ALREADY EXISTING ATTRIBUTE**
+
+![screenshot/editing_edit.webm.gif](screenshot/editing_edit.webm.gif)
+
+**ERASE A KEY/ATTRIBUTE AND ALL ITS VALUE**
+
+![screenshot/editing_remove.webm.gif](screenshot/editing_remove.webm.gif)
+
 ## To-Do List
 - [X] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc

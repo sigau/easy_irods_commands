@@ -5,7 +5,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 import os, sys, re, gzip 
-from tkinter import *
 from tkinter.messagebox import *
 from tkinter.filedialog import *
 import easicmd as easicmd
@@ -841,6 +840,106 @@ def INIT_ICHMOD():
     Button(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
     Button(win_ichmod, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=RIGHT)
 
+
+############
+## EDICTIONARY
+############
+def UPDATE_DICT():
+    file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    with open(file_name,"wb") as f :
+        pickle.dump(easicmd.dico_attribute, f)
+    print(f"Dictionary have been update in {file_name}")
+
+def EDIT_ADD_GETVALUE():
+    new_value=value.get()
+    value.delete(0,END)
+    if new_value not in easicmd.dico_attribute[new_attr] :
+        easicmd.dico_attribute[new_attr].append(new_value)
+        UPDATE_DICT()
+
+def EDIT_ADD():
+    global new_attr
+    new_attr=attribut.get()
+    attribut.delete(0,END)
+    if new_attr not in easicmd.dico_attribute :
+        easicmd.dico_attribute[new_attr]=[]
+
+    global value
+    win_add= Toplevel()
+    win_add.title(f"Add value to {new_attr} :")
+
+    Label(win_add,text="value : ").grid(row=0)
+    value = Entry(win_add,width=20)
+    value.grid(row=0, column=1)
+
+    add_button=Button(win_add,text="ADD",command=lambda:[EDIT_ADD_GETVALUE()])
+    add_button.grid(row=0, column=2)
+
+    exit_button=Button(win_add,text="exit",command=lambda:[win_add.destroy()])
+    exit_button.grid(row=2, column=2)
+
+
+def EDIT_RM_VALUE():
+    old_value=value.get()
+    value.delete(0,END)
+    if old_value in easicmd.dico_attribute[new_attr] :
+        easicmd.dico_attribute[new_attr].remove(old_value)
+        UPDATE_DICT()
+
+
+def EDIT_EDIT():
+    global new_attr
+    new_attr=attribut.get()
+    attribut.delete(0,END)
+
+    global value
+    win_add= Toplevel()
+    win_add.title(f"EDITING value form {new_attr} :")
+
+    Label(win_add,text="value : ").grid(row=0)
+    value = AutocompleteEntry(win_add, width=20,completevalues=easicmd.dico_attribute[new_attr])
+    value.grid(row=0, column=1)
+
+    add_button=Button(win_add,text="ADD",command=lambda:[EDIT_ADD_GETVALUE()])
+    add_button.grid(row=0, column=2)
+
+    rm_button=Button(win_add,text="remove",command=lambda:[EDIT_RM_VALUE()])
+    rm_button.grid(row=1, column=2)
+
+    exit_button=Button(win_add,text="exit",command=lambda:[win_add.destroy()])
+    exit_button.grid(row=2, column=2)    
+
+def EDIT_RM_ATTR():
+    new_attr=attribut.get()
+    attribut.delete(0,END)
+    if new_attr in easicmd.dico_attribute :
+        easicmd.dico_attribute.pop(new_attr)
+        UPDATE_DICT()
+
+
+def INIT_EDIT():
+    easicmd.read_attributes_dictionnary()
+    global attribut
+
+    win_edit = Toplevel()
+    win_edit.title("warning editionary")
+    
+    Label(win_edit,text="attribut* : ").grid(row=0)
+    attribut = AutocompleteEntry(win_edit, width=20,completevalues=easicmd.dico_attribute.keys())
+    attribut.grid(row=0, column=1)
+    
+    add_button = Button(win_edit,text="create",command=lambda:[EDIT_ADD()])
+    add_button.grid(row=1,column=0)
+
+    edit_button = Button(win_edit,text="edit existing",command=lambda:[EDIT_EDIT()])
+    edit_button.grid(row=1,column=1)
+
+    rm_button= Button(win_edit,text="erase ",command=lambda:[EDIT_RM_ATTR()])
+    rm_button.grid(row=1,column=2)
+    
+    exit_button = Button(win_edit,text="exit",command=lambda:[win_edit.destroy()])
+    exit_button.grid(row=0, column=2) 
+
 ############
 ## HELP
 ############
@@ -955,6 +1054,12 @@ try :
     showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
     Label(showmeta_frame, text="Show metadata to a data (file or folder) already present on irods").pack()
     showmeta_bouton=Button(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(side=BOTTOM)
+
+    ## EDIT METADATA DICTIONARY
+    edit_frame = LabelFrame(metadata, text="edit dictionary",padx=30, pady=30, relief=RAISED)
+    edit_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(edit_frame,text="edit metadata autocompletion dictionary\n\ncreate : create a new attribut key \nthen you can add value to this new attribut\n\nediting : modify(add/remove) the \nvalues associated with an existing attribute\n\ndelete : remove an attribut AND all \nhis value from the dictionary").pack()
+    edit_bouton=Button(edit_frame,text="edit", command=INIT_EDIT).pack(side=BOTTOM)
 
     ##################################################################################################
     ### Get info on data (serach_by_meta,search_by_name,idush,ichmod)
