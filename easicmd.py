@@ -763,8 +763,21 @@ def ICHMOD(iobject):
         option="-r"
     else :
         option=""
-    ichmod_cmd=f"ichmod {option} {right} {receiver} {iobject} "
+    ichmod_cmd=f"ichmod {option} {right} {receiver} {iobject}"
     subprocess.run(ichmod_cmd.split())
+    if identify_iobject(iobject) == "-C" :
+        ichmod_cmd2=f"ichmod {option} inherit {iobject}"
+        subprocess.run(ichmod_cmd2.split())
+
+
+def EDITIONARY():
+    action_list=["ADD","EDIT","REMOVE"]
+    read_attributes_dictionnary()
+    attribute_completer=WordCompleter(read_attribute_dictionnary.keys())
+    attribute=prompt("choose a attribute or create a new one : ",completer=attribute_completer)
+    action_completer=WordCompleter(action_list)
+    action=prompt("action (add/edit/rm) : ",completer=action_completer)
+    
 
 ##########################################################################################################################################################################################################################################################################################
 #### if __name__ == "__main__" 

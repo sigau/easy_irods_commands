@@ -757,11 +757,14 @@ def ICHMOD_CMD():
 
     if type_object == "-C":
         cmd_ichmod=f"ichmod -r {r} {t} {irods_path}"
+        ichmod_cmd2=f"ichmod -r inherit {irods_path}"
         path=irods_path
     else :
         cmd_ichmod=f"ichmod {r} {t} {irods_path_file}"
         path=irods_path_file
     subprocess.run(cmd_ichmod.split())
+    if type_object == "-C":
+        subprocess.run(ichmod_cmd2.split())
     showinfo(message=f"You just give {r} access for {path} to {t}")
 
 def ICHMOD_BUILD_CMD(type):
@@ -1035,24 +1038,24 @@ try :
     ##################################################################################################
     metadata = LabelFrame(root, text="Work with METADATA", padx=30, pady=30)
     metadata.pack(fill="both", expand="yes")
-    Label(metadata, text="Here you can work with the metadata associated with your data on irods such as add, delete,see metadate or edit the metadata dictionary (soon)").pack()
+    Label(metadata, text="Here you can work with the metadata associated with your data on irods such as add, delete,see metadate or edit the metadata dictionary ").pack()
 
     ## ADD METADATA TO DATA ALREADY ON IRODS
     addmeta_frame= LabelFrame(metadata, text="add metadata",padx=30, pady=30, relief=RAISED)
     addmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    Label(addmeta_frame, text="Add metadata to a data (file or folder) already present on irods").pack()
+    Label(addmeta_frame, text="Add metadata to a data (file or folder) \nalready present on irods").pack()
     addmeta_bouton=Button(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(side=BOTTOM)
 
     ## REMOVE METADATA TO DATA ALREADY ON IRODS
     rmmeta_frame= LabelFrame(metadata, text="remove metadata",padx=30, pady=30, relief=RAISED)
     rmmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    Label(rmmeta_frame, text="Remove metadata to a data (file or folder) already present on irods").pack()
+    Label(rmmeta_frame, text="Remove metadata to a data (file or folder) \nalready present on irods").pack()
     rmmeta_bouton=Button(rmmeta_frame, text="remove meta", command=INIT_RM_META).pack(side=BOTTOM)
 
     ## SHOW METADATA ASSOCIATE WITH A DATA
     showmeta_frame= LabelFrame(metadata, text="show metadata",padx=30, pady=30, relief=RAISED)
     showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    Label(showmeta_frame, text="Show metadata to a data (file or folder) already present on irods").pack()
+    Label(showmeta_frame, text="Show metadata to a data (file or folder) \nalready present on irods").pack()
     showmeta_bouton=Button(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(side=BOTTOM)
 
     ## EDIT METADATA DICTIONARY
