@@ -69,8 +69,30 @@ Possible COMMANDS :
 ```
 
 ## AUTOCOMPLETION
+**FOR BASH ARGUMENT AUTOCOMPLETION**
+
+You can use **TAB** when using easicmd.py to call the possible argument/command for that you have to "*source useful_stuff/easicmd-completion.bash*" or add "*source path/to/useful_stuff/easicmd-completion.bash*" to your .bashrc.
+
+```
+$ source useful_stuff/easicmd-completion.bash 
+
+$ ./easicmd.py 
+add_meta         build_dico_meta  ichmod           imkdir           pull             rm_meta          search_name      synchro          
+add_path         help             idush            irm              push             search_by_meta   show_meta        
+
+$ ./easicmd.py s
+search_by_meta  search_name     show_meta       synchro         
+
+$ ./easicmd.py search_
+search_by_meta  search_name     
+
+$ ./easicmd.py search_by_meta 
+```
+**FOR IRODS AUTOCOMPLETION**
+
 As it is, IRODS doesn't allow the autocompletion by using tab for data on irods (kind of with *i-commands-auto.bash* see in useful_stuff). The python module *prompt_toolkit* allow us to add some kind of autocompletion when it comes to choosing data on irods. 
 When you will have to select a data from irods a list where you can navigate by using TAB or direction keys will be displayed on your screen :
+
 ![screenshot/autocompletion.gif](screenshot/autocompletion.gif)
 
 ## Examples 
