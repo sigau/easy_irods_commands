@@ -23,6 +23,8 @@ Possible COMMANDS :
 	add_meta	: add_meta or add_meta [irods path]
 		  if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
 
+  add_path  : add additional path to your irods path autocompletion (e.g : not my home but a common folder for a project)(stock in a file [~/.irods_additional_path_save.pkl] for later)
+
 	build_dico_meta : create a file in your home directory containing the dictionary with your metadata attribute and value.
                     As it's in local you just to have to run this the first time and when you add metadata it will be update.
                     This is usefull because when you have many file in your irods vault it take a very long time to get this dictionary if you have to do it every time you need the autocompletion for metadata 
@@ -537,7 +539,7 @@ You can edit it with this function, you can create a new key/attribut and add va
 
 **With the GUI**:
 
-**CREATE A NEW KEY/ATTRIBUTE**
+**CREATE A NEW KEY/ATTRIBUTE**add to the list of collection an additional path
 
 ![screenshot/editing_add.webm.gif](screenshot/editing_add.webm.gif)
 
@@ -548,6 +550,16 @@ You can edit it with this function, you can create a new key/attribut and add va
 **ERASE A KEY/ATTRIBUTE AND ALL ITS VALUE**
 
 ![screenshot/editing_remove.webm.gif](screenshot/editing_remove.webm.gif)
+
+
+### ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH
+If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home.
+
+
+**With the GUI**:
+
+![screenshot/add_path.gif](screenshot/add_path.gif)
+
 
 ## To-Do List
 - [X] Add an option for graphical user interface (Tkinter or other)

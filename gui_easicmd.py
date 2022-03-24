@@ -944,6 +944,39 @@ def INIT_EDIT():
     exit_button.grid(row=0, column=2) 
 
 ############
+## ADD PATH
+############
+def CLEAN_PATH():
+    path.delete(0,END)
+
+def ADD_PATH():
+    new_path=path.get()
+    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    if os.path.isfile(new_path_file):
+        with open(new_path_file,"rb") as f:
+            list_new_path=pickle.load(f)
+    else :
+        list_new_path=[]
+    if new_path not in list_new_path:
+        list_new_path.append(new_path)
+    with open(new_path_file,"wb") as f:
+            pickle.dump(list_new_path, f)
+    print("irods list of path updated")
+
+def INIT_ADD_PATH():
+    global path
+    win_path = Toplevel()
+    win_path.title("warning add path")
+    Label(win_path,text="IRODS PATH : ").grid(row=0)
+    path = Entry(win_path, width=20)
+    path.grid(row=0,column=1)
+
+    add_button = Button(win_path,text="add",command=lambda:[ADD_PATH(),CLEAN_PATH()])
+    add_button.grid(row=1,column=1)
+
+    exit_button = Button(win_path, text="exit",command=lambda:[win_path.destroy()])
+    exit_button.grid(row=1,column=2)
+############
 ## HELP
 ############
 
@@ -1095,6 +1128,12 @@ try :
     Label(ichmod_frame, text="With this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group").pack()
     ichmod_bouton=Button(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(side=BOTTOM)
 
+    ##  ADD ADDITIONAL PATH TO ICOLLECTION
+    addpath_frame=LabelFrame(infodata, text="add additional path",padx=30, pady=30, relief=RAISED)
+    addpath_frame.pack(fill="both", expand="yes", side=LEFT)
+    Label(addpath_frame, text="With this command you can add path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(stock in a file for later) ").pack()
+    addpath_bouton=Button(addpath_frame, text="add path", command=INIT_ADD_PATH).pack(side=BOTTOM)
+    
     ## EXIT
     quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)
 
@@ -1108,7 +1147,7 @@ try :
         showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files")
         easicmd.building_attributes_dictionnary()
         #print("easicmd.building_attributes_dictionnary()")
-        showwarning(title="missing dictionary",message=f"It's done\nthanks for the wait")
+        showwarning(title="missing dictionary",message=f"It's done\nthanks for waiting")
 
 
 

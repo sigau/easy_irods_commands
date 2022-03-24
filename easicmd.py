@@ -175,6 +175,9 @@ def main() :
         elif sys.argv[1] == "build_dico_meta":
             building_attributes_dictionnary()
 
+        elif sys.argv[1] == "add_path":
+            ADD_ADDITIONAL_PATH()
+            
         elif sys.argv[1] == "test" :
             get_user()
 
@@ -192,6 +195,7 @@ def help():
     name()
     print("\nPossible COMMANDS :\n")
     print("\tadd_meta\t: add_meta or add_meta [irods path]\n\t\t if you don't give an irods path you'll be asked an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion\n")
+    print("\tadd_path\t: add additional path to your irods path autocompletion (e.g : not my home but a common folder for a project)(stock in a file for later)")
     print("\tbuild_dico_meta\t: create a file in your home directory containing the dictionary with your metadata attribute and value.\n\t\tAs it's in local you just to have to run this the first time and when you add metadata it will be update.\n\t\tThis is usefull because when you have many file in your irods vault it take a very long time to get this dictionary if you have to do it every time you need the autocompletion for metadata  ")
     print("\thelp\t: print this help and leave")
     print("\tichmod\t: give right to other user/group over some of your data (e.g give read right over one iCollection)")
@@ -243,6 +247,18 @@ def irods_collection():
     for i in ils.split("\n"):
         if "  C- " in i :
             list_of_icollection.append(i.replace("  C- ", "")) ##keep only the collection represent by C- in irods
+    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    if os.path.isfile(new_path_file): ### add to the list of collection the additional path (e.g : not my home but a common folder for a project )
+        with open(new_path_file,"rb") as f:
+            list_new_path=pickle.load(f)
+        for new_path in list_new_path:
+            cmd_ils_np=f"ils -r {new_path}"
+            list_of_icollection.append(new_path)
+            ils_np=(subprocess.run(cmd_ils_np.split(),capture_output=True).stdout).decode("utf-8")
+            for k in ils_np.split("\n"):
+                if "  C- " in k :
+                    list_of_icollection.append(k.replace("  C- ", ""))
+    list_of_icollection.sort()
     icol_completer=WordCompleter(list_of_icollection)
     #return(list_of_icollection)
 
@@ -435,8 +451,6 @@ def read_attributes_dictionnary():
     else:
         f=open(file_name,"wb")
         f.close()
-
-
 
 
 def name():
@@ -768,6 +782,25 @@ def ICHMOD(iobject):
     if identify_iobject(iobject) == "-C" :
         ichmod_cmd2=f"ichmod {option} inherit {iobject}"
         subprocess.run(ichmod_cmd2.split())
+
+def ADD_ADDITIONAL_PATH():
+    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    if os.path.isfile(new_path_file):
+        with open(new_path_file,"rb") as f:
+            list_new_path=pickle.load(f)
+    else :
+        list_new_path=[]
+    new_path=input("give a new IRODS PATH (empty to stop) : ")
+    if new_path == "":
+        sys.exit()
+    else:
+        if new_path not in list_new_path:
+            list_new_path.append(new_path)
+        with open(new_path_file,"wb") as f:
+            pickle.dump(list_new_path, f)
+        print("irods list of path updated")
+        ADD_ADDITIONAL_PATH()
+
 
 
 def EDITIONARY():
