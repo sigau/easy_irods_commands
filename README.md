@@ -52,6 +52,8 @@ Possible COMMANDS :
 
 	rm_meta	: rm_meta or rm_meta [irods path]
 		  if you don't give an irods path you'll be ask an option ([f] for file or [C] for a folder) then you will have to chose your object help by autocompletion
+  
+  rm_path: remove additional path you already add but don't need anymore
 
 	search_by_meta	: search_by_meta [option] or search_by_meta
 		 option are [-f] for a file, [-C] for a folder and [-u] for a user
@@ -95,6 +97,11 @@ When you will have to select a data from irods a list where you can navigate by 
 
 ![screenshot/autocompletion.gif](screenshot/autocompletion.gif)
 
+## FILES CREATED BY THE SCRIPT
+The script will create the first time you use it three different files in your home folder:
+- ~/.irods_additional_path_save.pkl : That contain all the additional path allowing you to use the autocompletion on irods folder not in your /zone/home/user (it will be updated automatically after every operation on additional path)
+- ~/.irods_collection_save.pkl : A list of all your collection (equivalent to "ils -r") can take a little bit of time the first time, but it will save you time later (it will be updated automatically after every operation)
+- ~/.irods_metadata_local_save.pkl : A dictionary of all the metadata you already used, that will be used for the autocompletion when you add metadata (it will be updated automatically after every operation)
 ## Examples 
 **To simplify when we talk about irods file it refer to data_object and irods folder to collection.**
 
