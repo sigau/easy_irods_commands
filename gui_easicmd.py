@@ -94,7 +94,7 @@ def PROGRESS_BAR(command):
     pb.stop()
 
 ############
-### PULL
+### PUSH
 ###########
 
 def to_irods_and_beyond():
@@ -104,7 +104,9 @@ def to_irods_and_beyond():
     else :
         cmd_push=f"iput -rPKVf {local_object} {irods_path}"
     showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish") 
-    subprocess.run(cmd_push.split())   
+    subprocess.run(cmd_push.split())
+    if type_object == "-d":
+        easicmd.update_irods_collection("add", f"{irods_path}/{local_object}")   
     showinfo(title="All Your Bytes Are Belong To Us",message="End of Transfer : The data should be on irods now")
 
 def WHERE_TO_IRODS():
@@ -112,10 +114,10 @@ def WHERE_TO_IRODS():
     win_where = Toplevel()
     win_where.title("WHERE TO SEND DATA")
     win_where.geometry('1080x500')
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     gui_list_of_icollection= Listbox(win_where)
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -157,7 +159,7 @@ def GET_IRODS_FILE():
     select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),WHERE_IN_LOCAL(),DOWNLOAD("-f")]).pack(side='bottom')
 
 def PULL_FROM_IRODS(itype):
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     if itype == "-C" :
@@ -166,8 +168,8 @@ def PULL_FROM_IRODS(itype):
         win_where.title("FIRST SELECT THE FOLDER")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -194,6 +196,7 @@ def INIT_PULL() :
 def CMD_IMKDIR():
     cmd_imkdir=f"imkdir -p {irods_path}/{new_folder}"
     subprocess.run(cmd_imkdir.split())
+    easicmd.update_irods_collection("add", f"{irods_path}/{new_folder}")
 
 def GET_NAME():
     global new_folder
@@ -213,14 +216,14 @@ def GIVE_NAME():
     btnAffiche = Button(win_name,text="create", command=lambda:[GET_NAME(), win_name.destroy()]).pack(padx=5, pady=5)
 
 def INIT_IMKDIR():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     win_where.title("WHERE DO YOU WANT TO CREATE YOUR FOLDER")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where) 
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)   
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)   
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -235,6 +238,7 @@ def DESTROY():
     else :
         cmd_irm=f"irm -f {irods_path_file}"
     subprocess.run(cmd_irm.split())
+    update_irods_collection("remove", irods_path)
     showinfo(message="DATA HAS BEEN DESTROYED")
 
 def GET_IRM_FILE_NAME():
@@ -250,7 +254,7 @@ def GET_IRM_FILE_NAME():
     select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),DESTROY()]).pack(side='bottom')
 
 def IRM_GET_FOLDER():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     if type_object == "-C":
@@ -259,8 +263,8 @@ def IRM_GET_FOLDER():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)  
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)  
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)  
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -375,7 +379,7 @@ def GET_ADDMETA_FILE_NAME():
     select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GIVE_META()]).pack(side='bottom')
         
 def ADDMETA_GET_IRODS_PATH():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     if type_object == "-C":
@@ -384,8 +388,8 @@ def ADDMETA_GET_IRODS_PATH():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)    
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -458,7 +462,7 @@ def GET_RMMETA_FILE_NAME():
     select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')    
 
 def RMMETA_GET_IRODS_PATH():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     if type_object == "-C":
@@ -467,8 +471,8 @@ def RMMETA_GET_IRODS_PATH():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)    
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -521,7 +525,7 @@ def GET_SHOW_META_FILE_NAME():
     select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom') 
 
 def SHOWMETA_GET_IRODS_PATH():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     if type_object == "-C":
@@ -530,8 +534,8 @@ def SHOWMETA_GET_IRODS_PATH():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)    
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)    
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -678,7 +682,7 @@ def PRINT_NAME():
 def FOLDER_NAME_CMD():
     global result
     result=""
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     search=f"*/*{name.get()}"
     for i in easicmd.list_of_icollection:
         if fnmatch.fnmatch(i, search) :
@@ -728,14 +732,14 @@ def PRINT_IDUST():
     button_close.pack(side=BOTTOM)
 
 def INIT_IDUST():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     win_where.title("WHICH FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)    
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)    
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -815,7 +819,7 @@ def GET_ICHMOD_FILE_NAME():
     select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')     
 
 def ICHMOD_IRODS_PATH():
-    easicmd.irods_collection()
+    easicmd.get_irods_collection()
     global gui_list_of_icollection
     win_where = Toplevel()
     if type_object == "-C":
@@ -824,8 +828,8 @@ def ICHMOD_IRODS_PATH():
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
-    home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
-    gui_list_of_icollection.insert(0,home)    
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)    
     for i in easicmd.list_of_icollection:
         gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
     gui_list_of_icollection.pack(fill="both",expand="yes")
@@ -962,14 +966,32 @@ def ADD_PATH():
     with open(new_path_file,"wb") as f:
             pickle.dump(list_new_path, f)
     print("irods list of path updated")
+    easicmd.update_irods_collection("add",new_path)
+
+def RM_PATH():
+    to_remove=path.get()
+    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    if os.path.isfile(new_path_file):
+        with open(new_path_file,"rb") as f:
+            list_new_path=pickle.load(f)
+        list_new_path.remove(to_remove)
+        with open(new_path_file,"wb") as f:
+            pickle.dump(list_new_path, f)
+        print("irods list of path updated")
+        easicmd.update_irods_collection("remove", to_remove)
+
 
 def INIT_ADD_PATH():
     global path
+    easicmd.get_additional_path()
     win_path = Toplevel()
     win_path.title("warning add path")
     Label(win_path,text="IRODS PATH : ").grid(row=0)
-    path = Entry(win_path, width=20)
+    path = AutocompleteEntry(win_path, width=20,completevalues=easicmd.list_additional_path)
     path.grid(row=0,column=1)
+
+    edit_button = Button(win_path,text="remove",command=lambda:[RM_PATH(),CLEAN_PATH()])
+    edit_button.grid(row=1,column=0)
 
     add_button = Button(win_path,text="add",command=lambda:[ADD_PATH(),CLEAN_PATH()])
     add_button.grid(row=1,column=1)
@@ -1128,11 +1150,11 @@ try :
     Label(ichmod_frame, text="With this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group").pack()
     ichmod_bouton=Button(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(side=BOTTOM)
 
-    ##  ADD ADDITIONAL PATH TO ICOLLECTION
-    addpath_frame=LabelFrame(infodata, text="add additional path",padx=30, pady=30, relief=RAISED)
+    ##  EDIT ADDITIONAL PATH TO ICOLLECTION
+    addpath_frame=LabelFrame(infodata, text="edit additional path",padx=30, pady=30, relief=RAISED)
     addpath_frame.pack(fill="both", expand="yes", side=LEFT)
-    Label(addpath_frame, text="With this command you can add path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(stock in a file for later) ").pack()
-    addpath_bouton=Button(addpath_frame, text="add path", command=INIT_ADD_PATH).pack(side=BOTTOM)
+    Label(addpath_frame, text="With this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(stock in a file for later) ").pack()
+    addpath_bouton=Button(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(side=BOTTOM)
     
     ## EXIT
     quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)
@@ -1144,11 +1166,17 @@ try :
     ### IF no metadata dictionary found create it 
     save_dict=os.path.expanduser("~/.irods_metadata_local_save.pkl")
     if not os.path.isfile(save_dict) :
-        showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files")
+        showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
         easicmd.building_attributes_dictionnary()
         #print("easicmd.building_attributes_dictionnary()")
         showwarning(title="missing dictionary",message=f"It's done\nthanks for waiting")
 
+    ### If no collection pickle create one 
+    pickles_path=os.path.expanduser("~/.irods_collection_save.pkl")
+    if not os.path.isfile(pickles_path):
+        showwarning(title="missing collection file",message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
+        easicmd.get_irods_collection()
+        showwarning(title="missing collection file",message=f"It's done\nthanks for waiting")
 
 
     root.mainloop()
