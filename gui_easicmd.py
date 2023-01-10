@@ -105,8 +105,8 @@ def to_irods_and_beyond():
         cmd_push=f"iput -rPKVf {local_object} {irods_path}"
     showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish") 
     subprocess.run(cmd_push.split())
-    if type_object == "-d":
-        easicmd.update_irods_collection("add", f"{irods_path}/{local_object}")   
+    if type_object != "-d":
+        easicmd.update_irods_collection("add", irods_path)   
     showinfo(title="All Your Bytes Are Belong To Us",message="End of Transfer : The data should be on irods now")
 
 def WHERE_TO_IRODS():
