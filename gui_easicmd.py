@@ -100,9 +100,9 @@ def PROGRESS_BAR(command):
 def to_irods_and_beyond():
     irods_path=gui_list_of_icollection.get(gui_list_of_icollection.curselection())
     if type_object == "-d":
-        cmd_push=f"iput -PKVf {local_object} {irods_path}"
+        cmd_push=f"iput{win_exe} -PKVf {local_object} {irods_path}"
     else :
-        cmd_push=f"iput -rPKVf {local_object} {irods_path}"
+        cmd_push=f"iput{win_exe} -rPKVf {local_object} {irods_path}"
     showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish") 
     subprocess.run(cmd_push.split())
     if type_object != "-d":
@@ -138,9 +138,9 @@ def INIT_PUSH():
 #######
 def DOWNLOAD(itype):
     if itype == "-C" :
-        cmd_pull=f"iget -rPKV {irods_path} {local_path}".replace("//", "/")
+        cmd_pull=f"iget{win_exe} -rPKV {irods_path} {local_path}".replace("//", "/")
     else :
-        cmd_pull=f"iget -PKV {irods_path_file} {local_path}".replace("//", "/")
+        cmd_pull=f"iget{win_exe} -PKV {irods_path_file} {local_path}".replace("//", "/")
     showinfo(title="Transfer's Begining",message="Click to run the transfer\nAnother pop-up will show when finish")
     subprocess.run(cmd_pull.split())
     showinfo(title="End of Transfer",message="The data should be on your local now")
@@ -194,7 +194,7 @@ def INIT_PULL() :
 ############
 
 def CMD_IMKDIR():
-    cmd_imkdir=f"imkdir -p {irods_path}/{new_folder}"
+    cmd_imkdir=f"imkdir{win_exe} -p {irods_path}/{new_folder}"
     subprocess.run(cmd_imkdir.split())
     easicmd.update_irods_collection("add", f"{irods_path}/{new_folder}")
 
@@ -234,9 +234,9 @@ def INIT_IMKDIR():
 ########
 def DESTROY():
     if type_object == "-C":
-        cmd_irm=f"irm -rf {irods_path}"
+        cmd_irm=f"irm{win_exe} -rf {irods_path}"
     else :
-        cmd_irm=f"irm -f {irods_path_file}"
+        cmd_irm=f"irm{win_exe} -f {irods_path_file}"
     subprocess.run(cmd_irm.split())
     update_irods_collection("remove", irods_path)
     showinfo(message="DATA HAS BEEN DESTROYED")
@@ -292,9 +292,9 @@ def CLEAR_TEXT():
 
 def ADD_META_CMD():
     if type_object == "-C":
-        cmd_add=f"imeta add {type_object} {irods_path} {attribut.get()} {value.get()} {units.get()}"
+        cmd_add=f"imeta{win_exe} add {type_object} {irods_path} {attribut.get()} {value.get()} {units.get()}"
     else :
-        cmd_add=f"imeta add {type_object} {irods_path_file} {attribut.get()} {value.get()} {units.get()}"
+        cmd_add=f"imeta{win_exe} add {type_object} {irods_path_file} {attribut.get()} {value.get()} {units.get()}"
     subprocess.run(cmd_add.split())
 
     ##updating the autocompletion dictionary
@@ -310,7 +310,7 @@ def ADD_META_CMD():
             change=True
 
     if change == True :
-        file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+        file_name=os.path.expanduser(pickle_meta_dictionary_path)
         with open(file_name,"wb") as f :
             pickle.dump(easicmd.dico_attribute, f)
         print(f"Dictionary have been update in {file_name}")
@@ -415,9 +415,9 @@ def RM_META_CMD():
     att=str(attribut.get()).replace("*", "%")
     val=str(value.get()).replace("*", "%")
     if type_object == "-C":
-        cmd_rm=f"imeta rmw {type_object} {irods_path} {att} {val} %"
+        cmd_rm=f"imeta{win_exe} rmw {type_object} {irods_path} {att} {val} %"
     else :
-        cmd_rm=f"imeta rmw {type_object} {irods_path_file} {att} {val} %"
+        cmd_rm=f"imeta{win_exe} rmw {type_object} {irods_path_file} {att} {val} %"
     subprocess.run(cmd_rm.split())
 
 def GET_RM_ATTR():
@@ -505,9 +505,9 @@ def PRINT_META():
 def GUI_SHOW_META():
     global meta_to_show
     if type_object == "-C":
-        cmd=f"imeta ls {type_object} {irods_path}"
+        cmd=f"imeta{win_exe} ls {type_object} {irods_path}"
     else :
-        cmd=f"imeta ls {type_object} {irods_path_file}"
+        cmd=f"imeta{win_exe} ls {type_object} {irods_path_file}"
     meta_to_show=subprocess.check_output(cmd, shell=True,text=True )
     PRINT_META()
 
@@ -571,7 +571,7 @@ def SEARCH_GET_CMD():
     global operator
     global search_meta_cmd
 
-    search_meta_cmd=f"imeta qu {type_object}"
+    search_meta_cmd=f"imeta{win_exe} qu {type_object}"
     list_operation=["=","like","\'>\'","\'<\'"]
     list_liaison=["","and",'or']
 
@@ -662,7 +662,7 @@ def FILE_NAME_CMD():
     global result
     search=name.get()
     search=str(search).replace("*", "%")
-    cmd_search=f"ilocate {search}"
+    cmd_search=f"ilocate{win_exe} {search}"
     try :
         result=subprocess.check_output(cmd_search, shell=True,text=True )
     except subprocess.CalledProcessError :
@@ -714,7 +714,7 @@ def INIT_SEARCH_NAME():
 ###########
 def GUI_IDUSH():
     global result_size
-    cmd_ils=f"ils -rl {irods_path}"
+    cmd_ils=f"ils{win_exe} -rl {irods_path}"
     ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8")
     total_bits=0
     for line in ils.split("\n"):
@@ -760,11 +760,11 @@ def ICHMOD_CMD():
     t=TO.get()
 
     if type_object == "-C":
-        cmd_ichmod=f"ichmod -r {r} {t} {irods_path}"
-        ichmod_cmd2=f"ichmod -r inherit {irods_path}"
+        cmd_ichmod=f"ichmod{win_exe} -r {r} {t} {irods_path}"
+        ichmod_cmd2=f"ichmod{win_exe} -r inherit {irods_path}"
         path=irods_path
     else :
-        cmd_ichmod=f"ichmod {r} {t} {irods_path_file}"
+        cmd_ichmod=f"ichmod{win_exe} {r} {t} {irods_path_file}"
         path=irods_path_file
     subprocess.run(cmd_ichmod.split())
     if type_object == "-C":
@@ -852,7 +852,7 @@ def INIT_ICHMOD():
 ## EDICTIONARY
 ############
 def UPDATE_DICT():
-    file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    file_name=os.path.expanduser(pickle_meta_dictionary_path)
     with open(file_name,"wb") as f :
         pickle.dump(easicmd.dico_attribute, f)
     print(f"Dictionary have been update in {file_name}")
@@ -955,7 +955,7 @@ def CLEAN_PATH():
 
 def ADD_PATH():
     new_path=path.get()
-    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
     if os.path.isfile(new_path_file):
         with open(new_path_file,"rb") as f:
             list_new_path=pickle.load(f)
@@ -970,7 +970,7 @@ def ADD_PATH():
 
 def RM_PATH():
     to_remove=path.get()
-    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
     if os.path.isfile(new_path_file):
         with open(new_path_file,"rb") as f:
             list_new_path=pickle.load(f)
@@ -1164,7 +1164,7 @@ try :
     help_bouton.pack(side=BOTTOM)
 
     ### IF no metadata dictionary found create it 
-    save_dict=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    save_dict=os.path.expanduser(pickle_meta_dictionary_path)
     if not os.path.isfile(save_dict) :
         showwarning(title="missing dictionary",message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
         easicmd.building_attributes_dictionnary()
@@ -1172,7 +1172,7 @@ try :
         showwarning(title="missing dictionary",message=f"It's done\nthanks for waiting")
 
     ### If no collection pickle create one 
-    pickles_path=os.path.expanduser("~/.irods_collection_save.pkl")
+    pickles_path=os.path.expanduser(pickle_irods_path_path)
     if not os.path.isfile(pickles_path):
         showwarning(title="missing collection file",message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
         easicmd.get_irods_collection()

@@ -6,6 +6,7 @@ import subprocess
 import fnmatch
 import pkg_resources
 import pickle
+import platform
 
 #from prompt_toolkit import prompt
 #from prompt_toolkit.completion import WordCompleter
@@ -28,8 +29,39 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 ##########################################################################################################################################################################################################################################################################################
+####  identify platform
+##########################################################################################################################################################################################################################################################################################
+
+
+global pickle_meta_dictionary_path
+global pickle_irods_path_path 
+global pickle_additional_path_path
+global win_exe
+
+if platform.system() == "Linux":
+    pickle_meta_dictionary_path="~/.irods_metadata_local_save.pkl"
+    pickle_irods_path_path ="~/.irods_collection_save.pkl"
+    pickle_additional_path_path = "~/.irods_additional_path_save.pkl"
+    win_exe=""
+
+
+elif platform.system() == "Windows":
+    pickle_meta_dictionary_path="~\.irods_metadata_local_save.pkl"
+    pickle_irods_path_path ="~\.irods_collection_save.pkl"
+    pickle_additional_path_path = "~\.irods_additional_path_save.pkl"
+    win_exe=".exe"
+
+elif platform.system() == "Darwin":
+    pickle_meta_dictionary_path="~/.irods_metadata_local_save.pkl"
+    pickle_irods_path_path ="~/.irods_collection_save.pkl"
+    pickle_additional_path_path = "~/.irods_additional_path_save.pkl"
+    win_exe=""
+
+
+##########################################################################################################################################################################################################################################################################################
 ####  main function
 ##########################################################################################################################################################################################################################################################################################
+
 
 def main() :
     if len(sys.argv)>1:
@@ -245,21 +277,22 @@ def irods_collection():
     ##create a list with all the collection in irods for autocompletion later 
     global icol_completer
     global list_of_icollection
+
     list_of_icollection=[]
-    cmd_ipwd="ipwd"
+    cmd_ipwd=f"ipwd{win_exe}"
     ipwd=(subprocess.run(cmd_ipwd.split(),capture_output=True).stdout).decode("utf-8")
     list_of_icollection.append(ipwd.replace("\n", ""))
-    cmd_ils="ils -r" ##list all the collection from your irods root
+    cmd_ils=f"ils{win_exe} -r" ##list all the collection from your irods root
     ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8") #keep the output of a cmd in a variable
     for i in ils.split("\n"):
         if "  C- " in i :
             list_of_icollection.append(i.replace("  C- ", "")) ##keep only the collection represent by C- in irods
-    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
     if os.path.isfile(new_path_file): ### add to the list of collection the additional path (e.g : not my home but a common folder for a project )
         with open(new_path_file,"rb") as f:
             list_new_path=pickle.load(f)
         for new_path in list_new_path:
-            cmd_ils_np=f"ils -r {new_path}"
+            cmd_ils_np=f"ils{win_exe} -r {new_path}"
             list_of_icollection.append(new_path)
             ils_np=(subprocess.run(cmd_ils_np.split(),capture_output=True).stdout).decode("utf-8")
             for k in ils_np.split("\n"):
@@ -273,7 +306,7 @@ def initialise_irods_collection():
     ## create a pickles with all the irods folder to save time later 
     print("create a file with all the irods folder to save time later\n if you already have some irods folder it can take a bit of time ")
     irods_collection()
-    pickles_path=os.path.expanduser("~/.irods_collection_save.pkl")
+    pickles_path=os.path.expanduser(pickle_irods_path_path)
     with open(pickles_path,"wb") as f:
         pickle.dump(list_of_icollection, f)
     print("a list or your irods collection have been save ")
@@ -283,7 +316,7 @@ def get_irods_collection():
     ## you don't have to "recalculate" your collection only read thge pickles 
     global icol_completer
     global list_of_icollection
-    pickles_path=os.path.expanduser("~/.irods_collection_save.pkl")
+    pickles_path=os.path.expanduser(pickle_irods_path_path)
     if os.path.isfile(pickles_path):
         with open(pickles_path,"rb") as f:
             list_of_icollection=pickle.load(f)
@@ -296,17 +329,19 @@ def update_irods_collection(action,path):
     ##update the pickles file when you push a folder or remove one 
     global list_of_icollection
     get_irods_collection()
-    pickles_path=os.path.expanduser("~/.irods_collection_save.pkl")
+    pickles_path=os.path.expanduser(pickle_irods_path_path)
+
     ## we push a new folder we have to add this folder and subfolder in our list
     if action=="add" :
         list_of_icollection.append(path)
-        cmd_ils=f"ils -r {path}"
+        cmd_ils=f"ils{win_exe} -r {path}"
         ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8")
         for i in ils.split("\n"):
             if "  C- " in i :
                 if i not in list_of_icollection:
                     list_of_icollection.append(i.replace("  C- ", ""))
         list_of_icollection.sort()
+        list_of_icollection = list(dict.fromkeys(list_of_icollection)) ## no double in my list please
 
     ## we remove a folder we have to remobe this folder and subfolder from our list                
     else:
@@ -315,7 +350,8 @@ def update_irods_collection(action,path):
             if path not in j :
                 list_tmp.append(j)
         list_of_icollection = list_tmp
-
+        list_of_icollection = list(dict.fromkeys(list_of_icollection)) ## no double in my list please
+        
     ## save the update list            
     with open(pickles_path,"wb") as f:
         pickle.dump(list_of_icollection, f)
@@ -324,7 +360,7 @@ def update_irods_collection(action,path):
 
 def get_additional_path():
     global list_additional_path
-    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
     with open(new_path_file,"rb") as f:
         list_additional_path=pickle.load(f)
     
@@ -334,7 +370,7 @@ def list_ifile(ifolder):
     global ifile_completer
     global ifile
     ifile=[]
-    cmd_ils=f"ils {ifolder}"
+    cmd_ils=f"ils{win_exe} {ifolder}"
     ils=(subprocess.run(cmd_ils.split(), capture_output=True).stdout).decode("utf-8")
     for i in ils.split("\n"):
         if "/" not in i :  ##take everything except for the collection
@@ -369,7 +405,8 @@ def list_sha_irods():
     ##creat a list of all the sha256 registered in the icat
     global list_isha
     list_isha=[]
-    cmd_ichecksum="ichksum ." ##get the modified sha for all the files in irods
+    
+    cmd_ichecksum=f"ichksum{win_exe} ." ##get the modified sha for all the files in irods
     ichksum=(subprocess.run(cmd_ichecksum.split(),capture_output=True).stdout).decode("utf-8")
     for i in ichksum.split("\n"):
         if "sha2:" in i :
@@ -381,7 +418,7 @@ def list_sha_irods2():
     #same as  list_sha_irods() but for testing new_synchro:
     global list_isha2
     list_isha2={}
-    cmd_ichecksum="ichksum ." ##get the modified sha for all the files in irods
+    cmd_ichecksum=f"ichksum{win_exe} ." ##get the modified sha for all the files in irods
     ichksum=(subprocess.run(cmd_ichecksum.split(),capture_output=True).stdout).decode("utf-8")
     for i in ichksum.split("\n"):
         if i!= "" and i[0] == "C" :
@@ -408,7 +445,7 @@ def identify_loc_object(object):
 def identify_iobject(iobject):
     ##identify is the object is a collection(folder), object (file) (or user ?) 
     global is_ifile
-    cmd_ils=f"ils {iobject}"
+    cmd_ils=f"ils{win_exe} {iobject}"
     ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8")
     if ":" not in ils:
         type_iobject="-d"
@@ -456,7 +493,7 @@ def building_attributes_dictionnary():
     ##building the dictionary
     get_irods_collection()
     for ifolder in list_of_icollection:
-        cmd_imetaLsD=f"imeta ls -C {ifolder}"
+        cmd_imetaLsD=f"imeta{win_exe} ls -C {ifolder}"
         imetaLsD=(subprocess.run(cmd_imetaLsD.split(),capture_output=True).stdout).decode("utf-8")
         for line in imetaLsD.split("\n"):
             if "attribute:" in line :
@@ -470,7 +507,7 @@ def building_attributes_dictionnary():
                     dico_attribute[attribut].add(value)
         list_ifile(ifolder)
         for irods_file in ifile:
-            cmd_imetaLsF=f"imeta ls -d {irods_file}"
+            cmd_imetaLsF=f"imeta{win_exe} ls -d {irods_file}"
             imetaLsF=(subprocess.run(cmd_imetaLsF.split(),capture_output=True).stdout).decode("utf-8")
             for ligne in imetaLsF.split("\n"):
                 if "attribute:" in ligne :
@@ -484,7 +521,7 @@ def building_attributes_dictionnary():
                         dico_attribute[attribut].add(value)
     ## Save the dictionary in an extern text file 
     ## If the user have many file the creation of the dictionary will be time consuming everytime 
-    file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    file_name=os.path.expanduser(pickle_meta_dictionary_path)
     with open(file_name,"wb") as f :
         pickle.dump(dico_attribute, f)
     print(f"Dictionary have been save in {file_name}")
@@ -510,7 +547,7 @@ def building_attributes_dictionnary_sql():
 def read_attributes_dictionnary():
     global dico_attribute
     dico_attribute={}
-    file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    file_name=os.path.expanduser(pickle_meta_dictionary_path)
     if os.path.isfile(file_name):
         with open(file_name,"rb") as f:
             dico_attribute=pickle.load(f)
@@ -531,7 +568,7 @@ def name():
 def get_user():
     global list_user
     list_user=[]
-    cmd_user=subprocess.check_output("iquest \"SELECT USER_NAME \"",shell=True,text=True )
+    cmd_user=subprocess.check_output(f"iquest{win_exe} \"SELECT USER_NAME \"",shell=True,text=True )
     for line in cmd_user.splitlines():
         if "USER_NAME = " in line :
             list_user.append(line.split("USER_NAME = ")[1])
@@ -539,7 +576,7 @@ def get_user():
 def get_group():
     global list_group
     list_group=[]
-    cmd_group=subprocess.check_output("iquest \"SELECT USER_GROUP_NAME\"",shell=True,text=True )
+    cmd_group=subprocess.check_output(f"iquest{win_exe} \"SELECT USER_GROUP_NAME\"",shell=True,text=True )
     for line in cmd_group.splitlines():
         if "USER_GROUP_NAME = " in line :
             list_group.append(line.split("USER_GROUP_NAME = ")[1])
@@ -560,9 +597,9 @@ def PUSH(local_object) :
     if irods_path=="": 
         irods_path=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "/")
     if is_file:
-        cmd_push=f"iput -PKVf {local_object} {irods_path}"
+        cmd_push=f"iput{win_exe} -PKVf {local_object} {irods_path}"
     else:
-        cmd_push=f"iput -rPKVf {local_object} {irods_path}"
+        cmd_push=f"iput{win_exe} -rPKVf {local_object} {irods_path}"
     subprocess.run(cmd_push.split())
     
     ## get new iobject
@@ -591,11 +628,11 @@ def PULL(type_iobject,local_path) :
         local_path=prompt("local folder :",completer=folder_completer)
     if type_iobject == "-f" :
         if "%" in iobject :
-            cmd_pull=(f"irsync -rKV i:{iobject} {local_path}".replace("//", "/")).replace("%", "")
+            cmd_pull=(f"irsync{win_exe} -rKV i:{iobject} {local_path}".replace("//", "/")).replace("%", "")
         else :
-            cmd_pull=f"iget -PKV {iobject} {local_path}".replace("//", "/")
+            cmd_pull=f"iget{win_exe} -PKV {iobject} {local_path}".replace("//", "/")
     else :
-        cmd_pull=f"iget -rPKV {iobject} {local_path}".replace("//", "/")
+        cmd_pull=f"iget{win_exe} -rPKV {iobject} {local_path}".replace("//", "/")
     subprocess.run(cmd_pull.split())
     
 
@@ -621,7 +658,7 @@ def ADD_META(iobject):
         if attribut =="" :
             break
         value_completer=WordCompleterwb
-        cmd_add_meta=f"imeta add {identify_iobject(iobject)} {iobject} {attribut} {value} {unit}"
+        cmd_add_meta=f"imeta{win_exe} add {identify_iobject(iobject)} {iobject} {attribut} {value} {unit}"
         subprocess.run(cmd_add_meta.split())
         if attribut not in dico_attribute:
             dico_attribute[attribut]=set()
@@ -634,7 +671,7 @@ def ADD_META(iobject):
     
     ###UPDATE dictionary file
     if change == True :
-        file_name=os.path.expanduser("~/.irods_metadata_local_save.pkl")
+        file_name=os.path.expanduser(pickle_meta_dictionary_path)
         with open(file_name,"wb") as f :
             pickle.dump(dico_attribute, f)
         print(f"Dictionary have been update in {file_name}")
@@ -646,7 +683,7 @@ def IRM_META(iobject):
     attribut=input("attribut (empty for all): ")
     if attribut =="":   
         attribut="%" ## % is the wildcards of irods
-    cmd_irm_meta=f"imeta rmw {identify_iobject(iobject)} {iobject} {attribut} % %"
+    cmd_irm_meta=f"imeta{win_exe} rmw {identify_iobject(iobject)} {iobject} {attribut} % %"
     subprocess.run(cmd_irm_meta.split())
 
 
@@ -654,7 +691,7 @@ def IMKDIR():
     ##easy way for creating an irods collection helped with autocompletion if you don't know the exact tree view
     get_irods_collection()
     mkdir=prompt("create : ",completer=icol_completer)
-    cmd_imkdir=f"imkdir -p {mkdir}" ##-p create parents folder if needed
+    cmd_imkdir=f"imkdir{win_exe} -p {mkdir}" ##-p create parents folder if needed
     subprocess.run(cmd_imkdir.split())
     update_irods_collection("add", mkdir)
 
@@ -671,7 +708,7 @@ def IRM(type_iobject,iobject):
             count_slash=iobject.count("/")
             for i in list_of_icollection:
                 if fnmatch.fnmatch(i,iobject) and i.count("/") == count_slash: ##ifiobject match in i and don't consider the subfolder of i 
-                    cmd_irm=f"irm {option} {i}"
+                    cmd_irm=f"irm{win_exe} {option} {i}"
                     subprocess.run(cmd_irm.split())
         else :
             path=(iobject.split("/"))[:-1]
@@ -679,10 +716,10 @@ def IRM(type_iobject,iobject):
             for j in ifile:
                 full_path=path+"/"+j
                 if fnmatch.fnmatch(full_path, iobject): 
-                    cmd_irm=f"irm {option} {full_path}"
+                    cmd_irm=f"irm{win_exe} {option} {full_path}"
                     subprocess.run(cmd_irm.split())                
     else :
-        cmd_irm=f"irm {option} {iobject}"
+        cmd_irm=f"irm{win_exe} {option} {iobject}"
         subprocess.run(cmd_irm.split())
     
     if type_iobject == "-C":
@@ -692,7 +729,7 @@ def IRM(type_iobject,iobject):
 def SHOW_META(iobject):
     ##easy way for showing the meta data associate with an irods object helped with autocompletion
     ##can be collection(folder), Data_Object(file) or user
-    cmd_imeta_ls=f"imeta ls {identify_iobject(iobject)} {iobject}"
+    cmd_imeta_ls=f"imeta{win_exe} ls {identify_iobject(iobject)} {iobject}"
     subprocess.run(cmd_imeta_ls.split())
 
 
@@ -706,7 +743,7 @@ def SEARCH_BY_META(type_iobject):
     list_liaison=["","and",'or']
     liaison="placeholder"
     try :
-        cmd_imetaQu=f"imeta qu {type_iobject}"
+        cmd_imetaQu=f"imeta{win_exe} qu {type_iobject}"
         while liaison != "" :
             qu_attribute_completer=WordCompleter(dico_attribute.keys)
             qu_attribute=prompt("attribute: ",completer=qu_attribute_completer)
@@ -730,7 +767,7 @@ def SEARCH_BY_NAME(type_iobject):
     ##search a file (with ilocate) or a folder store in the irods vault 
     if type_iobject == "-f" :
         search=input("your query(% as *) : ")
-        cmd_ilocate=f"ilocate {search}"
+        cmd_ilocate=f"ilocate{win_exe} {search}"
         subprocess.run(cmd_ilocate.split())
     else :
         get_irods_collection()
@@ -762,10 +799,10 @@ def SYNCHRONISE(local_folder):
                         break
                 ### the (sub)folder is not yet in irods
                 if exist==False :
-                    cmd_imkdir=f"imkdir -p {local_folder}"
+                    cmd_imkdir=f"imkdir{win_exe} -p {local_folder}"
                     subprocess.run(cmd_imkdir.split())
                     get_irods_collection()
-                cmd_iput=f"irsync -K {path_to_file} i:{local_folder}" #input need -f (force) to update an already existing file (aka modify file)
+                cmd_iput=f"irsync{win_exe} -K {path_to_file} i:{local_folder}" #input need -f (force) to update an already existing file (aka modify file)
                 subprocess.run(cmd_iput.split())
         else :
             SYNCHRONISE(f"{local_folder}/{i}") ##if folder recursive function
@@ -789,7 +826,7 @@ def NEW_SYNCHRONISE(local_folder,irods_path):
         else :
             ipwd=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
             full_irods_path=f"{ipwd}/{local_folder}".replace("//", "/")
-        cmd_imkdir=f"imkdir -p {full_irods_path}"
+        cmd_imkdir=f"imkdir{win_exe} -p {full_irods_path}"
         subprocess.run(cmd_imkdir.split())
         get_irods_collection() ##refresh with the new values
         list_sha_irods2() ##same
@@ -801,7 +838,7 @@ def NEW_SYNCHRONISE(local_folder,irods_path):
             cmd_sha=f"sha256sum {objects_path} | awk '{{print $1}}' | xxd -r -p | base64"
             sha_256=(subprocess.check_output(cmd_sha, shell=True,text=True )).rstrip()
             if sha_256 not in list_isha2[full_irods_path]:
-                cmd_iput=f"irsync -K {objects_path} i:{full_irods_path}"
+                cmd_iput=f"irsync{win_exe} -K {objects_path} i:{full_irods_path}"
                 subprocess.run(cmd_iput.split())
         else:
             size=len(objects_path.split("/"))-1 ## as we create each time from the same collection the new collection we need to give him always 
@@ -816,7 +853,7 @@ def IDUSH():
     irods_path=prompt("ifolder (empty = /zone/home/user ): ",completer=icol_completer)
     if irods_path=="": 
         irods_path=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "/")
-    cmd_ils=f"ils -rl {irods_path}"
+    cmd_ils=f"ils{win_exe} -rl {irods_path}"
     ils=(subprocess.run(cmd_ils.split(),capture_output=True).stdout).decode("utf-8")
     total_bits=0
     for line in ils.split("\n"):
@@ -851,15 +888,15 @@ def ICHMOD(iobject):
         option="-r"
     else :
         option=""
-    ichmod_cmd=f"ichmod {option} {right} {receiver} {iobject}"
+    ichmod_cmd=f"ichmod{win_exe} {option} {right} {receiver} {iobject}"
     subprocess.run(ichmod_cmd.split())
     if identify_iobject(iobject) == "-C" :
-        ichmod_cmd2=f"ichmod {option} inherit {iobject}"
+        ichmod_cmd2=f"ichmod{win_exe} {option} inherit {iobject}"
         subprocess.run(ichmod_cmd2.split())
 
 def ADD_ADDITIONAL_PATH():
     ## Add additional path to the autocompletion (e.g someone give you right on collection not in your zone/home/user )
-    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
     if os.path.isfile(new_path_file):
         with open(new_path_file,"rb") as f:
             list_new_path=pickle.load(f)
@@ -881,7 +918,7 @@ def ADD_ADDITIONAL_PATH():
 
 def RM_ADDITIONAL_PATH():
     ##remove additional path you don't need anymore
-    new_path_file=os.path.expanduser("~/.irods_additional_path_save.pkl")
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
     if os.path.isfile(new_path_file):
         with open(new_path_file,"rb") as f:
             list_new_path=pickle.load(f)
