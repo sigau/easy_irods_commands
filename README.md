@@ -584,7 +584,7 @@ You can edit it with this function, you can create a new key/attribut and add va
 
 
 ### ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH
-If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home.
+If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home. Additionally, if you have a shared folder, you can use this command to update the folder list. To improve performance, the folder list is stored in a .pkl file [~/.irods_collection_save.pkl] so that it doesn't have to be recalculated every time the command is run. However, this can be a limitation when multiple users need access to the same folder list. To overcome this limitation, you can create a symlink for each user from their local ~/.irods_collection_save.pkl file to a common file that can be accessed by all users.
 
 
 **With the GUI**:

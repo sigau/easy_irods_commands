@@ -1153,7 +1153,7 @@ try :
     ##  EDIT ADDITIONAL PATH TO ICOLLECTION
     addpath_frame=LabelFrame(infodata, text="edit additional path",padx=30, pady=30, relief=RAISED)
     addpath_frame.pack(fill="both", expand="yes", side=LEFT)
-    Label(addpath_frame, text="With this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(stock in a file for later) ").pack()
+    Label(addpath_frame, text="With this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(stock in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ").pack()
     addpath_bouton=Button(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(side=BOTTOM)
     
     ## EXIT
