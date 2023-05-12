@@ -214,7 +214,7 @@ def main() :
             RM_ADDITIONAL_PATH()        
             
         elif sys.argv[1] == "test" :
-            get_irods_collection()
+            get_irods_addin_path()
 
         
         else :
@@ -581,9 +581,19 @@ def get_group():
         if "USER_GROUP_NAME = " in line :
             list_group.append(line.split("USER_GROUP_NAME = ")[1])
 
+def get_irods_addin_path():
+    new_path_file=os.path.expanduser(pickle_additional_path_path)
+    if not os.path.isfile(new_path_file):
+        list_new_path=[]
+        with open(new_path_file,"wb") as f:
+            pickle.dump(list_new_path, f)
+        print("irods list of path updated")
+
 def auto_parsing_meta():
     ##automatically add metadata based on the parsing of the file/folder info like date/format/author
     print()
+
+
 ##########################################################################################################################################################################################################################################################################################
 #### called function's definition (function that will be "called" by the user/main )
 ##########################################################################################################################################################################################################################################################################################
@@ -893,6 +903,7 @@ def ICHMOD(iobject):
     if identify_iobject(iobject) == "-C" :
         ichmod_cmd2=f"ichmod{win_exe} {option} inherit {iobject}"
         subprocess.run(ichmod_cmd2.split())
+
 
 def ADD_ADDITIONAL_PATH():
     ## Add additional path to the autocompletion (e.g someone give you right on collection not in your zone/home/user )

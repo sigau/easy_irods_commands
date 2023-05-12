@@ -51,6 +51,25 @@ def GUIADDMETA():
 ### GUI  tools function's definition (function that will only be use by other functions to avoid redundancy )                
 ########################################################################################################################################
 
+def listbox_filter(event):
+    sstr= search_str.get()
+    gui_list_of_icollection.delete(0, END)
+    # If filter removed show all data
+    if sstr == "":
+        fill_listbox(easicmd.list_of_icollection)
+        return
+
+    filtered_data = list()
+    for item in easicmd.list_of_icollection :
+        if item.find(sstr) >= 0:
+            filtered_data.append(item)
+    
+    fill_listbox(filtered_data)
+
+def fill_listbox(ld):
+    for item in ld:
+        gui_list_of_icollection.insert(END, item)
+
 def GUITEST():
     print("test")
 
@@ -118,8 +137,15 @@ def WHERE_TO_IRODS():
     gui_list_of_icollection= Listbox(win_where)
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     select_button= Button(win_where,text="select",command=lambda:[to_irods_and_beyond(),win_where.destroy()]).pack(side='bottom')
 
@@ -170,8 +196,15 @@ def PULL_FROM_IRODS(itype):
     gui_list_of_icollection= Listbox(win_where)
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     
     if itype == "-C":
@@ -224,8 +257,15 @@ def INIT_IMKDIR():
     gui_list_of_icollection= Listbox(win_where) 
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)   
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GIVE_NAME()]).pack(side='bottom')        
 
@@ -265,8 +305,15 @@ def IRM_GET_FOLDER():
     gui_list_of_icollection= Listbox(win_where)  
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)  
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
         select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),DESTROY()]).pack(side='bottom')
@@ -390,8 +437,15 @@ def ADDMETA_GET_IRODS_PATH():
     gui_list_of_icollection= Listbox(win_where)    
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
         select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GIVE_META()]).pack(side='bottom')
@@ -473,8 +527,15 @@ def RMMETA_GET_IRODS_PATH():
     gui_list_of_icollection= Listbox(win_where)    
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
         select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')
@@ -536,8 +597,14 @@ def SHOWMETA_GET_IRODS_PATH():
     gui_list_of_icollection= Listbox(win_where)
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)    
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
         select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom')
@@ -740,8 +807,14 @@ def INIT_IDUST():
     gui_list_of_icollection= Listbox(win_where)
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)    
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_IDUSH()]).pack(side='bottom')
 
@@ -830,8 +903,15 @@ def ICHMOD_IRODS_PATH():
     gui_list_of_icollection= Listbox(win_where)
     #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
     #gui_list_of_icollection.insert(0,home)    
-    for i in easicmd.list_of_icollection:
-        gui_list_of_icollection.insert(easicmd.list_of_icollection.index(i)+1,i)
+    
+    fill_listbox(easicmd.list_of_icollection)
+    global search_str
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
+    label_search.pack( side=BOTTOM)
+    search_str = StringVar()
+    search = Entry(win_where, textvariable=search_str, width=10)
+    search.pack(padx=5, pady=5, side=BOTTOM)
+    search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
         select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')
@@ -1153,7 +1233,7 @@ try :
     ##  EDIT ADDITIONAL PATH TO ICOLLECTION
     addpath_frame=LabelFrame(infodata, text="edit additional path",padx=30, pady=30, relief=RAISED)
     addpath_frame.pack(fill="both", expand="yes", side=LEFT)
-    Label(addpath_frame, text="With this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(stock in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ").pack()
+    Label(addpath_frame, text="With this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(write in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ").pack()
     addpath_bouton=Button(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(side=BOTTOM)
     
     ## EXIT
@@ -1177,6 +1257,13 @@ try :
         showwarning(title="missing collection file",message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
         easicmd.get_irods_collection()
         showwarning(title="missing collection file",message=f"It's done\nthanks for waiting")
+    
+    ### If no irods addin path file create one 
+    pickles_additionals_path=os.path.expanduser(pickle_additional_path_path)
+    if not os.path.isfile(pickles_additionals_path):
+        showwarning(title="missing irods addin path file",message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
+        easicmd.get_irods_addin_path()
+        showwarning(title="missing irods addin path file",message=f"It's done\nthanks for waiting")
 
 
     root.mainloop()
