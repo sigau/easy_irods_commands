@@ -1200,25 +1200,25 @@ try :
     push_frame= customtkinter.CTkFrame(data, width=200, height=150)
     push_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(push_frame, text="\n\n\n\n\n\n\n\nSend local data to irods",font=("",15)).pack()
-    push_bouton=customtkinter.CTkButton(push_frame, text="PUSH", command=GUIPUSH).pack(side=BOTTOM)
+    push_bouton=customtkinter.CTkButton(push_frame, text="PUSH", command=GUIPUSH).pack(pady=15,side=BOTTOM)
 
     ## PULL DATA TO IRODS
     pull_frame= customtkinter.CTkFrame(data, width=200, height=150)
     pull_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(pull_frame, text="\n\n\n\n\n\n\n\nGet data from irods to a local folder", font=("",15)).pack()
-    pull_bouton=customtkinter.CTkButton(pull_frame, text="PULL", command=GUIPULL).pack(side=BOTTOM)
+    pull_bouton=customtkinter.CTkButton(pull_frame, text="PULL", command=GUIPULL).pack(pady=15,side=BOTTOM)
 
     ## CREATE A DIRECTORY IN IRODS
     imkdir_frame= customtkinter.CTkFrame(data, width=200, height=150)
     imkdir_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(imkdir_frame, text="\n\n\n\n\n\n\n\nCreate a ifolder in irods", font=("",15)).pack()
-    imkdir_bouton=customtkinter.CTkButton(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).pack(side=BOTTOM)
+    imkdir_bouton=customtkinter.CTkButton(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).pack(pady=15,side=BOTTOM)
 
     ## REMOVE A DATA FROM IRODS
     irm_frame= customtkinter.CTkFrame(data, width=200, height=150)
     irm_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(irm_frame, text="\n\n\n\n\n\n\n\nRemove data frome Irods", font=("",15)).pack()
-    irm_bouton=customtkinter.CTkButton(irm_frame, text="IRM", command=GUIIRM).pack(side=BOTTOM)
+    irm_bouton=customtkinter.CTkButton(irm_frame, text="IRM", command=GUIIRM).pack(pady=15,side=BOTTOM)
 
     ##################################################################################################
     ### Work with metadata (add_meta,rm_meta,show_meta)
@@ -1231,25 +1231,25 @@ try :
     addmeta_frame= customtkinter.CTkFrame(metadata, width=200, height=150)
     addmeta_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(addmeta_frame, text="\n\n\n\n\n\n\n\nAdd metadata to a data (file or folder) \nalready present on irods", font=("",15)).pack()
-    addmeta_bouton=customtkinter.CTkButton(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(side=BOTTOM)
+    addmeta_bouton=customtkinter.CTkButton(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(pady=15,side=BOTTOM)
 
     ## REMOVE METADATA TO DATA ALREADY ON IRODS
     rmmeta_frame= customtkinter.CTkFrame(metadata, width=200, height=150)
     rmmeta_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(rmmeta_frame, text="\n\n\n\n\n\n\n\nRemove metadata to a data (file or folder) \nalready present on irods", font=("",15)).pack()
-    rmmeta_bouton=customtkinter.CTkButton(rmmeta_frame, text="remove meta", command=INIT_RM_META).pack(side=BOTTOM)
+    rmmeta_bouton=customtkinter.CTkButton(rmmeta_frame, text="remove meta", command=INIT_RM_META).pack(pady=15,side=BOTTOM)
 
     ## SHOW METADATA ASSOCIATE WITH A DATA
     showmeta_frame= customtkinter.CTkFrame(metadata, width=200, height=150)
     showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(showmeta_frame, text="\n\n\n\n\n\n\n\nShow metadata to a data (file or folder) \nalready present on irods", font=("",15)).pack()
-    showmeta_bouton=customtkinter.CTkButton(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(side=BOTTOM)
+    showmeta_bouton=customtkinter.CTkButton(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(pady=15,side=BOTTOM)
 
     ## EDIT METADATA DICTIONARY
     edit_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
     edit_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(edit_frame,text="\n\n\n\n\nedit metadata autocompletion dictionary\n\ncreate : create a new attribut key \nthen you can add value to this new attribut\n\nediting : modify(add/remove) the \nvalues associated with an existing attribute\n\ndelete : remove an attribut AND all \nhis value from the dictionary", font=("",15)).pack()
-    edit_bouton=customtkinter.CTkButton(edit_frame,text="edit", command=INIT_EDIT).pack(side=BOTTOM)
+    edit_bouton=customtkinter.CTkButton(edit_frame,text="edit", command=INIT_EDIT).pack(pady=15,side=BOTTOM)
 
     ##################################################################################################
     ### Get info on data (serach_by_meta,search_by_name,idush,ichmod)
@@ -1262,31 +1262,31 @@ try :
     searchmeta_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     searchmeta_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(searchmeta_frame, text="\n\n\n\n\n\nSearch for data from the \nassociated metadata (SQL-like)", font=("",15)).pack()
-    searchmeta_bouton=customtkinter.CTkButton(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(side=BOTTOM)
+    searchmeta_bouton=customtkinter.CTkButton(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(pady=15,side=BOTTOM)
 
     ## SEARCH A DATA BY IT'S NAME
     searchname_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     searchname_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(searchname_frame, text="\n\n\n\n\n\nSearch for data based on their name", font=("",15)).pack()
-    searchname_bouton=customtkinter.CTkButton(searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME).pack(side=BOTTOM)
+    searchname_bouton=customtkinter.CTkButton(searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME).pack(pady=15,side=BOTTOM)
 
     ## GET THE SIZE OF A IFOLDER
     idush_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     idush_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(idush_frame, text="\n\n\n\n\n\nGet the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)", font=("",15)).pack()
-    idush_bouton=customtkinter.CTkButton(idush_frame, text="idush", command=INIT_IDUST).pack(side=BOTTOM)
+    idush_bouton=customtkinter.CTkButton(idush_frame, text="idush", command=INIT_IDUST).pack(pady=15,side=BOTTOM)
 
     ## GIVE ACCES TO THE DATA TO OTHER USER 
     ichmod_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(ichmod_frame, text="\n\n\n\n\n\nWith this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group", font=("",15)).pack()
-    ichmod_bouton=customtkinter.CTkButton(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(side=BOTTOM)
+    ichmod_bouton=customtkinter.CTkButton(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(pady=15,side=BOTTOM)
 
     ##  EDIT ADDITIONAL PATH TO ICOLLECTION
     addpath_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     addpath_frame.pack(fill="both", expand="yes", side=LEFT)
     customtkinter.CTkLabel(addpath_frame, text="\n\n\n\nWith this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(write in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ", font=("",15)).pack()
-    addpath_bouton=customtkinter.CTkButton(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(side=BOTTOM)
+    addpath_bouton=customtkinter.CTkButton(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(pady=15,side=BOTTOM)
     
     ## EXIT
     quit_bouton=customtkinter.CTkButton(root, text="quit", command=root.quit).pack(anchor = "e", side=BOTTOM)
