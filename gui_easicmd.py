@@ -1297,7 +1297,7 @@ try :
 
     ## CHANGE THEME
     theme_bouton=customtkinter.CTkButton(root,text="theme", command=theme_gui)
-    theme_bouton.pack(anchor = "w", side=BOTTOM)
+    theme_bouton.pack(pady=10,  anchor = "w", side=BOTTOM)
 
     ### IF no metadata dictionary found create it 
     save_dict=os.path.expanduser(pickle_meta_dictionary_path)
