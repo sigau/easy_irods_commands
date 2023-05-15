@@ -11,12 +11,19 @@ easicmd is a python script written to facilitate/automate the use of irods for n
 For graphical user interface
 - tkinter (sudo apt-get install python3-tk)
 - [ttkwidgets](https://ttkwidgets.readthedocs.io/en/latest/installation.html) (for the autocompletion in the GUI)
+- [CustomTkinter](https://customtkinter.tomschimansky.com/) (the script install it the first time you run it if it's not already install)
 
 ## COMMAND LINE OR GRAPHICAL USER INTERFACE (GUI)
 - ./easicmd.py --> run the command line version
 - ./gui_easicmd.py --> launch the GUI version
 
 **In any case activate irods before running the script --> iinit**
+
+## NEW interface with CustumTkinter
+**Light theme**
+![screenshot/new_light_interface.png](screenshot/new_light_interface.png ) 
+**Dark Theme**
+![screenshot/new_dark_interface.png](screenshot/new_dark_interface.png) 
 
 ## Commands
 ```
