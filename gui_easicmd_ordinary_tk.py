@@ -16,7 +16,7 @@ import subprocess
 ####  install dependancy (bad and temporary methods) 
 ##########################################################################################################################################################################################################################################################################################
 
-required = {"ttkwidgets","customtkinter"}
+required = {"ttkwidgets"}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 
@@ -26,13 +26,9 @@ if missing:
 
 import ttkwidgets
 from ttkwidgets.autocomplete import AutocompleteEntry
-import customtkinter
-
 
 #ssh -X to activate Xwindow
-
 # autocompletion sudo apt-get install python3-pil python3-pil.imagetk
-
 ######################################################################################################################################## 
 ### GUI called function's definition (function that will be "called" by the user)                  
 ########################################################################################################################################
@@ -51,7 +47,6 @@ def GUIIRM():
 
 def GUIADDMETA():
     INIT_ADD_META()
-
 ######################################################################################################################################## 
 ### GUI  tools function's definition (function that will only be use by other functions to avoid redundancy )                
 ########################################################################################################################################
@@ -101,14 +96,16 @@ def WHERE_IN_LOCAL():
 def GET_IRODS_PATH():
     global irods_path
     irods_path=gui_list_of_icollection.get(gui_list_of_icollection.curselection())
+    #print(irods_path)
 
 def GET_IRODS_FILE_PATH():
     global irods_path_file
     irods_path_file=f"{irods_path}/{gui_list_of_ifile.get(gui_list_of_ifile.curselection())}"
+    #print(irods_path_file)
 
 def PROGRESS_BAR(command):
     global pb
-    win_pb=customtkinter.CTkToplevel()
+    win_pb=Toplevel()
     pb=ttk.Progressbar(win_pb,orient="horizontal",mode="indeterminate",length=280)
     pb.pack(padx=10, pady=20)
     pb.start()
@@ -133,32 +130,34 @@ def to_irods_and_beyond():
 
 def WHERE_TO_IRODS():
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.title("WHERE TO SEND DATA")
     win_where.geometry('1080x500')
     easicmd.get_irods_collection()
     gui_list_of_icollection= Listbox(win_where)
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
-    select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[to_irods_and_beyond(),win_where.destroy()]).pack(side='bottom')
+    select_button= Button(win_where,text="select",command=lambda:[to_irods_and_beyond(),win_where.destroy()]).pack(side='bottom')
 
 def INIT_PUSH():
 
-    win = customtkinter.CTkToplevel()
+    win = Toplevel()
     win.title('warning')
     win.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win, text=message).pack()
-    customtkinter.CTkButton(win, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win.destroy(),GUI_GET_LOCAL_OBJECT("file"),WHERE_TO_IRODS()]).pack(side=LEFT)
-    customtkinter.CTkButton(win, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win.destroy(),GUI_GET_LOCAL_OBJECT("folder"),WHERE_TO_IRODS()]).pack(side=RIGHT)
+    Label(win, text=message).pack()
+    Button(win, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win.destroy(),GUI_GET_LOCAL_OBJECT("file"),WHERE_TO_IRODS()]).pack(side=LEFT)
+    Button(win, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win.destroy(),GUI_GET_LOCAL_OBJECT("folder"),WHERE_TO_IRODS()]).pack(side=RIGHT)
 
 #######
 #PULL
@@ -175,7 +174,7 @@ def DOWNLOAD(itype):
 
 def GET_IRODS_FILE():
     global gui_list_of_ifile
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.geometry('1080x500')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
@@ -183,43 +182,45 @@ def GET_IRODS_FILE():
     for i in easicmd.ifile :
         gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
     gui_list_of_ifile.pack(fill="both",expand="yes")
-    select_button=customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),WHERE_IN_LOCAL(),DOWNLOAD("-f")]).pack(side='bottom')
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),WHERE_IN_LOCAL(),DOWNLOAD("-f")]).pack(side='bottom')
 
 def PULL_FROM_IRODS(itype):
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     if itype == "-C" :
         win_where.title("WHICH FOLDER")
     else :
         win_where.title("FIRST SELECT THE FOLDER")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     
     if itype == "-C":
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(), WHERE_IN_LOCAL(),DOWNLOAD("-C") ]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(), WHERE_IN_LOCAL(),DOWNLOAD("-C") ]).pack(side='bottom')
     else :
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(), GET_IRODS_FILE()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(), GET_IRODS_FILE()]).pack(side='bottom')
 
 
 def INIT_PULL() :
-    win_pull = customtkinter.CTkToplevel()
+    win_pull = Toplevel()
     win_pull.title('warning pull')
     win_pull.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_pull, text=message).pack()
-    customtkinter.CTkButton(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),PULL_FROM_IRODS("-f")]).pack(side=LEFT)
-    customtkinter.CTkButton(win_pull, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_pull.destroy(),PULL_FROM_IRODS("-C")]).pack(side=RIGHT)
+    Label(win_pull, text=message).pack()
+    Button(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),PULL_FROM_IRODS("-f")]).pack(side=LEFT)
+    Button(win_pull, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_pull.destroy(),PULL_FROM_IRODS("-C")]).pack(side=RIGHT)
 
 ############
 ###imkdir
@@ -240,31 +241,33 @@ def GET_NAME():
 
 def GIVE_NAME():
     global entree
-    win_name=customtkinter.CTkToplevel()
-    customtkinter.CTkLabel(win_name,text="name of the new folder :\n NO SPACE ONLY '_' ").pack()
-    entree = customtkinter.CTkEntry(win_name, width=50)
+    win_name=Toplevel()
+    Label(win_name,text="name of the new folder :\n NO SPACE ONLY '_' ").pack()
+    entree = Entry(win_name, width=50)
     entree.pack(padx=5, pady=5, side=LEFT)
     entree.focus_force()
-    btnAffiche = customtkinter.CTkButton(win_name,text="create", command=lambda:[GET_NAME(), win_name.destroy()]).pack(padx=5, pady=5)
+    btnAffiche = Button(win_name,text="create", command=lambda:[GET_NAME(), win_name.destroy()]).pack(padx=5, pady=5)
 
 def INIT_IMKDIR():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.title("WHERE DO YOU WANT TO CREATE YOUR FOLDER")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)
+    gui_list_of_icollection= Listbox(win_where) 
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)   
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
-    select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GIVE_NAME()]).pack(side='bottom')        
+    select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GIVE_NAME()]).pack(side='bottom')        
 
 ########
 ###irm
@@ -280,7 +283,7 @@ def DESTROY():
 
 def GET_IRM_FILE_NAME():
     global gui_list_of_ifile
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.geometry('1080x500')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
@@ -288,41 +291,43 @@ def GET_IRM_FILE_NAME():
     for i in easicmd.ifile :
         gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
     gui_list_of_ifile.pack(fill="both",expand="yes")
-    select_button=customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),DESTROY()]).pack(side='bottom')
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),DESTROY()]).pack(side='bottom')
 
 def IRM_GET_FOLDER():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     if type_object == "-C":
         win_where.title("WHICH FOLDER ?")
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
     win_where.geometry('1080x500')
-    gui_list_of_icollection= Listbox(win_where)
+    gui_list_of_icollection= Listbox(win_where)  
+    #home=((subprocess.run("ipwd",capture_output=True).stdout).decode("utf-8")).replace("\n", "")
+    #gui_list_of_icollection.insert(0,home)  
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),DESTROY()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),DESTROY()]).pack(side='bottom')
     else :
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_IRM_FILE_NAME()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_IRM_FILE_NAME()]).pack(side='bottom')
     
 def INIT_IRM():
-    win_pull = customtkinter.CTkToplevel()
+    win_pull = Toplevel()
     win_pull.title('warning IRM')
     win_pull.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_pull, text=message).pack()
-    customtkinter.CTkButton(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),IRM_GET_FOLDER()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_pull, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_pull.destroy(),IRM_GET_FOLDER()]).pack(side=RIGHT)
+    Label(win_pull, text=message).pack()
+    Button(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),IRM_GET_FOLDER()]).pack(side=LEFT)
+    Button(win_pull, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_pull.destroy(),IRM_GET_FOLDER()]).pack(side=RIGHT)
     
 ############
 ##ADD_META
@@ -357,6 +362,25 @@ def ADD_META_CMD():
             pickle.dump(easicmd.dico_attribute, f)
         print(f"Dictionary have been update in {file_name}")
 
+# def GIVE_META():
+#     global attribut
+#     global value 
+#     global units 
+#     win_name_addmeta= Toplevel()
+#     win_name_addmeta.title("ADD METADATA (* is mandatory)")
+#     Label(win_name_addmeta,text="attribut* : ").grid(row=0)
+#     Label(win_name_addmeta,text="value* : ").grid(row=1)
+#     Label(win_name_addmeta,text="units : ").grid(row=2)
+#     attribut = Entry(win_name_addmeta, width=20)
+#     attribut.grid(row=0, column=1)
+#     value = Entry(win_name_addmeta, width=20)
+#     value.grid(row=1, column=1)
+#     units = Entry(win_name_addmeta, width=20)
+#     units.grid(row=2, column=1)
+#     validate_button = Button(win_name_addmeta,text="validate",command=lambda:[ADD_META_CMD(),CLEAR_TEXT()])
+#     validate_button.grid(row=0, column=2)
+#     exit_button = Button(win_name_addmeta,text="exit",command=lambda:[win_name_addmeta.destroy()])
+#     exit_button.grid(row=3, column=2)
 
 def GIVE_META():
     global attribut
@@ -373,25 +397,25 @@ def GIVE_META():
         list_attr.append(attr)
     list_attr.sort(key=str.lower)
     list_value.sort(key=str.lower) 
-    win_name_addmeta= customtkinter.CTkToplevel()
+    win_name_addmeta= Toplevel()
     win_name_addmeta.title("ADD METADATA (* is mandatory)")
-    customtkinter.CTkLabel(win_name_addmeta,text="attribut* : ").grid(row=0)
-    customtkinter.CTkLabel(win_name_addmeta,text="value* : ").grid(row=1)
-    customtkinter.CTkLabel(win_name_addmeta,text="units : ").grid(row=2)
+    Label(win_name_addmeta,text="attribut* : ").grid(row=0)
+    Label(win_name_addmeta,text="value* : ").grid(row=1)
+    Label(win_name_addmeta,text="units : ").grid(row=2)
     attribut = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_attr)
     attribut.grid(row=0, column=1)
     value = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_value)
     value.grid(row=1, column=1)
-    units = customtkinter.CTkEntry(win_name_addmeta, width=20)
+    units = Entry(win_name_addmeta, width=20)
     units.grid(row=2, column=1)
-    validate_button = customtkinter.CTkButton(win_name_addmeta,text="validate",command=lambda:[ADD_META_CMD(),CLEAR_TEXT(),win_name_addmeta.destroy(),GIVE_META()])
+    validate_button = Button(win_name_addmeta,text="validate",command=lambda:[ADD_META_CMD(),CLEAR_TEXT(),win_name_addmeta.destroy(),GIVE_META()])
     validate_button.grid(row=0, column=2)
-    exit_button = customtkinter.CTkButton(win_name_addmeta,text="exit",command=lambda:[win_name_addmeta.destroy()])
+    exit_button = Button(win_name_addmeta,text="exit",command=lambda:[win_name_addmeta.destroy()])
     exit_button.grid(row=3, column=2)
 
 def GET_ADDMETA_FILE_NAME():
     global gui_list_of_ifile
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.geometry('1080x500')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
@@ -399,12 +423,12 @@ def GET_ADDMETA_FILE_NAME():
     for i in easicmd.ifile :
         gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
     gui_list_of_ifile.pack(fill="both",expand="yes")
-    select_button=customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GIVE_META()]).pack(side='bottom')
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GIVE_META()]).pack(side='bottom')
         
 def ADDMETA_GET_IRODS_PATH():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     if type_object == "-C":
         win_where.title("WHICH FOLDER ?")
     else :
@@ -416,26 +440,26 @@ def ADDMETA_GET_IRODS_PATH():
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GIVE_META()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GIVE_META()]).pack(side='bottom')
     else :
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_ADDMETA_FILE_NAME()]).pack(side='bottom')    
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_ADDMETA_FILE_NAME()]).pack(side='bottom')    
 
 def INIT_ADD_META():
-    win_addmeta = customtkinter.CTkToplevel()
+    win_addmeta = Toplevel()
     win_addmeta.title('warning ADD METADATA')
     win_addmeta.geometry('500x200')
     message = "The data is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_addmeta, text=message).pack()
-    customtkinter.CTkButton(win_addmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_addmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=RIGHT)
+    Label(win_addmeta, text=message).pack()
+    Button(win_addmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_addmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=RIGHT)
 
 
 ############
@@ -465,23 +489,23 @@ def GET_RM_ATTR():
         list_attr.append(attr)
     list_attr.sort(key=str.lower)
     list_value.sort(key=str.lower) 
-    win_name_addmeta= customtkinter.CTkToplevel()
+    win_name_addmeta= Toplevel()
     win_name_addmeta.title("REMOVE METADATA (* for all)")
-    customtkinter.CTkLabel(win_name_addmeta,text="attribut : ").grid(row=0)
-    customtkinter.CTkLabel(win_name_addmeta,text="value : ").grid(row=1)
+    Label(win_name_addmeta,text="attribut : ").grid(row=0)
+    Label(win_name_addmeta,text="value : ").grid(row=1)
     attribut = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_attr)
     attribut.grid(row=0, column=1)
     value = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_value)
     value.grid(row=1, column=1)
-    units = customtkinter.CTkEntry(win_name_addmeta, width=20)
-    validate_button = customtkinter.CTkButton(win_name_addmeta,text="validate",command=lambda:[RM_META_CMD(),CLEAR_TEXT()])
+    units = Entry(win_name_addmeta, width=20)
+    validate_button = Button(win_name_addmeta,text="validate",command=lambda:[RM_META_CMD(),CLEAR_TEXT()])
     validate_button.grid(row=0, column=2)
-    exit_button = customtkinter.CTkButton(win_name_addmeta,text="exit",command=lambda:[win_name_addmeta.destroy()])
+    exit_button = Button(win_name_addmeta,text="exit",command=lambda:[win_name_addmeta.destroy()])
     exit_button.grid(row=3, column=2)  
 
 def GET_RMMETA_FILE_NAME():
     global gui_list_of_ifile
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.geometry('1080x500')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
@@ -489,12 +513,12 @@ def GET_RMMETA_FILE_NAME():
     for i in easicmd.ifile :
         gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
     gui_list_of_ifile.pack(fill="both",expand="yes")
-    select_button=customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')    
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')    
 
 def RMMETA_GET_IRODS_PATH():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     if type_object == "-C":
         win_where.title("WHICH FOLDER ?")
     else :
@@ -506,37 +530,37 @@ def RMMETA_GET_IRODS_PATH():
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RM_ATTR()]).pack(side='bottom')
     else :
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RMMETA_FILE_NAME()]).pack(side='bottom')  
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_RMMETA_FILE_NAME()]).pack(side='bottom')  
 
 def INIT_RM_META():
-    win_rmmeta= customtkinter.CTkToplevel()
+    win_rmmeta= Toplevel()
     win_rmmeta.title('warning ADD METADATA')
     win_rmmeta.geometry('500x200')
     message = "The data you want to remove metadata from is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_rmmeta, text=message).pack()
-    customtkinter.CTkButton(win_rmmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_rmmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=RIGHT)    
+    Label(win_rmmeta, text=message).pack()
+    Button(win_rmmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_rmmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=RIGHT)    
 
 ##################
 ##SHOW META
 ##################
 def PRINT_META():
-    win_meta= customtkinter.CTkToplevel()
+    win_meta= Toplevel()
     t= Text(win_meta, height = 25, width = 52)
-    customtkinter.CTkLabel(win_meta,text="Your metadata :").pack()
+    Label(win_meta,text="Your metadata :").pack()
     t.insert(tk.END, meta_to_show)
     t.pack()
-    button_close= customtkinter.CTkButton(win_meta, text="close", command=win_meta.destroy)
+    button_close= Button(win_meta, text="close", command=win_meta.destroy)
     button_close.pack(side=BOTTOM)
 
 def GUI_SHOW_META():
@@ -551,7 +575,7 @@ def GUI_SHOW_META():
 
 def GET_SHOW_META_FILE_NAME():
     global gui_list_of_ifile
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.geometry('1080x500')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
@@ -559,12 +583,12 @@ def GET_SHOW_META_FILE_NAME():
     for i in easicmd.ifile :
         gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
     gui_list_of_ifile.pack(fill="both",expand="yes")
-    select_button=customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom') 
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom') 
 
 def SHOWMETA_GET_IRODS_PATH():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     if type_object == "-C":
         win_where.title("WHICH FOLDER ?")
     else :
@@ -575,26 +599,26 @@ def SHOWMETA_GET_IRODS_PATH():
     #gui_list_of_icollection.insert(0,home)    
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_SHOW_META()]).pack(side='bottom')
     else :
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_SHOW_META_FILE_NAME()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_SHOW_META_FILE_NAME()]).pack(side='bottom')
         
 def INIT_SHOW_META():
-    win_showmeta= customtkinter.CTkToplevel()
+    win_showmeta= Toplevel()
     win_showmeta.title('warning ADD METADATA')
     win_showmeta.geometry('500x200')
     message = "The data you want to show metadata is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_showmeta, text=message).pack()
-    customtkinter.CTkButton(win_showmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_showmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=RIGHT)
+    Label(win_showmeta, text=message).pack()
+    Button(win_showmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_showmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=RIGHT)
 
 ####################
 ##search by meta
@@ -631,12 +655,12 @@ def SEARCH_GET_CMD():
     list_attr.sort(key=str.lower)
     list_value.sort(key=str.lower) 
     
-    win_searchcmd= customtkinter.CTkToplevel()
+    win_searchcmd= Toplevel()
     win_searchcmd.title("SEARCH FOR (* is mandatory)")
-    customtkinter.CTkLabel(win_searchcmd,text="attribut* : ").grid(row=0)
-    customtkinter.CTkLabel(win_searchcmd,text="operator* (=, like, >, <,) : ").grid(row=1)
-    customtkinter.CTkLabel(win_searchcmd,text="value* : ").grid(row=2)
-    customtkinter.CTkLabel(win_searchcmd,text="liaison (and/or): ").grid(row=3)
+    Label(win_searchcmd,text="attribut* : ").grid(row=0)
+    Label(win_searchcmd,text="operator* (=, like, >, <,) : ").grid(row=1)
+    Label(win_searchcmd,text="value* : ").grid(row=2)
+    Label(win_searchcmd,text="liaison (and/or): ").grid(row=3)
 
     attribut = AutocompleteEntry(win_searchcmd, width=20,completevalues=list_attr)
     attribut.grid(row=0, column=1)
@@ -647,11 +671,11 @@ def SEARCH_GET_CMD():
     liaison=AutocompleteEntry(win_searchcmd, width=20,completevalues=list_liaison)
     liaison.grid(row=3,column=1)
     
-    add_button = customtkinter.CTkButton(win_searchcmd,text="add",command=lambda:[BUILD_SEARCH_CMD(),CLEAR_SEARCH_TEXT()])
+    add_button = Button(win_searchcmd,text="add",command=lambda:[BUILD_SEARCH_CMD(),CLEAR_SEARCH_TEXT()])
     add_button.grid(row=0,column=2)
-    validate_button = customtkinter.CTkButton(win_searchcmd,text="validate",command=lambda:[EXEC_SEARCH_CMD(),win_searchcmd.destroy()])
+    validate_button = Button(win_searchcmd,text="validate",command=lambda:[EXEC_SEARCH_CMD(),win_searchcmd.destroy()])
     validate_button.grid(row=1, column=2)
-    exit_button = customtkinter.CTkButton(win_searchcmd,text="exit",command=lambda:[win_searchcmd.destroy()])
+    exit_button = Button(win_searchcmd,text="exit",command=lambda:[win_searchcmd.destroy()])
     exit_button.grid(row=3, column=2) 
 
 
@@ -665,12 +689,12 @@ def EXEC_SEARCH_CMD():
     PRINT_SEARCH()
 
 def PRINT_SEARCH():
-    win_meta= customtkinter.CTkToplevel()
+    win_meta= Toplevel()
     t= Text(win_meta, height = 25, width = 52)
-    customtkinter.CTkLabel(win_meta,text="Your searched data are :").pack()
+    Label(win_meta,text="Your searched data are :").pack()
     t.insert(tk.END, searched_data)
     t.pack()
-    button_close= customtkinter.CTkButton(win_meta, text="close", command=win_meta.destroy)
+    button_close= Button(win_meta, text="close", command=win_meta.destroy)
     button_close.pack(side=BOTTOM)
 
 def BUILD_SEARCH_CMD():
@@ -680,25 +704,25 @@ def BUILD_SEARCH_CMD():
 
 
 def INIT_SEARCH_META():
-    win_searchmeta= customtkinter.CTkToplevel()
+    win_searchmeta= Toplevel()
     win_searchmeta.title('warning SEARCH BY METADATA')
     win_searchmeta.geometry('500x200')
     message = "The data you're looking for is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_searchmeta, text=message).pack()
-    customtkinter.CTkButton(win_searchmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_searchmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=RIGHT)
+    Label(win_searchmeta, text=message).pack()
+    Button(win_searchmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=LEFT)
+    Button(win_searchmeta, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=RIGHT)
 
 ########################
 # SEARCH BY NAME
 ########################
 def SEARCH_FILE_NAME():
     global name
-    win_namesearch = customtkinter.CTkToplevel()
+    win_namesearch = Toplevel()
     win_namesearch.title('warning SEARCH BY NAME')
-    customtkinter.CTkLabel(win_namesearch,text="your query (you can use *): ").pack()
-    name=customtkinter.CTkEntry(win_namesearch, width=50)
+    Label(win_namesearch,text="your query (you can use *): ").pack()
+    name=Entry(win_namesearch, width=50)
     name.pack(padx=5, pady=5, side=LEFT)
-    Btt_search= customtkinter.CTkButton(win_namesearch,text="search",command=lambda:[FILE_NAME_CMD(),win_namesearch.destroy()])
+    Btt_search= Button(win_namesearch,text="search",command=lambda:[FILE_NAME_CMD(),win_namesearch.destroy()])
     Btt_search.pack(side=BOTTOM)
 
 def FILE_NAME_CMD():
@@ -713,12 +737,12 @@ def FILE_NAME_CMD():
     PRINT_NAME()
     
 def PRINT_NAME():
-    win_printname= customtkinter.CTkToplevel()
+    win_printname= Toplevel()
     t= Text(win_printname, height = 50, width = 150)
-    customtkinter.CTkLabel(win_printname,text="Your searched data are :").pack()
+    Label(win_printname,text="Your searched data are :").pack()
     t.insert(tk.END, result)
     t.pack()
-    button_close= customtkinter.CTkButton(win_printname, text="close", command=win_printname.destroy)
+    button_close= Button(win_printname, text="close", command=win_printname.destroy)
     button_close.pack(side=BOTTOM)
 
 
@@ -734,23 +758,23 @@ def FOLDER_NAME_CMD():
 
 def SEARCH_FOLDER_NAME():
     global name
-    win_namesearch = customtkinter.CTkToplevel()
+    win_namesearch = Toplevel()
     win_namesearch.title('warning SEARCH BY NAME')
-    customtkinter.CTkLabel(win_namesearch,text="your query (you can use *): ").pack()
-    name=customtkinter.CTkEntry(win_namesearch, width=50)
+    Label(win_namesearch,text="your query (you can use *): ").pack()
+    name=Entry(win_namesearch, width=50)
     name.pack(padx=5, pady=5, side=LEFT)
-    Btt_search= customtkinter.CTkButton(win_namesearch,text="search",command=lambda:[FOLDER_NAME_CMD(),win_namesearch.destroy()])
+    Btt_search= Button(win_namesearch,text="search",command=lambda:[FOLDER_NAME_CMD(),win_namesearch.destroy()])
     Btt_search.pack(side=BOTTOM)
 
 
 def INIT_SEARCH_NAME():
-    win_searchname= customtkinter.CTkToplevel()
+    win_searchname= Toplevel()
     win_searchname.title('warning SEARCH BY NAME')
     win_searchname.geometry('500x200')
     message = "The data you're searching is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_searchname, text=message).pack()
-    customtkinter.CTkButton(win_searchname, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchname.destroy(),SEARCH_FILE_NAME()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_searchname, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchname.destroy(),SEARCH_FOLDER_NAME()]).pack(side=RIGHT)    
+    Label(win_searchname, text=message).pack()
+    Button(win_searchname, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchname.destroy(),SEARCH_FILE_NAME()]).pack(side=LEFT)
+    Button(win_searchname, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_searchname.destroy(),SEARCH_FOLDER_NAME()]).pack(side=RIGHT)    
 
 ###########
 ##idush
@@ -768,16 +792,16 @@ def GUI_IDUSH():
     PRINT_IDUST()
 
 def PRINT_IDUST():
-    win_meta= customtkinter.CTkToplevel()
+    win_meta= Toplevel()
     t= Text(win_meta, height = 25, width = 52)
-    customtkinter.CTkLabel(win_meta,text=f"Your folder's size is : {result_size}").pack()
-    button_close= customtkinter.CTkButton(win_meta, text="close", command=win_meta.destroy)
+    Label(win_meta,text=f"Your folder's size is : {result_size}").pack()
+    button_close= Button(win_meta, text="close", command=win_meta.destroy)
     button_close.pack(side=BOTTOM)
 
 def INIT_IDUST():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.title("WHICH FOLDER ?")
     win_where.geometry('1080x500')
     gui_list_of_icollection= Listbox(win_where)
@@ -785,14 +809,14 @@ def INIT_IDUST():
     #gui_list_of_icollection.insert(0,home)    
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
-    select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_IDUSH()]).pack(side='bottom')
+    select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GUI_IDUSH()]).pack(side='bottom')
 
 
 #############
@@ -831,33 +855,33 @@ def ICHMOD_BUILD_CMD(type):
         easicmd.get_user()
         list_to_show=easicmd.list_user
 
-    win_cmdichmod=customtkinter.CTkToplevel()
+    win_cmdichmod=Toplevel()
     win_cmdichmod.title("warning ICHMOD")
 
-    customtkinter.CTkLabel(win_cmdichmod,text="give : ").grid(row=0)
-    customtkinter.CTkLabel(win_cmdichmod,text="to : ").grid(row=1)
+    Label(win_cmdichmod,text="give : ").grid(row=0)
+    Label(win_cmdichmod,text="to : ").grid(row=1)
     right=AutocompleteEntry(win_cmdichmod, width=20,completevalues=list_right)
     right.grid(column=1,row=0)
     TO=AutocompleteEntry(win_cmdichmod, width=20,completevalues=list_to_show)
     TO.grid(column=1,row=1)
 
-    BTT_cmd=customtkinter.CTkButton(win_cmdichmod,text="select",command=lambda:[ICHMOD_CMD(),CLEAN_ICHMOD()])
+    BTT_cmd=Button(win_cmdichmod,text="select",command=lambda:[ICHMOD_CMD(),CLEAN_ICHMOD()])
     BTT_cmd.grid(column=2,row=0)
-    BTT_exit=customtkinter.CTkButton(win_cmdichmod,text="exit",command=lambda:[win_cmdichmod.destroy()])
+    BTT_exit=Button(win_cmdichmod,text="exit",command=lambda:[win_cmdichmod.destroy()])
     BTT_exit.grid(column=2,row=2)
 
 def USER_OR_GROUP():
-    win_ichmod= customtkinter.CTkToplevel()
+    win_ichmod= Toplevel()
     win_ichmod.title('warning ICHMOD')
     win_ichmod.geometry('500x200')
     message = "Share your data with a GROUP or a USER ?"
-    customtkinter.CTkLabel(win_ichmod, text=message).pack()
-    customtkinter.CTkButton(win_ichmod, text='USER', command=lambda:[ICHMOD_BUILD_CMD("user"),win_ichmod.destroy(),]).pack(side=LEFT)
-    customtkinter.CTkButton(win_ichmod, text='GROUP', command=lambda:[ICHMOD_BUILD_CMD("group"),win_ichmod.destroy()]).pack(side=RIGHT)
+    Label(win_ichmod, text=message).pack()
+    Button(win_ichmod, text='USER', command=lambda:[ICHMOD_BUILD_CMD("user"),win_ichmod.destroy(),]).pack(side=LEFT)
+    Button(win_ichmod, text='GROUP', command=lambda:[ICHMOD_BUILD_CMD("group"),win_ichmod.destroy()]).pack(side=RIGHT)
 
 def GET_ICHMOD_FILE_NAME():
     global gui_list_of_ifile
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     win_where.geometry('1080x500')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
@@ -865,12 +889,12 @@ def GET_ICHMOD_FILE_NAME():
     for i in easicmd.ifile :
         gui_list_of_ifile.insert(easicmd.ifile.index(i)+1,i)
     gui_list_of_ifile.pack(fill="both",expand="yes")
-    select_button=customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')     
+    select_button=Button(win_where,text="select",command=lambda:[GET_IRODS_FILE_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')     
 
 def ICHMOD_IRODS_PATH():
     easicmd.get_irods_collection()
     global gui_list_of_icollection
-    win_where = customtkinter.CTkToplevel()
+    win_where = Toplevel()
     if type_object == "-C":
         win_where.title("WHICH FOLDER ?")
     else :
@@ -882,26 +906,26 @@ def ICHMOD_IRODS_PATH():
     
     fill_listbox(easicmd.list_of_icollection)
     global search_str
-    label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
+    label_search=Label(win_where,text="Add text to filter the list than press enter")
     label_search.pack( side=BOTTOM)
     search_str = StringVar()
-    search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
+    search = Entry(win_where, textvariable=search_str, width=10)
     search.pack(padx=5, pady=5, side=BOTTOM)
     search.bind("<Return>", listbox_filter)
     gui_list_of_icollection.pack(fill="both",expand="yes")
     if type_object == "-C":
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),USER_OR_GROUP()]).pack(side='bottom')
     else :
-        select_button= customtkinter.CTkButton(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_ICHMOD_FILE_NAME()]).pack(side='bottom')
+        select_button= Button(win_where,text="select",command=lambda:[GET_IRODS_PATH(),win_where.destroy(),GET_ICHMOD_FILE_NAME()]).pack(side='bottom')
 
 def INIT_ICHMOD():
-    win_ichmod= customtkinter.CTkToplevel()
+    win_ichmod= Toplevel()
     win_ichmod.title('warning ICHMOD')
     win_ichmod.geometry('500x200')
     message = "The data you want to share is a FILE or a FOLDER ?"
-    customtkinter.CTkLabel(win_ichmod, text=message).pack()
-    customtkinter.CTkButton(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
-    customtkinter.CTkButton(win_ichmod, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=RIGHT)
+    Label(win_ichmod, text=message).pack()
+    Button(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
+    Button(win_ichmod, text='FOLDER', command=lambda:[GUI_TYPE_OBJECT("folder"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=RIGHT)
 
 
 ############
@@ -928,17 +952,17 @@ def EDIT_ADD():
         easicmd.dico_attribute[new_attr]=[]
 
     global value
-    win_add= customtkinter.CTkToplevel()
+    win_add= Toplevel()
     win_add.title(f"Add value to {new_attr} :")
 
-    customtkinter.CTkLabel(win_add,text="value : ").grid(row=0)
-    value = customtkinter.CTkEntry(win_add,width=20)
+    Label(win_add,text="value : ").grid(row=0)
+    value = Entry(win_add,width=20)
     value.grid(row=0, column=1)
 
-    add_button=customtkinter.CTkButton(win_add,text="ADD",command=lambda:[EDIT_ADD_GETVALUE()])
+    add_button=Button(win_add,text="ADD",command=lambda:[EDIT_ADD_GETVALUE()])
     add_button.grid(row=0, column=2)
 
-    exit_button=customtkinter.CTkButton(win_add,text="exit",command=lambda:[win_add.destroy()])
+    exit_button=Button(win_add,text="exit",command=lambda:[win_add.destroy()])
     exit_button.grid(row=2, column=2)
 
 
@@ -956,20 +980,20 @@ def EDIT_EDIT():
     attribut.delete(0,END)
 
     global value
-    win_add= customtkinter.CTkToplevel()
+    win_add= Toplevel()
     win_add.title(f"EDITING value form {new_attr} :")
 
-    customtkinter.CTkLabel(win_add,text="value : ").grid(row=0)
+    Label(win_add,text="value : ").grid(row=0)
     value = AutocompleteEntry(win_add, width=20,completevalues=easicmd.dico_attribute[new_attr])
     value.grid(row=0, column=1)
 
-    add_button=customtkinter.CTkButton(win_add,text="ADD",command=lambda:[EDIT_ADD_GETVALUE()])
+    add_button=Button(win_add,text="ADD",command=lambda:[EDIT_ADD_GETVALUE()])
     add_button.grid(row=0, column=2)
 
-    rm_button=customtkinter.CTkButton(win_add,text="remove",command=lambda:[EDIT_RM_VALUE()])
+    rm_button=Button(win_add,text="remove",command=lambda:[EDIT_RM_VALUE()])
     rm_button.grid(row=1, column=2)
 
-    exit_button=customtkinter.CTkButton(win_add,text="exit",command=lambda:[win_add.destroy()])
+    exit_button=Button(win_add,text="exit",command=lambda:[win_add.destroy()])
     exit_button.grid(row=2, column=2)    
 
 def EDIT_RM_ATTR():
@@ -984,23 +1008,23 @@ def INIT_EDIT():
     easicmd.read_attributes_dictionnary()
     global attribut
 
-    win_edit = customtkinter.CTkToplevel()
+    win_edit = Toplevel()
     win_edit.title("warning editionary")
     
-    customtkinter.CTkLabel(win_edit,text="attribut* : ").grid(row=0)
+    Label(win_edit,text="attribut* : ").grid(row=0)
     attribut = AutocompleteEntry(win_edit, width=20,completevalues=easicmd.dico_attribute.keys())
     attribut.grid(row=0, column=1)
     
-    add_button = customtkinter.CTkButton(win_edit,text="create",command=lambda:[EDIT_ADD()])
+    add_button = Button(win_edit,text="create",command=lambda:[EDIT_ADD()])
     add_button.grid(row=1,column=0)
 
-    edit_button = customtkinter.CTkButton(win_edit,text="edit existing",command=lambda:[EDIT_EDIT()])
+    edit_button = Button(win_edit,text="edit existing",command=lambda:[EDIT_EDIT()])
     edit_button.grid(row=1,column=1)
 
-    rm_button= customtkinter.CTkButton(win_edit,text="erase ",command=lambda:[EDIT_RM_ATTR()])
+    rm_button= Button(win_edit,text="erase ",command=lambda:[EDIT_RM_ATTR()])
     rm_button.grid(row=1,column=2)
     
-    exit_button = customtkinter.CTkButton(win_edit,text="exit",command=lambda:[win_edit.destroy()])
+    exit_button = Button(win_edit,text="exit",command=lambda:[win_edit.destroy()])
     exit_button.grid(row=0, column=2) 
 
 ############
@@ -1040,77 +1064,34 @@ def RM_PATH():
 def INIT_ADD_PATH():
     global path
     easicmd.get_additional_path()
-    win_path = customtkinter.CTkToplevel()
+    win_path = Toplevel()
     win_path.title("warning add path")
-    customtkinter.CTkLabel(win_path,text="IRODS PATH : ").grid(row=0)
+    Label(win_path,text="IRODS PATH : ").grid(row=0)
     path = AutocompleteEntry(win_path, width=20,completevalues=easicmd.list_additional_path)
     path.grid(row=0,column=1)
 
-    edit_button = customtkinter.CTkButton(win_path,text="remove",command=lambda:[RM_PATH(),CLEAN_PATH()])
+    edit_button = Button(win_path,text="remove",command=lambda:[RM_PATH(),CLEAN_PATH()])
     edit_button.grid(row=1,column=0)
 
-    add_button = customtkinter.CTkButton(win_path,text="add",command=lambda:[ADD_PATH(),CLEAN_PATH()])
+    add_button = Button(win_path,text="add",command=lambda:[ADD_PATH(),CLEAN_PATH()])
     add_button.grid(row=1,column=1)
 
-    exit_button = customtkinter.CTkButton(win_path, text="exit",command=lambda:[win_path.destroy()])
+    exit_button = Button(win_path, text="exit",command=lambda:[win_path.destroy()])
     exit_button.grid(row=1,column=2)
 ############
 ## HELP
 ############
 
 def help_gui():
-    win_help= customtkinter.CTkToplevel()
+    win_help= Toplevel()
     win_help.title('help')
     win_help.geometry('500x200')
     message = "For any help go see the README on :"
-    customtkinter.CTkLabel(win_help,text=message).pack()
+    Label(win_help,text=message).pack()
     t=Text(win_help, height = 5, width = 50)
     t.insert(tk.END, "https://github.com/sigau/easy_irods_commands")
     t.pack()
-    customtkinter.CTkButton(win_help,text="exit",command=lambda:[win_help.destroy()]).pack(side=BOTTOM)
-
-############
-## CHANGE THEME
-############
-
-
-def theme_gui():
-    win_theme= customtkinter.CTkToplevel()
-    win_theme.title('Theme')
-    win_theme.geometry('500x200')
-    message = "Choose the theme you want to use :"
-    customtkinter.CTkLabel(win_theme,text=message).pack()
-
-    def radiobutton_event():
-        radio_var.get()
-
-    def dark_theme():
-            customtkinter.set_appearance_mode("dark")
-            customtkinter.set_default_color_theme("dark-blue")
-            print("dark theme selected")
-
-    def light_theme():
-            customtkinter.set_appearance_mode("light")
-            customtkinter.set_default_color_theme("blue")
-            print("light theme selected")
-
-    def system_theme():
-            customtkinter.set_appearance_mode("system")
-            customtkinter.set_default_color_theme("blue")
-            print("default theme selected")
-
-    radio_var = tk.IntVar(value=0)
-
-    radiobutton_1 = customtkinter.CTkRadioButton(win_theme, text="DARK", command=dark_theme, variable= radio_var, value=1)
-    radiobutton_2 = customtkinter.CTkRadioButton(win_theme, text="LIGHT", command=light_theme, variable= radio_var, value=2)
-    radiobutton_3 = customtkinter.CTkRadioButton(win_theme, text="SYSTEM", command=system_theme, variable= radio_var, value=3)
-
-    #quit_bouton=customtkinter.CTkButton(win_theme, text="quit", command=win_theme.quit).pack(anchor = "center", side=BOTTOM)
-    
-    radiobutton_1.pack(padx=20, pady=10)
-    radiobutton_2.pack(padx=20, pady=10)
-    radiobutton_3.pack(padx=20, pady=10)
-
+    Button(win_help,text="exit",command=lambda:[win_help.destroy()]).pack(side=BOTTOM)
 
 ######################################################################################################################################## 
 ### creation of the main window (putting the form)                  
@@ -1152,120 +1133,115 @@ class Test(Text):  ###allow control c/v/x in tkinter
         self.insert('insert', text)
 
 try :
-    root = customtkinter.CTk()
+    root = tk.Tk()
     app=FullScreenApp(root)
     root.title("easicmd : easy irods commands graphical edition")
 
     ##################################################################################################
     ### Work with data (push,pull,imkdir,irm)
     ##################################################################################################
-    #data = LabelFrame(root, text="Work with DATA", padx=30, pady=30)
-    data = customtkinter.CTkFrame(root)
+    data = LabelFrame(root, text="Work with DATA", padx=30, pady=30)
     data.pack(fill="both", expand="yes")
-    customtkinter.CTkLabel(data, text="Here you can work with your data like send it to irods, recover it from irods, create ifolders or delete data on irods", font=("",15)).pack()
+    Label(data, text="Here you can work with your data like send it to irods, recover it from irods, create ifolders or delete data on irods").pack()
 
     ##PUSH DATA TO IRODS
-    push_frame= customtkinter.CTkFrame(data, width=200, height=150)
+    push_frame= LabelFrame(data, text="PUSH",padx=30, pady=30, relief=RAISED)
     push_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(push_frame, text="\n\n\n\n\n\n\n\nSend local data to irods",font=("",15)).pack()
-    push_bouton=customtkinter.CTkButton(push_frame, text="PUSH", command=GUIPUSH).pack(pady=15,side=BOTTOM)
+    Label(push_frame, text="Send local data to irods").pack()
+    push_bouton=Button(push_frame, text="PUSH", command=GUIPUSH).pack(side=BOTTOM)
 
     ## PULL DATA TO IRODS
-    pull_frame= customtkinter.CTkFrame(data, width=200, height=150)
+    pull_frame= LabelFrame(data, text="PULL",padx=30, pady=30, relief=RAISED)
     pull_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(pull_frame, text="\n\n\n\n\n\n\n\nGet data from irods to a local folder", font=("",15)).pack()
-    pull_bouton=customtkinter.CTkButton(pull_frame, text="PULL", command=GUIPULL).pack(pady=15,side=BOTTOM)
+    Label(pull_frame, text="Get data from irods to a local folder").pack()
+    pull_bouton=Button(pull_frame, text="PULL", command=GUIPULL).pack(side=BOTTOM)
 
     ## CREATE A DIRECTORY IN IRODS
-    imkdir_frame= customtkinter.CTkFrame(data, width=200, height=150)
+    imkdir_frame= LabelFrame(data, text="IMKDIR",padx=30, pady=30, relief=RAISED)
     imkdir_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(imkdir_frame, text="\n\n\n\n\n\n\n\nCreate a ifolder in irods", font=("",15)).pack()
-    imkdir_bouton=customtkinter.CTkButton(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).pack(pady=15,side=BOTTOM)
+    Label(imkdir_frame, text="Create a ifolder in irods").pack()
+    imkdir_bouton=Button(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).pack(side=BOTTOM)
 
     ## REMOVE A DATA FROM IRODS
-    irm_frame= customtkinter.CTkFrame(data, width=200, height=150)
+    irm_frame= LabelFrame(data, text="IRM",padx=30, pady=30, relief=RAISED)
     irm_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(irm_frame, text="\n\n\n\n\n\n\n\nRemove data frome Irods", font=("",15)).pack()
-    irm_bouton=customtkinter.CTkButton(irm_frame, text="IRM", command=GUIIRM).pack(pady=15,side=BOTTOM)
+    Label(irm_frame, text="Remove data frome Irods").pack()
+    irm_bouton=Button(irm_frame, text="IRM", command=GUIIRM).pack(side=BOTTOM)
 
     ##################################################################################################
     ### Work with metadata (add_meta,rm_meta,show_meta)
     ##################################################################################################
-    metadata = customtkinter.CTkFrame(root)
+    metadata = LabelFrame(root, text="Work with METADATA", padx=30, pady=30)
     metadata.pack(fill="both", expand="yes")
-    customtkinter.CTkLabel(metadata, text="Here you can work with the metadata associated with your data on irods such as add, delete,see metadate or edit the metadata dictionary", font=("",15)).pack()
+    Label(metadata, text="Here you can work with the metadata associated with your data on irods such as add, delete,see metadate or edit the metadata dictionary ").pack()
 
     ## ADD METADATA TO DATA ALREADY ON IRODS
-    addmeta_frame= customtkinter.CTkFrame(metadata, width=200, height=150)
+    addmeta_frame= LabelFrame(metadata, text="add metadata",padx=30, pady=30, relief=RAISED)
     addmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(addmeta_frame, text="\n\n\n\n\n\n\n\nAdd metadata to a data (file or folder) \nalready present on irods", font=("",15)).pack()
-    addmeta_bouton=customtkinter.CTkButton(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(pady=15,side=BOTTOM)
+    Label(addmeta_frame, text="Add metadata to a data (file or folder) \nalready present on irods").pack()
+    addmeta_bouton=Button(addmeta_frame, text="addmeta", command=INIT_ADD_META).pack(side=BOTTOM)
 
     ## REMOVE METADATA TO DATA ALREADY ON IRODS
-    rmmeta_frame= customtkinter.CTkFrame(metadata, width=200, height=150)
+    rmmeta_frame= LabelFrame(metadata, text="remove metadata",padx=30, pady=30, relief=RAISED)
     rmmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(rmmeta_frame, text="\n\n\n\n\n\n\n\nRemove metadata to a data (file or folder) \nalready present on irods", font=("",15)).pack()
-    rmmeta_bouton=customtkinter.CTkButton(rmmeta_frame, text="remove meta", command=INIT_RM_META).pack(pady=15,side=BOTTOM)
+    Label(rmmeta_frame, text="Remove metadata to a data (file or folder) \nalready present on irods").pack()
+    rmmeta_bouton=Button(rmmeta_frame, text="remove meta", command=INIT_RM_META).pack(side=BOTTOM)
 
     ## SHOW METADATA ASSOCIATE WITH A DATA
-    showmeta_frame= customtkinter.CTkFrame(metadata, width=200, height=150)
+    showmeta_frame= LabelFrame(metadata, text="show metadata",padx=30, pady=30, relief=RAISED)
     showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(showmeta_frame, text="\n\n\n\n\n\n\n\nShow metadata to a data (file or folder) \nalready present on irods", font=("",15)).pack()
-    showmeta_bouton=customtkinter.CTkButton(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(pady=15,side=BOTTOM)
+    Label(showmeta_frame, text="Show metadata to a data (file or folder) \nalready present on irods").pack()
+    showmeta_bouton=Button(showmeta_frame, text="show meta", command=INIT_SHOW_META).pack(side=BOTTOM)
 
     ## EDIT METADATA DICTIONARY
-    edit_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
+    edit_frame = LabelFrame(metadata, text="edit dictionary",padx=30, pady=30, relief=RAISED)
     edit_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(edit_frame,text="\n\n\n\n\nedit metadata autocompletion dictionary\n\ncreate : create a new attribut key \nthen you can add value to this new attribut\n\nediting : modify(add/remove) the \nvalues associated with an existing attribute\n\ndelete : remove an attribut AND all \nhis value from the dictionary", font=("",15)).pack()
-    edit_bouton=customtkinter.CTkButton(edit_frame,text="edit", command=INIT_EDIT).pack(pady=15,side=BOTTOM)
+    Label(edit_frame,text="edit metadata autocompletion dictionary\n\ncreate : create a new attribut key \nthen you can add value to this new attribut\n\nediting : modify(add/remove) the \nvalues associated with an existing attribute\n\ndelete : remove an attribut AND all \nhis value from the dictionary").pack()
+    edit_bouton=Button(edit_frame,text="edit", command=INIT_EDIT).pack(side=BOTTOM)
 
     ##################################################################################################
     ### Get info on data (serach_by_meta,search_by_name,idush,ichmod)
     ##################################################################################################
-    infodata = customtkinter.CTkFrame(root)
+    infodata = LabelFrame(root, text="INFO on data", padx=30, pady=30)
     infodata.pack(fill="both", expand="yes")
-    customtkinter.CTkLabel(infodata, text="Here you can search for data present on irods from their name or associated metadata, get the size that a folder occupied on irods or allow to give/remove rights to other users on your data on irods", font=("",15)).pack()
+    Label(infodata, text="Here you can search for data present on irods from their name or associated metadata, get the size that a folder occupied on irods or allow to give/remove rights to other users on your data on irods").pack()
 
     ## SEARCH A DATA BY USING METADATA
-    searchmeta_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    searchmeta_frame=LabelFrame(infodata, text="searchmeta",padx=30, pady=30, relief=RAISED)
     searchmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(searchmeta_frame, text="\n\n\n\n\n\nSearch for data from the \nassociated metadata (SQL-like)", font=("",15)).pack()
-    searchmeta_bouton=customtkinter.CTkButton(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(pady=15,side=BOTTOM)
+    Label(searchmeta_frame, text="Search for data from the associated metadata (SQL-like)").pack()
+    searchmeta_bouton=Button(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(side=BOTTOM)
 
     ## SEARCH A DATA BY IT'S NAME
-    searchname_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    searchname_frame=LabelFrame(infodata, text="searchname",padx=30, pady=30, relief=RAISED)
     searchname_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(searchname_frame, text="\n\n\n\n\n\nSearch for data based on their name", font=("",15)).pack()
-    searchname_bouton=customtkinter.CTkButton(searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME).pack(pady=15,side=BOTTOM)
+    Label(searchname_frame, text="Search for data based on their name").pack()
+    searchname_bouton=Button(searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME).pack(side=BOTTOM)
 
     ## GET THE SIZE OF A IFOLDER
-    idush_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    idush_frame=LabelFrame(infodata, text="idush",padx=30, pady=30, relief=RAISED)
     idush_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(idush_frame, text="\n\n\n\n\n\nGet the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)", font=("",15)).pack()
-    idush_bouton=customtkinter.CTkButton(idush_frame, text="idush", command=INIT_IDUST).pack(pady=15,side=BOTTOM)
+    Label(idush_frame, text="Get the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)").pack()
+    idush_bouton=Button(idush_frame, text="idush", command=INIT_IDUST).pack(side=BOTTOM)
 
     ## GIVE ACCES TO THE DATA TO OTHER USER 
-    ichmod_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    ichmod_frame=LabelFrame(infodata, text="ichmod",padx=30, pady=30, relief=RAISED)
     ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(ichmod_frame, text="\n\n\n\n\n\nWith this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group", font=("",15)).pack()
-    ichmod_bouton=customtkinter.CTkButton(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(pady=15,side=BOTTOM)
+    Label(ichmod_frame, text="With this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group").pack()
+    ichmod_bouton=Button(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(side=BOTTOM)
 
     ##  EDIT ADDITIONAL PATH TO ICOLLECTION
-    addpath_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    addpath_frame=LabelFrame(infodata, text="edit additional path",padx=30, pady=30, relief=RAISED)
     addpath_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(addpath_frame, text="\n\n\n\nWith this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(write in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ", font=("",15)).pack()
-    addpath_bouton=customtkinter.CTkButton(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(pady=15,side=BOTTOM)
+    Label(addpath_frame, text="With this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common \nfolder for a project\n(write in a file for later)\nCan also be use \nto update the \ncollection list when multiple \nusers use it").pack()
+    addpath_bouton=Button(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(side=BOTTOM)
     
     ## EXIT
-    quit_bouton=customtkinter.CTkButton(root, text="quit", command=root.quit).pack(anchor = "e", side=BOTTOM)
+    quit_bouton=Button(root, text="quit", command=root.quit).pack(side=BOTTOM)
 
     ##HELP
-    help_bouton=customtkinter.CTkButton(root,text="help", command=help_gui)
-    help_bouton.pack(anchor = "center", side=BOTTOM)
-
-    ## CHANGE THEME
-    theme_bouton=customtkinter.CTkButton(root,text="theme", command=theme_gui)
-    theme_bouton.pack(pady=10,  anchor = "w", side=BOTTOM)
+    help_bouton=Button(root,text="help", command=help_gui)
+    help_bouton.pack(side=BOTTOM)
 
     ### IF no metadata dictionary found create it 
     save_dict=os.path.expanduser(pickle_meta_dictionary_path)
