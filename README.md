@@ -13,6 +13,14 @@ For graphical user interface
 - [ttkwidgets](https://ttkwidgets.readthedocs.io/en/latest/installation.html) (for the autocompletion in the GUI)
 - [CustomTkinter](https://customtkinter.tomschimansky.com/) (the script install it the first time you run it if it's not already install)
 
+You can also create a python virtualenv with the following command line :
+```
+python -m venv env_easicmd
+source env_easicmd/bin/activate
+pip install -r requirements.txt
+```
+This will create a virtualenv with all the dependencies installed and not interact with your main environement/installation
+
 ## COMMAND LINE OR GRAPHICAL USER INTERFACE (GUI)
 - ./easicmd.py --> run the command line version
 - ./gui_easicmd.py --> launch the GUI version
