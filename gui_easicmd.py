@@ -242,7 +242,7 @@ def GIVE_NAME():
     global entree
     win_name=customtkinter.CTkToplevel()
     customtkinter.CTkLabel(win_name,text="name of the new folder :\n NO SPACE ONLY '_' ").pack()
-    entree = customtkinter.CTkEntry(win_name, width=50)
+    entree = customtkinter.CTkEntry(win_name, width=250) 
     entree.pack(padx=5, pady=5, side=LEFT)
     entree.focus_force()
     btnAffiche = customtkinter.CTkButton(win_name,text="create", command=lambda:[GET_NAME(), win_name.destroy()]).pack(padx=5, pady=5)
@@ -382,7 +382,8 @@ def GIVE_META():
     attribut.grid(row=0, column=1)
     value = AutocompleteEntry(win_name_addmeta, width=20,completevalues=list_value)
     value.grid(row=1, column=1)
-    units = customtkinter.CTkEntry(win_name_addmeta, width=20)
+    empty_list=[]
+    units = AutocompleteEntry(win_name_addmeta, width=20,completevalues=empty_list)
     units.grid(row=2, column=1)
     validate_button = customtkinter.CTkButton(win_name_addmeta,text="validate",command=lambda:[ADD_META_CMD(),CLEAR_TEXT(),win_name_addmeta.destroy(),GIVE_META()])
     validate_button.grid(row=0, column=2)
@@ -696,7 +697,7 @@ def SEARCH_FILE_NAME():
     win_namesearch = customtkinter.CTkToplevel()
     win_namesearch.title('warning SEARCH BY NAME')
     customtkinter.CTkLabel(win_namesearch,text="your query (you can use *): ").pack()
-    name=customtkinter.CTkEntry(win_namesearch, width=50)
+    name=customtkinter.CTkEntry(win_namesearch, width=250)
     name.pack(padx=5, pady=5, side=LEFT)
     Btt_search= customtkinter.CTkButton(win_namesearch,text="search",command=lambda:[FILE_NAME_CMD(),win_namesearch.destroy()])
     Btt_search.pack(side=BOTTOM)
@@ -737,7 +738,7 @@ def SEARCH_FOLDER_NAME():
     win_namesearch = customtkinter.CTkToplevel()
     win_namesearch.title('warning SEARCH BY NAME')
     customtkinter.CTkLabel(win_namesearch,text="your query (you can use *): ").pack()
-    name=customtkinter.CTkEntry(win_namesearch, width=50)
+    name=customtkinter.CTkEntry(win_namesearch, width=250) 
     name.pack(padx=5, pady=5, side=LEFT)
     Btt_search= customtkinter.CTkButton(win_namesearch,text="search",command=lambda:[FOLDER_NAME_CMD(),win_namesearch.destroy()])
     Btt_search.pack(side=BOTTOM)
@@ -1087,17 +1088,17 @@ def theme_gui():
     def dark_theme():
             customtkinter.set_appearance_mode("dark")
             customtkinter.set_default_color_theme("dark-blue")
-            print("dark theme selected")
+            #print("dark theme selected")
 
     def light_theme():
             customtkinter.set_appearance_mode("light")
             customtkinter.set_default_color_theme("blue")
-            print("light theme selected")
+            #print("light theme selected")
 
     def system_theme():
             customtkinter.set_appearance_mode("system")
             customtkinter.set_default_color_theme("blue")
-            print("default theme selected")
+            #print("default theme selected")
 
     radio_var = tk.IntVar(value=0)
 
