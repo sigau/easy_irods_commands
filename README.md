@@ -611,3 +611,10 @@ If you're using an irods folder that isn't descendants of your irods home it won
 - [X] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)
+
+## Known Issues
+If you open the graphical user interface (GUI) within a conda environment, you might encounter a display problem where the interface doesn't appear correctly. This issue is a recognized rendering issue between conda and CustumTkinter, resulting in buttons with jagged edges.
+
+Even though the graphical user interface (GUI) may not be displayed correctly when launching it in a conda environment, it's important to note that the underlying script still functions properly.
+
+![screenshot/conda_gui_problem.png](screenshot/conda_gui_problem.png)
