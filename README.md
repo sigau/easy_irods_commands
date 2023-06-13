@@ -5,6 +5,7 @@ easicmd is a python script written to facilitate/automate the use of irods for n
 **For Windows users** : you have to edit *gui_easicmd_windows_launcher.bat* and replace the placeholder *"C:\path\to\irods_**_windows\icommands"* with the path to your irods commands folder, this will add it to your path temporally (if your irods commands already in your path you should just remove the placeholder in the file ). You now have a clikable launcher for the graphical version of easicmd.
 
 ## Dependancies
+- Irods icommands (in your path + iinit already done at least once)
 - python 3.7 or more for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) and subprocess (capture_output)
 - [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time you run it if it's not already install)
 
