@@ -1,6 +1,6 @@
 # EASy-Irods-CoMmanDs (easicmd)
 ## Short description
-easicmd is a python script written to facilitate/automate the use of irods for new users and add the autocompletion for some irods commands by using prompt_toolkit module.
+Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
 **For Windows users** : you have to edit *gui_easicmd_windows_launcher.bat* and replace the placeholder *"C:\path\to\irods_**_windows\icommands"* with the path to your irods commands folder, this will add it to your path temporally (if your irods commands already in your path you should just remove the placeholder in the file ). You now have a clikable launcher for the graphical version of easicmd.
 
