@@ -2,19 +2,23 @@
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
-**For Windows users** : you have to edit *gui_easicmd_windows_launcher.bat* and replace the placeholder *"C:\path\to\irods_**_windows\icommands"* with the path to your irods commands folder, this will add it to your path temporally (if your irods commands already in your path you should just remove the placeholder in the file ). You now have a clikable launcher for the graphical version of easicmd.
+**For Windows users** : You can double click on **gui_easicmd_windows_launcher.bat** it will create the virtual environement and run the graphical version of easicmd using the api. You now have a clikable launcher for the graphical version of easicmd.
+
+## The script easicmd.py and gui_easicmd.py need the icommand to be in your path. Can run on linux and mac (as long as the icommand are in the path). 
+## The api_easicmd.py and api_gui_easicmd.py scripts are the new versions which no longer depend on icommands but are based on the irods python api (no need to change icommand clients when the server changes version of irods). Can run on linux, mac AND windows.
 
 ## Dependancies
-- Irods icommands (in your path + iinit already done at least once)
-- python 3.7 or more for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) and subprocess (capture_output)
+
+- ~~Irods icommands (in your path + iinit already done at least once)~~ no longer necessary if you use the api version (neoeasicmd.py and neo_gui_easicmd.py)
+- **python 3.7** or more for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) and subprocess (capture_output)
 - [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time you run it if it's not already install)
 
 For graphical user interface
-- tkinter (sudo apt-get install python3-tk)
-- [ttkwidgets](https://ttkwidgets.readthedocs.io/en/latest/installation.html) (for the autocompletion in the GUI)
+- **tkinter** (Linux : sudo apt-get install python3-tk | windows : during the installation process of Python ensure that you select the option to install Tcl/Tk and Tkinter  )
+- [ttkwidgets](https://ttkwidgets.readthedocs.io/en/latest/installation.html) (for the autocompletion in the GUI, the script install it the first time you run it if it's not already install)
 - [CustomTkinter](https://customtkinter.tomschimansky.com/) (the script install it the first time you run it if it's not already install)
 
-You can also create a python virtualenv with the following command line :
+You can also create a python virtualenv with the following command line (on windows it will be create when using the .bat):
 ```
 python -m venv env_easicmd
 source env_easicmd/bin/activate
@@ -26,7 +30,19 @@ This will create a virtualenv with all the dependencies installed and not intera
 - ./easicmd.py --> run the command line version
 - ./gui_easicmd.py --> launch the GUI version
 
-**In any case activate irods before running the script --> iinit**
+~~**In any case activate irods before running the script --> iinit**~~ no longer necessary if you use the api version (neoeasicmd.py and neo_gui_easicmd.py)
+
+## Before running api_easicmd.py or api_gui_easicmd.py
+**Fill in the irods_info file with the following information** :
+```
+{
+    "host": "hostname", ## e.g : ccirods.in2p3.fr
+    "port": 5588,  ## adapt to yur server
+    "user": "username", ## your username
+    "password": "supersecuredpassword", ## your password
+    "zone": "irodsZone" ## e.g : rhone-alpes
+}
+```
 
 ## NEW interface with CustumTkinter
 **Light theme**

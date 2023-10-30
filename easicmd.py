@@ -85,7 +85,7 @@ def main() :
             elif len(sys.argv)>2:
                 if sys.argv[2] == "-f" or sys.argv[2] == "f":
                     PULL("-f",False)
-                elif sys.argv[2] == "C" or sys.argv[2] == "C":
+                elif sys.argv[2] == "-C" or sys.argv[2] == "C":
                     PULL("-C",False)
                 else:
                     print("possible option for type is -f or -C\n command should look like easicmd.py pull -f/-C local/path/to/download" )
