@@ -1088,54 +1088,16 @@ def theme_gui():
 ### creation of the main window (putting the form)                  
 ################################################################################################################################################################################################################################################################################
 
-# class FullScreenApp(object):
-#     ##This creates a fullscreen window. Pressing Escape resizes the window to '200x200+0+0' by default. If you move or resize the window, Escape toggles between the current geometry and the previous geometry.
-#     def __init__(self, master, **kwargs):
-#         self.master=master
-#         pad=3
-#         self._geom='200x200+0+0'
-#         master.geometry("{0}x{1}+0+0".format(
-#             master.winfo_screenwidth()-pad, master.winfo_screenheight()-pad))
-#         master.bind('<Escape>',self.toggle_geom)            
-#     def toggle_geom(self,event):
-#         geom=self.master.winfo_geometry()
-#         #print(geom,self._geom)
-#         self.master.geometry(self._geom)
-#         self._geom=geom        
-
-# class FullScreenApp(object):
-#     def __init__(self, master, **kwargs):
-#         self.master = master
-#         pad = 3
-#         master.update_idletasks()  # Permet la mise à jour de la fenêtre
-
-#         # Calcul de la taille de la fenêtre sans la barre de titre et les bordures
-#         width = master.winfo_width() + (master.winfo_screenwidth() - master.winfo_reqwidth())
-#         height = master.winfo_height() + (master.winfo_screenheight() - master.winfo_reqheight())
-#         self._geom = f"{width}x{height}+0+0"
-
-#         master.geometry(self._geom)
-#         master.bind('<Escape>', self.toggle_geom)
-
-#     def toggle_geom(self, event):
-#         geom = self.master.winfo_geometry()
-#         self.master.geometry(self._geom)
-#         self._geom = geom
-
 class FullScreenApp(object):
     def __init__(self, master, **kwargs):
         self.master = master
         pad = 3
         master.update_idletasks()  # Permet la mise à jour de la fenêtre
 
-        # Récupération des dimensions de l'écran en prenant en compte la mise à l'échelle
-        screen_width = master.winfo_screenwidth()
-        screen_height = master.winfo_screenheight()
-
         # Calcul de la taille de la fenêtre sans la barre de titre et les bordures
-        width = (screen_width - master.winfo_rootx()) / master.winfo_fpixels("1i")
-        height = (screen_height - master.winfo_rooty()) / master.winfo_fpixels("1i")
-        self._geom = f"{int(width)}x{int(height)}+0+0"
+        width = master.winfo_width() + (master.winfo_screenwidth() - master.winfo_reqwidth())
+        height = master.winfo_height() + (master.winfo_screenheight() - master.winfo_reqheight())
+        self._geom = f"{width}x{height}+0+0"
 
         master.geometry(self._geom)
         master.bind('<Escape>', self.toggle_geom)
