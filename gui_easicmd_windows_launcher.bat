@@ -21,7 +21,7 @@ REM Activez l'environnement virtuel
 call "%ENV_PATH%\Scripts\activate.ps1"
 
 REM Exécutez le script Python
-python neo_gui_easicmd.py
+python api_gui_easicmd.py
 
 PAUSE
 

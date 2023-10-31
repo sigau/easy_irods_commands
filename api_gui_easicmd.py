@@ -1022,6 +1022,11 @@ def INIT_ADD_PATH():
 
     exit_button = customtkinter.CTkButton(win_path, text="exit",command=lambda:[win_path.destroy()])
     exit_button.grid(row=1,column=2)
+
+def INIT_UPD_PATH():
+    easicmd.initialise_irods_collection()
+    showwarning(title="Updating local pickle irods collection",message=f"It's done\nthanks for waiting")
+
 ################################################################################################################################################################################################################################################################################
 ## HELP
 ################################################################################################################################################################################################################################################################################
@@ -1083,20 +1088,40 @@ def theme_gui():
 ### creation of the main window (putting the form)                  
 ################################################################################################################################################################################################################################################################################
 
+# class FullScreenApp(object):
+#     ##This creates a fullscreen window. Pressing Escape resizes the window to '200x200+0+0' by default. If you move or resize the window, Escape toggles between the current geometry and the previous geometry.
+#     def __init__(self, master, **kwargs):
+#         self.master=master
+#         pad=3
+#         self._geom='200x200+0+0'
+#         master.geometry("{0}x{1}+0+0".format(
+#             master.winfo_screenwidth()-pad, master.winfo_screenheight()-pad))
+#         master.bind('<Escape>',self.toggle_geom)            
+#     def toggle_geom(self,event):
+#         geom=self.master.winfo_geometry()
+#         #print(geom,self._geom)
+#         self.master.geometry(self._geom)
+#         self._geom=geom        
+
 class FullScreenApp(object):
-    ##This creates a fullscreen window. Pressing Escape resizes the window to '200x200+0+0' by default. If you move or resize the window, Escape toggles between the current geometry and the previous geometry.
     def __init__(self, master, **kwargs):
-        self.master=master
-        pad=3
-        self._geom='200x200+0+0'
-        master.geometry("{0}x{1}+0+0".format(
-            master.winfo_screenwidth()-pad, master.winfo_screenheight()-pad))
-        master.bind('<Escape>',self.toggle_geom)            
-    def toggle_geom(self,event):
-        geom=self.master.winfo_geometry()
-        #print(geom,self._geom)
+        self.master = master
+        pad = 3
+        master.update_idletasks()  # Permet la mise à jour de la fenêtre
+
+        # Calcul de la taille de la fenêtre sans la barre de titre et les bordures
+        width = master.winfo_width() + (master.winfo_screenwidth() - master.winfo_reqwidth())
+        height = master.winfo_height() + (master.winfo_screenheight() - master.winfo_reqheight())
+        self._geom = f"{width}x{height}+0+0"
+
+        master.geometry(self._geom)
+        master.bind('<Escape>', self.toggle_geom)
+
+    def toggle_geom(self, event):
+        geom = self.master.winfo_geometry()
         self.master.geometry(self._geom)
-        self._geom=geom        
+        self._geom = geom
+
 
 class Test(Text):  ###allow control c/v/x in tkinter 
     def __init__(self, master, **kw):
@@ -1205,33 +1230,39 @@ try :
     ## SEARCH A DATA BY USING METADATA
     searchmeta_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     searchmeta_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(searchmeta_frame, text="\n\n\n\n\n\nSearch for data from the \nassociated metadata (SQL-like)", font=("",15)).pack()
+    customtkinter.CTkLabel(searchmeta_frame, text="\n\n\n\n\nSearch for data from the \nassociated metadata (SQL-like)", font=("",15)).pack()
     #searchmeta_bouton=customtkinter.CTkButton(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(pady=15,side=BOTTOM)
     searchmeta_bouton=customtkinter.CTkButton(searchmeta_frame, text="not_workin_yet").pack(pady=15,side=BOTTOM)
 
     ## SEARCH A DATA BY IT'S NAME
     searchname_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     searchname_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(searchname_frame, text="\n\n\n\n\n\nSearch for data based on their name", font=("",15)).pack()
+    customtkinter.CTkLabel(searchname_frame, text="\n\n\n\n\nSearch for data based on their name", font=("",15)).pack()
     searchname_bouton=customtkinter.CTkButton(searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME).pack(pady=15,side=BOTTOM)
 
     ## GET THE SIZE OF A IFOLDER
     idush_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     idush_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(idush_frame, text="\n\n\n\n\n\nGet the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)", font=("",15)).pack()
+    customtkinter.CTkLabel(idush_frame, text="\n\n\n\n\nGet the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)", font=("",15)).pack()
     idush_bouton=customtkinter.CTkButton(idush_frame, text="idush", command=INIT_IDUST).pack(pady=15,side=BOTTOM)
 
     ## GIVE ACCES TO THE DATA TO OTHER USER 
     ichmod_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
     ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(ichmod_frame, text="\n\n\n\n\n\nWith this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group", font=("",15)).pack()
+    customtkinter.CTkLabel(ichmod_frame, text="\n\n\n\n\nWith this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group", font=("",15)).pack()
     ichmod_bouton=customtkinter.CTkButton(ichmod_frame, text="ichmod", command=INIT_ICHMOD).pack(pady=15,side=BOTTOM)
 
     ##  EDIT ADDITIONAL PATH TO ICOLLECTION
-    addpath_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
-    addpath_frame.pack(fill="both", expand="yes", side=LEFT)
-    customtkinter.CTkLabel(addpath_frame, text="\n\n\n\nWith this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(write in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ", font=("",15)).pack()
-    addpath_bouton=customtkinter.CTkButton(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(pady=15,side=BOTTOM)
+    #addpath_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    #addpath_frame.pack(fill="both", expand="yes", side=LEFT)
+    #customtkinter.CTkLabel(addpath_frame, text="\n\n\n\nWith this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(write in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ", font=("",15)).pack()
+    #addpath_bouton=customtkinter.CTkButton(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(pady=15,side=BOTTOM)
+    
+    ##UPDATE IRODS COLLECTION 
+    updpath_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
+    updpath_frame.pack(fill="both", expand="yes", side=LEFT)
+    customtkinter.CTkLabel(updpath_frame, text="\n\n\n\nUpdate the irods collection, \ne.g : someone give you acces to a folder that\n wasn't in your local list\nor\nyou have work on IRODS from an other computer", font=("",15)).pack()
+    updpath_button=customtkinter.CTkButton(updpath_frame, text="update", command=INIT_UPD_PATH).pack(pady=15,side=BOTTOM)
     
     ## EXIT
     quit_bouton=customtkinter.CTkButton(root, text="quit", command=root.quit).pack(anchor = "e", side=BOTTOM)
