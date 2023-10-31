@@ -1,11 +1,17 @@
 # EASy-Irods-CoMmanDs (easicmd)
+
+## The script easicmd.py and gui_easicmd.py need the icommand to be in your path. Can run on linux and mac (as long as the icommand are in the path). 
+## The api_easicmd.py and api_gui_easicmd.py scripts are the new versions which no longer depend on icommands but are based on the irods python api (no need to change icommand clients when the server changes version of irods). Can run on linux, mac AND windows.
+
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
 **For Windows users** : You can double click on **gui_easicmd_windows_launcher.bat** it will create the virtual environement and run the graphical version of easicmd using the api. You now have a clikable launcher for the graphical version of easicmd.(it's possible that when you double click on the bat it open notepad, you need to associate the opening of a .ps1 file with powershell or just close the notepad, which will trigger execution of the script )
 
-## The script easicmd.py and gui_easicmd.py need the icommand to be in your path. Can run on linux and mac (as long as the icommand are in the path). 
-## The api_easicmd.py and api_gui_easicmd.py scripts are the new versions which no longer depend on icommands but are based on the irods python api (no need to change icommand clients when the server changes version of irods). Can run on linux, mac AND windows.
+We're aware of a screen scaling issue on Windows systems that may cause script windows to exceed the screen size due to scaling set above 100%. While we're actively working on a fix, a temporary solution is available:
+1. Go to "Settings" > "System" > "Display."
+2. Under "Scale and layout," set "Size of text, apps, and other items" to a maximum of 100%.
+This adjustment should prevent windows from extending beyond the screen until a permanent resolution is implemented.
 
 ## Dependancies
 
