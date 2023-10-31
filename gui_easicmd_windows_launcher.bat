@@ -8,7 +8,7 @@ if not exist "%ENV_PATH%" (
     echo Environnement virtuel non trouvé. Création en cours...
     
     REM Crée un nouvel environnement virtuel
-    virtualenv "%ENV_PATH%"
+    python -m venv "%ENV_PATH%"
 
     REM Activez l'environnement virtuel
     call "%ENV_PATH%\Scripts\activate.ps1"
