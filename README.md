@@ -1,11 +1,5 @@
 # EASy-Irods-CoMmanDs (easicmd)
 
-## Requirements for easicmd.py and gui_easicmd.py:
-The easicmd.py and gui_easicmd.py scripts require the icommand to be in your system's path. These scripts are compatible with Linux and Mac operating systems, provided the icommand is accessible through the system path.
-
-## Upgraded Versions: api_easicmd.py and api_gui_easicmd.py
-The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions that no longer rely on icommands. They are built upon the iRODS Python API, eliminating the necessity to adjust icommand clients when the server undergoes an iRODS version update. These upgraded scripts are compatible with Linux, Mac, and Windows operating systems.
-
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
@@ -15,6 +9,13 @@ We're aware of a screen scaling issue on Windows systems that may cause script w
 1. Go to "Settings" > "System" > "Display."
 2. Under "Scale and layout," set "Size of text, apps, and other items" to a maximum of 100%.
 This adjustment should prevent windows from extending beyond the screen until a permanent resolution is implemented.
+
+## Requirements for easicmd.py and gui_easicmd.py:
+The easicmd.py and gui_easicmd.py scripts require the icommand to be in your system's path. These scripts are compatible with Linux and Mac operating systems, provided the icommand is accessible through the system path.
+
+## Upgraded Versions: api_easicmd.py and api_gui_easicmd.py
+The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions that no longer rely on icommands. They are built upon the iRODS Python API, eliminating the necessity to adjust icommand clients when the server undergoes an iRODS version update. These upgraded scripts are compatible with Linux, Mac, and Windows operating systems.
+
 
 ## Dependancies
 
