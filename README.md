@@ -1,7 +1,10 @@
 # EASy-Irods-CoMmanDs (easicmd)
 
-## The script easicmd.py and gui_easicmd.py need the icommand to be in your path. Can run on linux and mac (as long as the icommand are in the path). 
-## The api_easicmd.py and api_gui_easicmd.py scripts are the new versions which no longer depend on icommands but are based on the irods python api (no need to change icommand clients when the server changes version of irods). Can run on linux, mac AND windows.
+## Requirements for easicmd.py and gui_easicmd.py:
+The easicmd.py and gui_easicmd.py scripts require the icommand to be in your system's path. These scripts are compatible with Linux and Mac operating systems, provided the icommand is accessible through the system path.
+
+## Upgraded Versions: api_easicmd.py and api_gui_easicmd.py
+The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions that no longer rely on icommands. They are built upon the iRODS Python API, eliminating the necessity to adjust icommand clients when the server undergoes an iRODS version update. These upgraded scripts are compatible with Linux, Mac, and Windows operating systems.
 
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
