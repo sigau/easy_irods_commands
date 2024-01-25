@@ -3,7 +3,7 @@
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
-**For Windows users** : You can double click on **gui_easicmd_windows_launcher.bat** it will create the virtual environement and run the graphical version of easicmd using the api. You now have a clikable launcher for the graphical version of easicmd.(it's possible that when you double click on the bat it open notepad, you need to associate the opening of a .ps1 file with powershell or just close the notepad, which will trigger execution of the script ).
+**For Windows users** : You can double click on **gui_easicmd_windows_launcher.bat** it will create the virtual environement and run the graphical version of easicmd using the api. You now have a clikable launcher for the graphical version of easicmd.(It's possible that when you double click on the bat it open notepad, you need to associate the opening of a .ps1 file with powershell or just close the notepad, which will trigger execution of the script ).
 
 We're aware of a screen scaling issue on Windows systems that may cause script windows to exceed the screen size due to scaling set above 100%. While we're actively working on a fix, a temporary solution is available:
 1. Go to "Settings" > "System" > "Display."
@@ -37,8 +37,8 @@ pip install -r requirements.txt
 This will create a virtualenv with all the dependencies installed and not interact with your main environement/installation
 
 ## COMMAND LINE OR GRAPHICAL USER INTERFACE (GUI)
-- ./easicmd.py --> run the command line version
-- ./gui_easicmd.py --> launch the GUI version
+- ./api_easicmd.py --> run the command line version
+- ./api_gui_easicmd.py --> launch the GUI version
 
 ~~**In any case activate irods before running the script --> iinit**~~ no longer necessary if you use the api version (api_easicmd.py and api__gui_easicmd.py)
 
