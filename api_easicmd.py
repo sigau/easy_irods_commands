@@ -21,6 +21,7 @@ from irods.user import iRODSUser
 from pprint import pprint
 from irods.collection import iRODSCollection
 from irods.access import iRODSAccess
+from cryptography.fernet import Fernet
 
 
 ## two # (##) mean a commentary and one # (#) mean a option you can change at your own risk 
@@ -47,21 +48,33 @@ from prompt_toolkit.completion import WordCompleter
 global pickle_meta_dictionary_path
 global pickle_irods_path_path 
 global pickle_additional_path_path
+global irods_key_path
+global irods_password_path
+global irods_info_files
 
 if platform.system() == "Linux":
-    pickle_meta_dictionary_path="~/.neo_irods_metadata_local_save.pkl"
-    pickle_irods_path_path ="~/.neo_irods_collection_save.pkl"
-    pickle_additional_path_path = "~/.neo_irods_additional_path_save.pkl"
+    pickle_meta_dictionary_path = os.path.expanduser("~/.neo_irods_metadata_local_save.pkl")
+    pickle_irods_path_path = os.path.expanduser("~/.neo_irods_collection_save.pkl")
+    pickle_additional_path_path = os.path.expanduser("~/.neo_irods_additional_path_save.pkl")
+    irods_key_path = os.path.expanduser("~/.easicmd.key")
+    irods_password_path = os.path.expanduser("~/.easicmd.psw")
+    irods_info_files = os.path.expanduser("~/.easicmd.info")
 
 elif platform.system() == "Windows":
-    pickle_meta_dictionary_path="~\.irods_metadata_local_save.pkl"
-    pickle_irods_path_path ="~\.irods_collection_save.pkl"
-    pickle_additional_path_path = "~\.irods_additional_path_save.pkl"
+    pickle_meta_dictionary_path = os.path.expanduser("~\.irods_metadata_local_save.pkl")
+    pickle_irods_path_path = os.path.expanduser("~\.irods_collection_save.pkl")
+    pickle_additional_path_path = os.path.expanduser("~\.irods_additional_path_save.pkl")
+    irods_key_path = os.path.expanduser("~\.easicmd.key")
+    irods_password_path = os.path.expanduser("~\.easicmd.psw")
+    irods_info_files = os.path.expanduser("~\.easicmd.info")
 
 elif platform.system() == "Darwin":
-    pickle_meta_dictionary_path="~/.irods_metadata_local_save.pkl"
-    pickle_irods_path_path ="~/.irods_collection_save.pkl"
-    pickle_additional_path_path = "~/.irods_additional_path_save.pkl"
+    pickle_meta_dictionary_path= os.path.expanduser("~/.irods_metadata_local_save.pkl")
+    pickle_irods_path_path = os.path.expanduser("~/.irods_collection_save.pkl")
+    pickle_additional_path_path = os.path.expanduser("~/.irods_additional_path_save.pkl")
+    irods_key_path = os.path.expanduser("~/.easicmd.key")
+    irods_password_path = os.path.expanduser("~/.easicmd.psw")
+    irods_info_files = os.path.expanduser("~/.easicmd.info")
 
 
 
@@ -262,14 +275,96 @@ def name():
     print(" |______| /_/    \_\ |_____/  |_____|  \_____| |_|  |_| |_____/\n")
 
 
+## Générer une clé secrète
+def generate_key():
+    return Fernet.generate_key()
+
+## Enregistrer la clé dans un fichier
+def save_key(key, filename=irods_key_path):
+    with open(filename, "wb") as key_file:
+        key_file.write(key)
+
+## Charger la clé depuis un fichier
+def load_key(filename=irods_key_path):
+    return open(filename, "rb").read()
+
+## Crypter une chaîne de caractères
+def encrypt_message(message, key):
+    f = Fernet(key)
+    encrypted_message = f.encrypt(message.encode())
+    return encrypted_message
+
+## Décrypter une chaîne de caractères
+def decrypt_message(encrypted_message, key):
+    f = Fernet(key)
+    decrypted_message = f.decrypt(encrypted_message).decode()
+    return decrypted_message
+
+def save_pswd(PASSWORD):
+    ## Générer et enregistrer une clé
+    key = generate_key()
+    save_key(key)
+    ## Crypter la chaîne
+    encrypted_message = encrypt_message(PASSWORD, key)
+    ## Enregistrer la chaîne cryptée dans un fichier
+    with open(irods_password_path, "wb") as file:
+        file.write(encrypted_message)
+
+def get_irods_password():
+    global PASSWORD
+    PASSWORD = ""
+
+    ## Verify if a key path exist 
+    ## If it exist the password has been save and encrypt so we have to decrypt it
+    if os.path.isfile(irods_key_path):
+        ## Charger la clé depuis le fichier
+        loaded_key = load_key()
+
+        ## Lire la chaîne cryptée depuis le fichier
+        with open(irods_password_path) as file:
+            loaded_encrypted_message = file.read()
+
+        ## Décrypter la chaîne
+        PASSWORD = decrypt_message(loaded_encrypted_message, loaded_key)
+
+    ## password wasn't save we can just ask it 
+    else :
+        caller = __name__
+        if caller == "__main__" : 
+            PASSWORD=input("ENTER YOUR IRODS PASSWORD : ")
+            ## Do the user want to save it 
+            answer=input(f"Do you want to save it for later (the password will be encrypt and stock in {irods_password_path} [Y/N] : ")
+            if answer == "Y" or answer == "y" or answer == "yes" or answer == "YES" : 
+                save_pswd(PASSWORD)
+
 def get_irods_info():
     global irods_config
-    ## Get the absolute path of the directory of the script currently running
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    file_name = "irods_info"
-    file_path = os.path.join(script_directory, file_name)
-    with open(file_path) as f:
-        irods_config = json.loads(f.read())
+    ## le fichier config existe deja 
+    if os.path.isfile(irods_info_files) :
+        with open(irods_info_files) as f:
+            irods_config = json.loads(f.read())
+        get_irods_password()
+        irods_config["password"] = PASSWORD
+
+    
+    else :
+        ## le fichier config n'hesite pas
+        ## if i call this functtion from api_gui_easicmd.py or api_easicmd.py I don't want the same reaction 
+        ## I'm calling from api_easicmd.py
+        caller = __name__
+        if caller == "__main__" : 
+            print(f"creating the irods config file in {irods_info_files} (equivalent to irods_environment.json with icommand/iinit)")
+            host = input("host: ")
+            port = input("port: ")
+            user = input("user: ")
+            zone = input("zone: ")
+            irods_config = {'host': host, 'port': port, 'user': user, 'zone': zone}
+            with open(irods_info_files,"w") as f :
+                json.dump(irods_config,f)
+            get_irods_password()
+            irods_config["password"] = PASSWORD
+            
+        ## else : I'm calling from api_gui_easicmd.py
 
 
 def irods_collection():

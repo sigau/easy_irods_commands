@@ -743,8 +743,19 @@ def GUI_IDUSH():
 
 def PRINT_IDUST():
     win_meta= customtkinter.CTkToplevel()
+    win_meta.title('iRODS iDUSH')
+    # Get screen width and height
+    screen_width = win_meta.winfo_screenwidth()
+    screen_height = win_meta.winfo_screenheight()
+    
+    # Calculate the position to center the window
+    x_position = (screen_width - 200) // 2
+    y_position = (screen_height - 100) // 2
+
+    win_meta.geometry(f'200x100+{x_position}+{y_position}')
+    
     t= Text(win_meta, height = 25, width = 52)
-    customtkinter.CTkLabel(win_meta,text=f"Your folder's size is : {result_size}").pack()
+    customtkinter.CTkLabel(win_meta,text=f"Your folder's size is :\n\n{result_size}").pack()
     button_close= customtkinter.CTkButton(win_meta, text="close", command=win_meta.destroy)
     button_close.pack(side=BOTTOM)
 
@@ -1047,7 +1058,7 @@ def help_gui():
 ################################################################################################################################################################################################################################################################################
 
 def theme_gui():
-    win_theme= customtkinter.CTkToplevel()
+    win_theme = customtkinter.CTkToplevel()
     win_theme.title('Theme')
     win_theme.geometry('500x200')
     message = "Choose the theme you want to use :"
@@ -1083,7 +1094,118 @@ def theme_gui():
     radiobutton_2.pack(padx=20, pady=10)
     radiobutton_3.pack(padx=20, pady=10)
 
+################################################################################################################################################################################################################################################################################
+## FILL IRODS CONFIG FILE 
+################################################################################################################################################################################################################################################################################
+def config_gui() :
+    global host_gui
+    global port_gui
+    global username_gui
+    global zone_gui
 
+
+    win_config = customtkinter.CTkToplevel()
+    win_config.title('Config iRODS')
+    
+    # Get screen width and height
+    screen_width = win_config.winfo_screenwidth()
+    screen_height = win_config.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 300) // 2
+
+    # Set the window geometry to position it in the center
+    win_config.geometry(f'500x300+{x_position}+{y_position}')
+    
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=0,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=1,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=3,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=5,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=7,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=2,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=4,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=6,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=7,column=0)
+    customtkinter.CTkLabel(win_config,text="        ").grid(row=8,column=0)
+
+
+    customtkinter.CTkLabel(win_config,text="host :  ").grid(row=1,column=1)
+    customtkinter.CTkLabel(win_config,text="port :  ").grid(row=3,column=1)
+    customtkinter.CTkLabel(win_config,text="username :  ").grid(row=5,column=1)
+    customtkinter.CTkLabel(win_config,text="zone :  ").grid(row=7,column=1)
+
+    host_gui=customtkinter.CTkEntry(win_config, width=150)
+    host_gui.grid(row=1,column=2)
+    port_gui=customtkinter.CTkEntry(win_config, width=150)
+    port_gui.grid(row=3,column=2)
+    username_gui=customtkinter.CTkEntry(win_config, width=150)
+    username_gui.grid(row=5,column=2)
+    zone_gui=customtkinter.CTkEntry(win_config, width=150)
+    zone_gui.grid(row=7,column=2)
+
+    validate_button=customtkinter.CTkButton(win_config,text="validate",command=lambda:[CREATE_IRODS_INFO_GUI(),win_config.destroy()])
+    validate_button.grid(row=9,column=4)
+
+def CREATE_IRODS_INFO_GUI():
+    irods_config_gui = {'host': host_gui.get(), 'port': port_gui.get(), 'user': username_gui.get(), 'zone': zone_gui.get()}
+    with open(irods_info_files,"w") as f:
+        json.dump(irods_config_gui,f)
+
+################################################################################################################################################################################################################################################################################
+## PASSWORD
+################################################################################################################################################################################################################################################################################
+def pswd_gui() :
+    global save_password_var
+
+    win_pswd = customtkinter.CTkToplevel()
+    win_pswd.title('iRODS Password')
+    #win_pswd.geometry('500x200')
+    message = "Type your password.\nIf you choose to save it, it will be encrypted and stored \nfor later use without the need to retype it."
+    
+    # Get screen width and height
+    screen_width = win_pswd.winfo_screenwidth()
+    screen_height = win_pswd.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    # Set the window geometry to position it in the center
+    win_pswd.geometry(f'500x200+{x_position}+{y_position}')
+
+    customtkinter.CTkLabel(win_pswd,text="        ").grid(row=0,column=0)
+    customtkinter.CTkLabel(win_pswd,text=message).grid(row=1,column=2)
+    customtkinter.CTkLabel(win_pswd,text="        ").grid(row=2,column=0)
+
+    save_password_var = customtkinter.StringVar(value="on")
+    
+    password_gui = customtkinter.CTkEntry(win_pswd,width=250) ## add show='*' to mask password
+    password_gui.grid(row=3,column=2)
+    
+    checkbox = customtkinter.CTkCheckBox(win_pswd,text="save", command=checkbox_event, variable=save_password_var, onvalue="on", offvalue="off")
+    checkbox.grid(row=5,column=0)
+
+
+    validate_button = customtkinter.CTkButton(win_pswd,text="validate",command=lambda:[PASSWORD_REGISTER_GUI(save_password_var.get(),password_gui.get()),win_pswd.destroy()])
+    validate_button.grid(row=6,column=2)
+
+def checkbox_event():
+    save_password_var.get()
+
+def PASSWORD_REGISTER_GUI(value,pswd):
+    ## we want to save the password
+    if value == "on":
+        save_pswd(pswd)
+        easicmd.get_irods_info()
+    else :
+        easicmd.get_irods_info()
+        easicmd.irods_config["password"] = pswd
+    
+
+
+
+        
 ################################################################################################################################################################################################################################################################################ 
 ### creation of the main window (putting the form)                  
 ################################################################################################################################################################################################################################################################################
@@ -1281,6 +1403,19 @@ try :
         showwarning(title="missing irods addin path file",message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
         easicmd.get_irods_addin_path()
         showwarning(title="missing irods addin path file",message=f"It's done\nthanks for waiting")
+
+
+    ## If no irods config info file create one 
+    if not os.path.isfile(irods_info_files):
+        showwarning(title="missing irods config file", message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}")
+        config_gui()
+
+    
+    ## if no irods password 
+    if not os.path.isfile(irods_password_path):
+        pswd_gui()
+        
+
 
 
     root.mainloop()
