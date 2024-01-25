@@ -3,7 +3,7 @@
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
-**For Windows users** : You can double click on **gui_easicmd_windows_launcher.bat** it will create the virtual environement and run the graphical version of easicmd using the api. You now have a clikable launcher for the graphical version of easicmd.(it's possible that when you double click on the bat it open notepad, you need to associate the opening of a .ps1 file with powershell or just close the notepad, which will trigger execution of the script ). [Before running the script](#before-running-api_easicmdpy-or-api_gui_easicmdpy).
+**For Windows users** : You can double click on **gui_easicmd_windows_launcher.bat** it will create the virtual environement and run the graphical version of easicmd using the api. You now have a clikable launcher for the graphical version of easicmd.(it's possible that when you double click on the bat it open notepad, you need to associate the opening of a .ps1 file with powershell or just close the notepad, which will trigger execution of the script ).
 
 We're aware of a screen scaling issue on Windows systems that may cause script windows to exceed the screen size due to scaling set above 100%. While we're actively working on a fix, a temporary solution is available:
 1. Go to "Settings" > "System" > "Display."
@@ -14,12 +14,12 @@ This adjustment should prevent windows from extending beyond the screen until a 
 The easicmd.py and gui_easicmd.py scripts require the icommand to be in your system's path. These scripts are compatible with Linux and Mac operating systems, provided the icommand is accessible through the system path.
 
 ## Upgraded Versions: api_easicmd.py and api_gui_easicmd.py
-The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions that no longer rely on icommands. They are built upon the iRODS Python API, eliminating the necessity to adjust icommand clients when the server undergoes an iRODS version update. These upgraded scripts are compatible with Linux, Mac, and Windows operating systems. [Before running the script](#before-running-api_easicmdpy-or-api_gui_easicmdpy).
+The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions that no longer rely on icommands. They are built upon the iRODS Python API, eliminating the necessity to adjust icommand clients when the server undergoes an iRODS version update. These upgraded scripts are compatible with Linux, Mac, and Windows operating systems. [First time running the script](#first-time-running-api_easicmd.py-or-api_gui_easicmd.py).
 
 
 ## Dependancies
 
-- ~~Irods icommands (in your path + iinit already done at least once)~~ no longer necessary if you use the api version (neoeasicmd.py and neo_gui_easicmd.py)
+- ~~Irods icommands (in your path + iinit already done at least once)~~ no longer necessary if you use the api version (apieasicmd.py and api_gui_easicmd.py)
 - **python 3.7** or more for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) and subprocess (capture_output)
 - [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time you run it if it's not already install)
 
@@ -40,19 +40,11 @@ This will create a virtualenv with all the dependencies installed and not intera
 - ./easicmd.py --> run the command line version
 - ./gui_easicmd.py --> launch the GUI version
 
-~~**In any case activate irods before running the script --> iinit**~~ no longer necessary if you use the api version (neoeasicmd.py and neo_gui_easicmd.py)
+~~**In any case activate irods before running the script --> iinit**~~ no longer necessary if you use the api version (api_easicmd.py and api__gui_easicmd.py)
 
-## Before running api_easicmd.py or api_gui_easicmd.py
-**Fill in the irods_info file with the following information** :
-```
-{
-    "host": "hostname", ## e.g : ccirods.in2p3.fr
-    "port": 5588,  ## adapt to yur server
-    "user": "username", ## your username
-    "password": "supersecuredpassword", ## your password
-    "zone": "irodsZone" ## e.g : rhone-alpes
-}
-```
+## First time running api_easicmd.py or api_gui_easicmd.py
+**Fill in the irods configuration info** : 
+The first time you run the script it will ask you to fill in the iRODS configuration information (host, port, user, zone) and the script will save it in a ~/.easicmd.info file. It will also ask you for your password, which can be saved (and encrypted) with a local key (~/.easicmd.psw and ~/.easicmd.key) so that you can use it later without having to retype it (as icomands do) or not remember it and have to retype it each time you run the script. 
 
 ## NEW interface with CustumTkinter
 **Light theme**
