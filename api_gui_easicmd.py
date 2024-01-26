@@ -118,7 +118,16 @@ def WHERE_TO_IRODS():
     global gui_list_of_icollection
     win_where = customtkinter.CTkToplevel()
     win_where.title("WHERE TO SEND DATA")
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
     easicmd.get_irods_collection()
     gui_list_of_icollection= Listbox(win_where)
     
@@ -137,7 +146,16 @@ def INIT_PUSH():
 
     win = customtkinter.CTkToplevel()
     win.title('warning')
-    win.geometry('500x200')
+    # Get screen width and height
+    screen_width = win.winfo_screenwidth()
+    screen_height = win.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+    win.geometry(f'500x200+{x_position}+{y_position}')
+
+
     message = "The data is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win, text=message).pack()
     customtkinter.CTkButton(win, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win.destroy(),GUI_GET_LOCAL_OBJECT("file"),WHERE_TO_IRODS()]).pack(side=LEFT)
@@ -160,7 +178,15 @@ def DOWNLOAD(itype):
 def GET_IRODS_FILE():
     global gui_list_of_ifile
     win_where = customtkinter.CTkToplevel()
-    win_where.geometry('1080x500')
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
     gui_list_of_ifile=Listbox(win_where)
@@ -177,7 +203,17 @@ def PULL_FROM_IRODS(itype):
         win_where.title("WHICH FOLDER")
     else :
         win_where.title("FIRST SELECT THE FOLDER")
-    win_where.geometry('1080x500')
+    
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     gui_list_of_icollection= Listbox(win_where)
     
     fill_listbox(easicmd.list_of_icollection)
@@ -199,7 +235,17 @@ def PULL_FROM_IRODS(itype):
 def INIT_PULL() :
     win_pull = customtkinter.CTkToplevel()
     win_pull.title('warning pull')
-    win_pull.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_pull.winfo_screenwidth()
+    screen_height = win_pull.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_pull.geometry(f'500x200+{x_position}+{y_position}')
+    
     message = "The data is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_pull, text=message).pack()
     customtkinter.CTkButton(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),PULL_FROM_IRODS("-f")]).pack(side=LEFT)
@@ -234,7 +280,17 @@ def INIT_IMKDIR():
     global gui_list_of_icollection
     win_where = customtkinter.CTkToplevel()
     win_where.title("WHERE DO YOU WANT TO CREATE YOUR FOLDER")
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+    
     gui_list_of_icollection= Listbox(win_where)
     
     fill_listbox(easicmd.list_of_icollection)
@@ -262,7 +318,17 @@ def DESTROY():
 def GET_IRM_FILE_NAME():
     global gui_list_of_ifile
     win_where = customtkinter.CTkToplevel()
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
     gui_list_of_ifile=Listbox(win_where)
@@ -279,7 +345,16 @@ def IRM_GET_FOLDER():
         win_where.title("WHICH FOLDER ?")
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
-    win_where.geometry('1080x500')
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     gui_list_of_icollection= Listbox(win_where)
     
     fill_listbox(easicmd.list_of_icollection)
@@ -299,7 +374,17 @@ def IRM_GET_FOLDER():
 def INIT_IRM():
     win_pull = customtkinter.CTkToplevel()
     win_pull.title('warning IRM')
-    win_pull.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_pull.winfo_screenwidth()
+    screen_height = win_pull.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_pull.geometry(f'500x200+{x_position}+{y_position}')
+    
     message = "The data is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_pull, text=message).pack()
     customtkinter.CTkButton(win_pull, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_pull.destroy(),IRM_GET_FOLDER()]).pack(side=LEFT)
@@ -378,7 +463,17 @@ def GIVE_META():
 def GET_ADDMETA_FILE_NAME():
     global gui_list_of_ifile
     win_where = customtkinter.CTkToplevel()
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
     gui_list_of_ifile=Listbox(win_where)
@@ -395,7 +490,16 @@ def ADDMETA_GET_IRODS_PATH():
         win_where.title("WHICH FOLDER ?")
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
-    win_where.geometry('1080x500')
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     gui_list_of_icollection= Listbox(win_where)    
 
     
@@ -416,7 +520,17 @@ def ADDMETA_GET_IRODS_PATH():
 def INIT_ADD_META():
     win_addmeta = customtkinter.CTkToplevel()
     win_addmeta.title('warning ADD METADATA')
-    win_addmeta.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_addmeta.winfo_screenwidth()
+    screen_height = win_addmeta.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_addmeta.geometry(f'500x200+{x_position}+{y_position}')
+    
     message = "The data is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_addmeta, text=message).pack()
     customtkinter.CTkButton(win_addmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_addmeta.destroy(),ADDMETA_GET_IRODS_PATH()]).pack(side=LEFT)
@@ -476,7 +590,16 @@ def GET_RM_ATTR():
 def GET_RMMETA_FILE_NAME():
     global gui_list_of_ifile
     win_where = customtkinter.CTkToplevel()
-    win_where.geometry('1080x500')
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
     gui_list_of_ifile=Listbox(win_where)
@@ -493,7 +616,17 @@ def RMMETA_GET_IRODS_PATH():
         win_where.title("WHICH FOLDER ?")
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+    
     gui_list_of_icollection= Listbox(win_where)    
     
     fill_listbox(easicmd.list_of_icollection)
@@ -513,7 +646,17 @@ def RMMETA_GET_IRODS_PATH():
 def INIT_RM_META():
     win_rmmeta= customtkinter.CTkToplevel()
     win_rmmeta.title('warning ADD METADATA')
-    win_rmmeta.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_rmmeta.winfo_screenwidth()
+    screen_height = win_rmmeta.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_rmmeta.geometry(f'500x200+{x_position}+{y_position}')
+
     message = "The data you want to remove metadata from is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_rmmeta, text=message).pack()
     customtkinter.CTkButton(win_rmmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_rmmeta.destroy(),RMMETA_GET_IRODS_PATH()]).pack(side=LEFT)
@@ -543,7 +686,17 @@ def GUI_SHOW_META():
 def GET_SHOW_META_FILE_NAME():
     global gui_list_of_ifile
     win_where = customtkinter.CTkToplevel()
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
     gui_list_of_ifile=Listbox(win_where)
@@ -561,7 +714,17 @@ def SHOWMETA_GET_IRODS_PATH():
         win_where.title("WHICH FOLDER ?")
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     gui_list_of_icollection= Listbox(win_where)
     fill_listbox(easicmd.list_of_icollection)
     label_search=customtkinter.CTkLabel(win_where,text="Add text to filter the list than press enter")
@@ -579,7 +742,17 @@ def SHOWMETA_GET_IRODS_PATH():
 def INIT_SHOW_META():
     win_showmeta= customtkinter.CTkToplevel()
     win_showmeta.title('warning ADD METADATA')
-    win_showmeta.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_showmeta.winfo_screenwidth()
+    screen_height = win_showmeta.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_showmeta.geometry(f'500x200+{x_position}+{y_position}')
+
     message = "The data you want to show metadata is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_showmeta, text=message).pack()
     customtkinter.CTkButton(win_showmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_showmeta.destroy(),SHOWMETA_GET_IRODS_PATH()]).pack(side=LEFT)
@@ -671,7 +844,17 @@ def BUILD_SEARCH_CMD():
 def INIT_SEARCH_META():
     win_searchmeta= customtkinter.CTkToplevel()
     win_searchmeta.title('warning SEARCH BY METADATA')
-    win_searchmeta.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_searchmeta.winfo_screenwidth()
+    screen_height = win_searchmeta.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_searchmeta.geometry(f'500x200+{x_position}+{y_position}')
+
     message = "The data you're looking for is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_searchmeta, text=message).pack()
     customtkinter.CTkButton(win_searchmeta, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchmeta.destroy(),SEARCH_GET_CMD()]).pack(side=LEFT)
@@ -726,7 +909,17 @@ def SEARCH_FOLDER_NAME():
 def INIT_SEARCH_NAME():
     win_searchname= customtkinter.CTkToplevel()
     win_searchname.title('warning SEARCH BY NAME')
-    win_searchname.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_searchname.winfo_screenwidth()
+    screen_height = win_searchname.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_searchname.geometry(f'500x200+{x_position}+{y_position}')
+
     message = "The data you're searching is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_searchname, text=message).pack()
     customtkinter.CTkButton(win_searchname, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_searchname.destroy(),SEARCH_FILE_NAME()]).pack(side=LEFT)
@@ -764,7 +957,17 @@ def INIT_IDUST():
     global gui_list_of_icollection
     win_where = customtkinter.CTkToplevel()
     win_where.title("WHICH FOLDER ?")
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+    
     gui_list_of_icollection= Listbox(win_where)
     fill_listbox(easicmd.list_of_icollection)
     global search_str
@@ -830,7 +1033,17 @@ def ICHMOD_BUILD_CMD(type):
 def USER_OR_GROUP():
     win_ichmod= customtkinter.CTkToplevel()
     win_ichmod.title('warning ICHMOD')
-    win_ichmod.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_ichmod.winfo_screenwidth()
+    screen_height = win_ichmod.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_ichmod.geometry(f'500x200+{x_position}+{y_position}')
+    
     message = "Share your data with a GROUP or a USER ?"
     customtkinter.CTkLabel(win_ichmod, text=message).pack()
     customtkinter.CTkButton(win_ichmod, text='USER', command=lambda:[ICHMOD_BUILD_CMD("user"),win_ichmod.destroy(),]).pack(side=LEFT)
@@ -839,7 +1052,17 @@ def USER_OR_GROUP():
 def GET_ICHMOD_FILE_NAME():
     global gui_list_of_ifile
     win_where = customtkinter.CTkToplevel()
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+
     win_where.title("SELECT THE FILE")
     easicmd.list_ifile(irods_path)
     gui_list_of_ifile=Listbox(win_where)
@@ -856,7 +1079,17 @@ def ICHMOD_IRODS_PATH():
         win_where.title("WHICH FOLDER ?")
     else :
         win_where.title("FIRST CHOOSE THE FOLDER ?")
-    win_where.geometry('1080x500')
+
+    # Get screen width and height
+    screen_width = win_where.winfo_screenwidth()
+    screen_height = win_where.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 1080) // 2
+    y_position = (screen_height - 500) // 2
+
+    win_where.geometry(f'1080x500+{x_position}+{y_position}')
+    
     gui_list_of_icollection= Listbox(win_where) 
     
     fill_listbox(easicmd.list_of_icollection)
@@ -876,7 +1109,17 @@ def ICHMOD_IRODS_PATH():
 def INIT_ICHMOD():
     win_ichmod= customtkinter.CTkToplevel()
     win_ichmod.title('warning ICHMOD')
-    win_ichmod.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_ichmod.winfo_screenwidth()
+    screen_height = win_ichmod.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_ichmod.geometry(f'500x200+{x_position}+{y_position}')
+
     message = "The data you want to share is a FILE or a FOLDER ?"
     customtkinter.CTkLabel(win_ichmod, text=message).pack()
     customtkinter.CTkButton(win_ichmod, text='FILE', command=lambda:[GUI_TYPE_OBJECT("file"),win_ichmod.destroy(),ICHMOD_IRODS_PATH()]).pack(side=LEFT)
@@ -1045,7 +1288,16 @@ def INIT_UPD_PATH():
 def help_gui():
     win_help= customtkinter.CTkToplevel()
     win_help.title('help')
-    win_help.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_help.winfo_screenwidth()
+    screen_height = win_help.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_help.geometry(f'500x200+{x_position}+{y_position}')
     message = "For any help go see the README on :"
     customtkinter.CTkLabel(win_help,text=message).pack()
     t=Text(win_help, height = 5, width = 50)
@@ -1060,7 +1312,17 @@ def help_gui():
 def theme_gui():
     win_theme = customtkinter.CTkToplevel()
     win_theme.title('Theme')
-    win_theme.geometry('500x200')
+
+    # Get screen width and height
+    screen_width = win_theme.winfo_screenwidth()
+    screen_height = win_theme.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_theme.geometry(f'500x200+{x_position}+{y_position}')
+
     message = "Choose the theme you want to use :"
     customtkinter.CTkLabel(win_theme,text=message).pack()
 
@@ -1160,7 +1422,6 @@ def pswd_gui() :
 
     win_pswd = customtkinter.CTkToplevel()
     win_pswd.title('iRODS Password')
-    #win_pswd.geometry('500x200')
     message = "Type your password.\nIf you choose to save it, it will be encrypted and stored \nfor later use without the need to retype it."
     
     # Get screen width and height
