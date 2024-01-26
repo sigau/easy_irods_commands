@@ -4,6 +4,43 @@
 
 <!-- /TOC -->
 
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Short description](#short-description)
+- [Requirements for easicmd.py and gui_easicmd.py:](#requirements-for-easicmdpy-and-gui_easicmdpy)
+- [Upgraded Versions: api_easicmd.py and api_gui_easicmd.py](#upgraded-versions-api_easicmdpy-and-api_gui_easicmdpy)
+- [Dependancies](#dependancies)
+- [COMMAND LINE OR GRAPHICAL USER INTERFACE (GUI)](#command-line-or-graphical-user-interface-gui)
+- [First time running api_easicmd.py or api_gui_easicmd.py](#first-time-running-api_easicmdpy-or-api_gui_easicmdpy)
+- [NEW interface with CustumTkinter](#new-interface-with-custumtkinter)
+- [Commands](#commands)
+- [AUTOCOMPLETION](#autocompletion)
+- [FILES CREATED BY THE SCRIPT](#files-created-by-the-script)
+- [Examples](#examples)
+  - [BUILD_DICO_META : CREATE A DICTIONARY OF METADATA IN YOUR LOCAL HOME](#build_dico_meta--create-a-dictionary-of-metadata-in-your-local-home)
+  - [PUSH : PUT LOCAL DATA ON IRODS](#push--put-local-data-on-irods)
+  - [PULL : GET BACK DATA FROM IRODS](#pull--get-back-data-from-irods)
+  - [SYNCHRO : SYNCHRONIZE MODIFIED DATA FROM A LOCAL FOLDER WITH IRODS](#synchro--synchronize-modified-data-from-a-local-folder-with-irods)
+  - [IMKDIR : CREATE AN IRODS WITHOUT KNOWING THE FULL TREE VIEW](#imkdir--create-an-irods-without-knowing-the-full-tree-view)
+  - [IRM : REMOVE DATA FROM IRODS](#irm--remove-data-from-irods)
+  - [ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS](#add_meta--add-metadata-associated-with-an-object-on-irods)
+  - [RM_META : REMOVING METADATA ASSOCIATED WITH AN OBJECT ON IRODS](#rm_meta--removing-metadata-associated-with-an-object-on-irods)
+  - [SHOW_META : SHOW ALL THE METADATA ASSOCIATED WITH AN OBJECT ON IRODS](#show_meta--show-all-the-metadata-associated-with-an-object-on-irods)
+  - [SEARCH_BY_META : SEARCH FOR IRODS OBJECTS (FOLDER/FILE) BASED ON THE METADATA](#search_by_meta--search-for-irods-objects-folderfile-based-on-the-metadata)
+  - [SEARCH_NAME : SEARCH FOR IRODS OBJECT BASED ON (PARTS) OF THE OBJECT NAME](#search_name--search-for-irods-object-based-on-parts-of-the-object-name)
+  - [IDUSH : AN IRODS EQUIVALENT TO du -sh](#idush--an-irods-equivalent-to-du--sh)
+  - [ICHMOD : SHARE YOUR DATA DIRECTLY IN IRODS](#ichmod--share-your-data-directly-in-irods)
+  - [EDITING THE AUTOCOMPLETION DICTIONARY](#editing-the-autocompletion-dictionary)
+  - [ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH](#add-to-the-list-of-collection-an-additional-path)
+- [To-Do List](#to-do-list)
+- [Known Issues](#known-issues)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
 ## Short description
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
