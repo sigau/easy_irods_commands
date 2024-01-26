@@ -85,7 +85,7 @@ This will create a virtualenv with all the dependencies installed and not intera
 
 ## First time running api_easicmd.py or api_gui_easicmd.py
 **Fill in the irods configuration info** : 
-The first time you run the script it will ask you to fill in the iRODS configuration information (host, port, user, zone) and the script will save it in a ~/.easicmd.info file. It will also ask you for your password, which can be saved (and encrypted) with a local key (~/.easicmd.psw and ~/.easicmd.key) so that you can use it later without having to retype it (as icomands do) or not remember it and have to retype it each time you run the script. 
+The first time you run the script it will ask you to fill in the iRODS configuration information (host, port, user, zone) and the script will save it in a \~/.easicmd.info file. It will also ask you for your password, which can be saved (and encrypted) with a local key (\~/.easicmd.psw and \~/.easicmd.key) so that you can use it later without having to retype it (as icomands do) or not remember it and have to retype it each time you run the script. 
 
 ## NEW interface with CustumTkinter
 **Light theme**
