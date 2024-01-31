@@ -1643,6 +1643,18 @@ try :
     theme_bouton=customtkinter.CTkButton(root,text="theme", command=theme_gui)
     theme_bouton.pack(pady=10,  anchor = "w", side=BOTTOM)
 
+
+    ## If no irods config info file create one 
+    if not os.path.isfile(irods_info_files):
+        showwarning(title="missing irods config file", message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}")
+        config_gui()
+
+    
+    ## if no irods password 
+    if not os.path.isfile(irods_password_path):
+        pswd_gui()
+
+
     ### IF no metadata dictionary found create it 
     save_dict=os.path.expanduser(pickle_meta_dictionary_path)
     if not os.path.isfile(save_dict) :
@@ -1664,19 +1676,6 @@ try :
         showwarning(title="missing irods addin path file",message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP")
         easicmd.get_irods_addin_path()
         showwarning(title="missing irods addin path file",message=f"It's done\nthanks for waiting")
-
-
-    ## If no irods config info file create one 
-    if not os.path.isfile(irods_info_files):
-        showwarning(title="missing irods config file", message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}")
-        config_gui()
-
-    
-    ## if no irods password 
-    if not os.path.isfile(irods_password_path):
-        pswd_gui()
-        
-
 
 
     root.mainloop()
