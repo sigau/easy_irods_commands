@@ -210,7 +210,7 @@ def main() :
                 SEARCH_BY_NAME(tofind,type_iobject=None)
 
         elif sys.argv[1] == "test" :
-            get_irods_addin_path()
+            PUSH_SPEEDTEST(sys.argv[2],sys.argv[3])
 
         else :
             help()
@@ -751,6 +751,18 @@ def get_recursive_folder_size(chemin_irods, session):
 ##########################################################################################################################################################################################################################################################################################
 #### called function's definition (function that will be "called" by the user/main )
 ##########################################################################################################################################################################################################################################################################################
+
+def PUSH_SPEEDTEST(local_object,irods_path):
+    ##test to speedtest the api version against the icommands 
+    with iRODSSession(**irods_config) as session:
+        temps_debut = time.time()
+        session.data_objects.put(local_object,irods_path,num_threads=nb_threads)
+        temps_fin = time.time()
+        temps_total = temps_fin - temps_debut
+    print(temps_total)
+
+
+
 
 def PUSH(local_object) :
     ##send an object to irods by irsync and add meta data on it 
