@@ -1904,6 +1904,7 @@ def config_gui():
         command=lambda: [CREATE_IRODS_INFO_GUI(), win_config.destroy()],
     )
     validate_button.grid(row=9, column=4)
+    return win_config
 
 
 def CREATE_IRODS_INFO_GUI():
@@ -1916,6 +1917,9 @@ def CREATE_IRODS_INFO_GUI():
     with open(irods_info_files, "w") as f:
         json.dump(irods_config_gui, f)
 
+def create_and_wait_for_config():
+    win_config = config_gui()
+    win_config.wait_window()
 
 ################################################################################################################################################################################################################################################################################
 ## PASSWORD
@@ -1968,7 +1972,7 @@ def pswd_gui():
         ],
     )
     validate_button.grid(row=6, column=2)
-
+    return win_pswd
 
 def checkbox_event():
     save_password_var.get()
@@ -1982,6 +1986,10 @@ def PASSWORD_REGISTER_GUI(value, pswd):
     else:
         easicmd.get_irods_info()
         easicmd.irods_config["password"] = pswd
+
+def create_and_wait_for_password():
+    win_pswd = pswd_gui()
+    win_pswd.wait_window()
 
 
 ################################################################################################################################################################################################################################################################################
@@ -2258,11 +2266,11 @@ try:
             title="missing irods config file",
             message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}",
         )
-        config_gui()
+        create_and_wait_for_config()
 
     ## if no irods password
     if not os.path.isfile(irods_password_path):
-        pswd_gui()
+        create_and_wait_for_password()
 
     ### IF no metadata dictionary found create it
     save_dict = os.path.expanduser(pickle_meta_dictionary_path)
