@@ -669,6 +669,7 @@ If you're using an irods folder that isn't descendants of your irods home it won
 
 ## To-Do List
 - [ ] create an explorer for the irods side 
+- [ ] allow multiple zone acces (change or multiple .easicmd.info/etc)
 - [X] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)
