@@ -98,7 +98,32 @@ def WHERE_IN_LOCAL():
 
 def GET_IRODS_PATH():
     global irods_path
-    irods_path = gui_list_of_icollection.get(gui_list_of_icollection.curselection())
+    if "gui_list_of_icollection" in globals():
+        irods_path = gui_list_of_icollection.get(gui_list_of_icollection.curselection())
+    else :
+        # Get the selected item from the treeview
+        selected_item = gui_tree_of_icollection.focus()
+
+        if not selected_item:
+            print("No folder selected")
+            return
+
+        # Initialize an empty list to hold the folder names
+        path_elements = []
+
+        # Traverse the tree upwards from the selected item to the root
+        while selected_item:
+            # Get the folder name of the current node
+            folder_name = gui_tree_of_icollection.item(selected_item, "text")
+            path_elements.insert(0, folder_name)  # Insert at the beginning (reverse order)
+            # Move to the parent of the current node
+            selected_item = gui_tree_of_icollection.parent(selected_item)
+
+        # Join the path elements to form the full path
+        irods_path = "/" + "/".join(path_elements)
+        
+        # Print the full path
+        print(irods_path)
 
 
 def GET_IRODS_FILE_PATH():
@@ -119,12 +144,90 @@ def PROGRESS_BAR(command):
 
 
 ################################################################################################################################################################################################################################################################################
+### TREE RELATED FUNCTION
+################################################################################################################################################################################################################################################################################
+
+# Get the next level of folders based on the current path
+def get_next_level_folders(current_path, folder_list):
+    next_level = set()
+    current_path = current_path.rstrip('/') + '/'  # Ensure trailing slash for matching
+
+    for folder in folder_list:
+        if folder.startswith(current_path):
+            relative_path = folder[len(current_path):]
+            first_level_folder = relative_path.split('/')[0]  # Get the immediate subfolder
+            next_level.add(current_path + first_level_folder)
+    
+    return sorted(next_level)
+
+# Populate Treeview with folders and track nodes
+def populate_treeview(treeview, parent_node, folder_list):
+    for folder in folder_list:
+        folder_name = folder.rstrip('/').split("/")[-1]  # Only show the folder name
+        node_id = treeview.insert(parent_node, "end", text=folder_name, values=[folder])
+        # Track all nodes for searching later
+        all_nodes[folder] = node_id
+        # Add a dummy item to allow expansion (+ symbol in tree)
+        treeview.insert(node_id, "end", text="Loading...", values=["dummy"])
+
+# Function to load subfolders dynamically when a folder is expanded
+def on_treeview_open(event):
+    treeview = event.widget
+    selected_item = treeview.focus()
+    folder_path = treeview.item(selected_item, "values")[0]  # Get the full folder path
+
+    # Check if it's a dummy node, if so, load the actual content
+    children = treeview.get_children(selected_item)
+    if len(children) == 1 and treeview.item(children[0], "values")[0] == "dummy":
+        # Remove the dummy item
+        treeview.delete(children[0])
+
+        # Fetch the next level of subfolders
+        subfolders = get_next_level_folders(folder_path, easicmd.list_of_icollection)
+
+        # Populate the tree with the actual subfolders
+        populate_treeview(treeview, selected_item, subfolders)
+
+# Function to filter the Treeview based on search input
+def treeview_filter(event):
+    search_term = search_str.get().lower()
+
+    # Show/hide nodes based on whether they match the search term
+    for folder, node_id in all_nodes.items():
+        item_text = folder.lower()
+        if search_term in item_text:
+            # Make sure the node and its parents are visible
+            expand_tree_to_node(gui_tree_of_icollection, node_id)
+        else:
+            # Hide the node if it doesn't match the search term
+            gui_tree_of_icollection.detach(node_id)
+
+# Helper function to expand all parent nodes and make a node visible
+def expand_tree_to_node(treeview, node):
+    parent = treeview.parent(node)
+    if parent:
+        # If the parent has a dummy node, remove it and load its children
+        if len(treeview.get_children(parent)) == 1 and treeview.item(treeview.get_children(parent)[0], "values")[0] == "dummy":
+            on_treeview_open_parent(treeview, parent)
+        treeview.item(parent, open=True)  # Expand the parent
+        expand_tree_to_node(treeview, parent)  # Recursively expand all ancestors
+    treeview.reattach(node, '', 'end')  # Reattach the node itself
+
+# Function to load children when opening parent for search
+def on_treeview_open_parent(treeview, parent_node):
+    folder_path = treeview.item(parent_node, "values")[0]
+    subfolders = get_next_level_folders(folder_path, easicmd.list_of_icollection)
+    populate_treeview(treeview, parent_node, subfolders)
+
+
+
+################################################################################################################################################################################################################################################################################
 ### PUSH
 ################################################################################################################################################################################################################################################################################
 
 
 def to_irods_and_beyond():
-    irods_path = gui_list_of_icollection.get(gui_list_of_icollection.curselection())
+    GET_IRODS_PATH()
     showinfo(
         title="Transfer's Begining",
         message="Click to run the transfer\nAnother pop-up will show when finish",
@@ -148,7 +251,8 @@ def to_irods_and_beyond():
 
 
 def WHERE_TO_IRODS():
-    global gui_list_of_icollection
+    easicmd.get_irods_collection()
+    global gui_tree_of_icollection, all_nodes
     win_where = customtkinter.CTkToplevel()
     win_where.title("WHERE TO SEND DATA")
 
@@ -161,20 +265,32 @@ def WHERE_TO_IRODS():
     y_position = (screen_height - 500) // 2
 
     win_where.geometry(f"1080x500+{x_position}+{y_position}")
-    easicmd.get_irods_collection()
-    gui_list_of_icollection = Listbox(win_where)
 
-    fill_listbox(easicmd.list_of_icollection)
+    # Create a Treeview widget
+    gui_tree_of_icollection = ttk.Treeview(win_where)
+    gui_tree_of_icollection.pack(fill="both", expand="yes")
+
+    # Keep track of all nodes (for search functionality)
+    all_nodes = {}
+
+    # Populate the Treeview with the root level (top-level folders)
+    root_folders = get_next_level_folders("/", easicmd.list_of_icollection)
+    populate_treeview(gui_tree_of_icollection, "", root_folders)
+
     global search_str
     label_search = customtkinter.CTkLabel(
-        win_where, text="Add text to filter the list than press enter"
+        win_where, text="Add text to filter the list, then press enter"
     )
     label_search.pack(side=BOTTOM)
+    
     search_str = StringVar()
     search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
     search.pack(padx=5, pady=5, side=BOTTOM)
-    search.bind("<Return>", listbox_filter)
-    gui_list_of_icollection.pack(fill="both", expand="yes")
+    search.bind("<Return>", treeview_filter)
+
+    # Bind tree item expansion to dynamically load subfolders
+    gui_tree_of_icollection.bind("<<TreeviewOpen>>", on_treeview_open)
+
     select_button = customtkinter.CTkButton(
         win_where,
         text="select",
@@ -276,8 +392,9 @@ def GET_IRODS_FILE():
 
 def PULL_FROM_IRODS(itype):
     easicmd.get_irods_collection()
-    global gui_list_of_icollection
+    global gui_tree_of_icollection, all_nodes
     win_where = customtkinter.CTkToplevel()
+    
     if itype == "-C":
         win_where.title("WHICH FOLDER")
     else:
@@ -293,19 +410,30 @@ def PULL_FROM_IRODS(itype):
 
     win_where.geometry(f"1080x500+{x_position}+{y_position}")
 
-    gui_list_of_icollection = Listbox(win_where)
+    # Create a Treeview widget
+    gui_tree_of_icollection = ttk.Treeview(win_where)
+    gui_tree_of_icollection.pack(fill="both", expand="yes")
 
-    fill_listbox(easicmd.list_of_icollection)
+    # Keep track of all nodes (for search functionality)
+    all_nodes = {}
+
+    # Populate the Treeview with the root level (top-level folders)
+    root_folders = get_next_level_folders("/", easicmd.list_of_icollection)
+    populate_treeview(gui_tree_of_icollection, "", root_folders)
+
     global search_str
     label_search = customtkinter.CTkLabel(
-        win_where, text="Add text to filter the list than press enter"
+        win_where, text="Add text to filter the list, then press enter"
     )
     label_search.pack(side=BOTTOM)
+    
     search_str = StringVar()
     search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
     search.pack(padx=5, pady=5, side=BOTTOM)
-    search.bind("<Return>", listbox_filter)
-    gui_list_of_icollection.pack(fill="both", expand="yes")
+    search.bind("<Return>", treeview_filter)
+
+    # Bind tree item expansion to dynamically load subfolders
+    gui_tree_of_icollection.bind("<<TreeviewOpen>>", on_treeview_open)
 
     if itype == "-C":
         select_button = customtkinter.CTkButton(
@@ -395,10 +523,12 @@ def GIVE_NAME():
 
 
 def INIT_IMKDIR():
+
     easicmd.get_irods_collection()
-    global gui_list_of_icollection
+    global gui_tree_of_icollection, all_nodes
     win_where = customtkinter.CTkToplevel()
     win_where.title("WHERE DO YOU WANT TO CREATE YOUR FOLDER")
+ 
 
     # Get screen width and height
     screen_width = win_where.winfo_screenwidth()
@@ -410,19 +540,31 @@ def INIT_IMKDIR():
 
     win_where.geometry(f"1080x500+{x_position}+{y_position}")
 
-    gui_list_of_icollection = Listbox(win_where)
+    # Create a Treeview widget
+    gui_tree_of_icollection = ttk.Treeview(win_where)
+    gui_tree_of_icollection.pack(fill="both", expand="yes")
 
-    fill_listbox(easicmd.list_of_icollection)
+    # Keep track of all nodes (for search functionality)
+    all_nodes = {}
+
+    # Populate the Treeview with the root level (top-level folders)
+    root_folders = get_next_level_folders("/", easicmd.list_of_icollection)
+    populate_treeview(gui_tree_of_icollection, "", root_folders)
+
     global search_str
     label_search = customtkinter.CTkLabel(
-        win_where, text="Add text to filter the list than press enter"
+        win_where, text="Add text to filter the list, then press enter"
     )
     label_search.pack(side=BOTTOM)
+    
     search_str = StringVar()
     search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
     search.pack(padx=5, pady=5, side=BOTTOM)
-    search.bind("<Return>", listbox_filter)
-    gui_list_of_icollection.pack(fill="both", expand="yes")
+    search.bind("<Return>", treeview_filter)
+
+    # Bind tree item expansion to dynamically load subfolders
+    gui_tree_of_icollection.bind("<<TreeviewOpen>>", on_treeview_open)
+
     select_button = customtkinter.CTkButton(
         win_where,
         text="select",
