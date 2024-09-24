@@ -1692,12 +1692,13 @@ def GET_ICHMOD_FILE_NAME():
 
 def ICHMOD_IRODS_PATH():
     easicmd.get_irods_collection()
-    global gui_list_of_icollection
+    global gui_tree_of_icollection, all_nodes
     win_where = customtkinter.CTkToplevel()
     if type_object == "-C":
         win_where.title("WHICH FOLDER ?")
     else:
-        win_where.title("FIRST CHOOSE THE FOLDER ?")
+         win_where.title("FIRST CHOOSE THE FOLDER ")
+ 
 
     # Get screen width and height
     screen_width = win_where.winfo_screenwidth()
@@ -1709,19 +1710,31 @@ def ICHMOD_IRODS_PATH():
 
     win_where.geometry(f"1080x500+{x_position}+{y_position}")
 
-    gui_list_of_icollection = Listbox(win_where)
+    # Create a Treeview widget
+    gui_tree_of_icollection = ttk.Treeview(win_where)
+    gui_tree_of_icollection.pack(fill="both", expand="yes")
 
-    fill_listbox(easicmd.list_of_icollection)
+    # Keep track of all nodes (for search functionality)
+    all_nodes = {}
+
+    # Populate the Treeview with the root level (top-level folders)
+    root_folders = get_next_level_folders("/", easicmd.list_of_icollection)
+    populate_treeview(gui_tree_of_icollection, "", root_folders)
+
     global search_str
     label_search = customtkinter.CTkLabel(
-        win_where, text="Add text to filter the list than press enter"
+        win_where, text="Add text to filter the list, then press enter"
     )
     label_search.pack(side=BOTTOM)
+    
     search_str = StringVar()
     search = customtkinter.CTkEntry(win_where, textvariable=search_str, width=300)
     search.pack(padx=5, pady=5, side=BOTTOM)
-    search.bind("<Return>", listbox_filter)
-    gui_list_of_icollection.pack(fill="both", expand="yes")
+    search.bind("<Return>", treeview_filter)
+
+    # Bind tree item expansion to dynamically load subfolders
+    gui_tree_of_icollection.bind("<<TreeviewOpen>>", on_treeview_open)
+    
     if type_object == "-C":
         select_button = customtkinter.CTkButton(
             win_where,
