@@ -6,9 +6,8 @@
 ##########################################################################################################################################################################################################################################################################################
 
 
-import sys, os, re, time, csv, queue, threading
+import sys, os, time, queue, threading
 import subprocess
-import fnmatch
 import pkg_resources
 import pickle
 import platform
@@ -18,7 +17,6 @@ from irods.column import Criterion
 from irods.models import DataObject, DataObjectMeta, Collection, CollectionMeta, User
 from irods.meta import iRODSMeta
 from irods.user import iRODSUser
-from pprint import pprint
 from irods.collection import iRODSCollection
 from irods.access import iRODSAccess
 from cryptography.fernet import Fernet
@@ -1084,7 +1082,7 @@ def SEARCH_BY_META(type_iobject=None):
         )
         operation_completer = WordCompleter(list_operation)
         operation = prompt(
-            "operation (like if your value contain *): ", completer=operation_completer
+            "operation (use 'like' if your value contain *): ", completer=operation_completer
         )
         liaison_completer = WordCompleter(list_liaison)
         liaison = prompt("liaison (empty to stop): ", completer=liaison_completer)
