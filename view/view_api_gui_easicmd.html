@@ -1,0 +1,1894 @@
+<!--
+ * Copyright (c) 2015 Mountainstorm
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Original from https://github.com/mountainstorm/jquery.graphviz.svg/blob/master/demo.html
+ -->
+<html>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
+		<!-- <link rel="stylesheet" href="css/graphviz.svg.css"> -->
+	</head>
+
+	<style>
+        #instructions {
+            color: #000000;
+            position: absolute;
+            z-index: 100;
+            bottom: 0px;
+            left: 0px;
+        }
+    </style>
+	<body>
+		<h4 id="instructions">Click node to highlight; Shift-scroll to zoom; Esc to unhighlight</h4>
+		<div id="graph" style="width: 100%; height: 100%; overflow: scroll;"></div>
+
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script type="text/javascript" src="https://cdn.rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.min.js"></script>
+		<script type="text/javascript" src="https://cdn.rawgit.com/jquery/jquery-color/master/jquery.color.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script type="text/javascript">!function(t){"use strict";String.prototype.startsWith=function(t){return 0==this.indexOf(t)},String.prototype.endsWith=function(t){return-1!==this.indexOf(t,this.length-t.length)};var e=function(t,e){this.type=null,this.options=null,this.enabled=null,this.$element=null,this.init("graphviz.svg",t,e)};e.VERSION="1.0.1",e.GVPT_2_PX=32.5,e.DEFAULTS={url:null,svg:null,shrink:"0.125pt",tooltips:{init:function(e){var i=t(this);i.tooltip({container:e,placement:"auto left",animation:!1,viewport:null}).on("hide.bs.tooltip",function(){if(i.attr("data-tooltip-keepvisible"))return!1})},show:function(){var e=t(this);e.attr("data-tooltip-keepvisible",!0),e.tooltip("show")},hide:function(){var e=t(this);e.removeAttr("data-tooltip-keepvisible"),e.tooltip("hide")},update:function(){var e=t(this);e.attr("data-tooltip-keepvisible")&&e.tooltip("show")}},zoom:!0,highlight:{selected:function(t,e){return t},unselected:function(t,e){return jQuery.Color(t).transition(e,.9)}},ready:null},e.prototype.init=function(e,i,n){if(this.enabled=!0,this.type=e,this.$element=t(i),this.options=this.getOptions(n),n.url){var o=this;t.get(n.url,null,function(e){var i=t("svg",e);o.$element.html(document.adoptNode(i[0])),o.setup()},"xml")}else n.svg&&this.$element.html(n.svg),this.setup()},e.prototype.getDefaults=function(){return e.DEFAULTS},e.prototype.getOptions=function(e){return(e=t.extend({},this.getDefaults(),this.$element.data(),e)).shrink&&("object"!=typeof e.shrink&&(e.shrink={x:e.shrink,y:e.shrink}),e.shrink.x=this.convertToPx(e.shrink.x),e.shrink.y=this.convertToPx(e.shrink.y)),e},e.prototype.setup=function(){var e=this.options,i=t(this.$element.children("svg")),n=i.children("g:first");this.$svg=i,this.$graph=n,this.$background=n.children("polygon:first"),this.$nodes=n.children(".node"),this.$edges=n.children(".edge"),this._nodesByName={},this._edgesByName={},this.$element.addClass("graphviz-svg"),this.$background.length&&this.$element.css("background",this.$background.attr("fill"));var o=this;this.$nodes.each(function(){o.setupNodesEdges(t(this),!0)}),this.$edges.each(function(){o.setupNodesEdges(t(this),!1)});var r=this.$graph.children("title");this.$graph.attr("data-name",r.text()),r.remove(),e.zoom&&this.setupZoom(),e.ready&&e.ready.call(this)},e.prototype.setupNodesEdges=function(e,i){var n=this,o=this.options;e.find("polygon, ellipse, path").each(function(){var e=t(this);e.data("graphviz.svg.color",{fill:e.attr("fill"),stroke:e.attr("stroke")}),i&&o.shrink&&n.scaleNode(e)});var r,s,h=e.children("title");if(h[0]){var a=h.text().replace(/:[snew][ew]?/g,"");e.attr("data-name",a),h.remove(),i?this._nodesByName[a]=e[0]:this._edgesByName[a]=e[0];for(var l=e[0].previousSibling;l&&8!=l.nodeType;)l=l.previousSibling;if(null!=l&&8==l.nodeType){var p=(r=l.nodeValue.trim(),(s=document.createElement("div")).innerHTML=r,s.childNodes[0].nodeValue);p!=a&&e.attr("data-comment",p)}}e.children("a").filter(function(){return t(this).attr("xlink:title")}).each(function(){var e=t(this);e.attr("title",e.attr("xlink:title")),e.removeAttr("xlink:title"),o.tooltips&&o.tooltips.init.call(this,n.$element)})},e.prototype.setupZoom=function(){var t=this,e=this.$element,i=this.$svg;this.zoom={width:i.attr("width"),height:i.attr("height"),percentage:null},this.scaleView(100),e.mousewheel(function(n){if(n.shiftKey){var o=t.zoom.percentage;(o-=n.deltaY*n.deltaFactor)<100&&(o=100);var r=n.pageX-i.offset().left,s=n.pageY-i.offset().top,h=r/i.width(),a=s/i.height(),l=n.pageX-e.offset().left,p=n.pageY-e.offset().top;return t.scaleView(o),e.scrollLeft(h*i.width()+.5-l),e.scrollTop(a*i.height()+.5-p),!1}})},e.prototype.scaleView=function(t){var e=this,i=this.$svg;i.attr("width",t+"%"),i.attr("height",t+"%"),this.zoom.percentage=t,this.$nodes.add(this.$edges).children("a[title]").each(function(){e.options.tooltips.update.call(this)})},e.prototype.scaleNode=function(t){var e=this.options.shrink.x,i=this.options.shrink.y,n=t.prop("tagName");if("ellipse"==n)t.attr("rx",parseFloat(t.attr("rx"))-e),t.attr("ry",parseFloat(t.attr("ry"))-i);else if("polygon"==n){var o=t[0].getBBox(),r=o.x+o.width/2,s=o.y+o.height/2,h=t.attr("points").split(" "),a="";for(var l in h){var p=h[l].split(","),d=parseFloat(p[0]),u=parseFloat(p[1]);a+=(r-d)/(o.width/2)*e+d+","+((s-u)/(o.height/2)*i+u)+" "}t.attr("points",a)}},e.prototype.convertToPx=function(t){var i=t;if("string"==typeof t){var n=t.length,o=1;t.endsWith("px")?n-=2:t.endsWith("pt")&&(n-=2,o=e.GVPT_2_PX),i=parseFloat(t.substring(0,n))*o}return i},e.prototype.findEdge=function(t,e,i){var n=[];for(var o in this._edgesByName){var r=e(t,o);r&&(i&&i.push(this._edgesByName[o]),n.push(r))}return n},e.prototype.findLinked=function(e,i,n,o){var r=t(e),s=null;i&&(s=o);var h=this.findEdge(r.attr("data-name"),n,s);for(var a in h){var l=this._nodesByName[h[a]];o.is(l)||(o.push(l),this.findLinked(l,i,n,o))}},e.prototype.colorElement=function(e,i){var n=this.$element.css("background");e.find("polygon, ellipse, path").each(function(){var e=t(this),o=e.data("graphviz.svg.color");o.fill&&"path"!=e.prop("tagName")&&e.attr("fill",i(o.fill,n)),o.stroke&&e.attr("stroke",i(o.stroke,n))})},e.prototype.restoreElement=function(e){e.find("polygon, ellipse, path").each(function(){var e=t(this),i=e.data("graphviz.svg.color");i.fill&&e.attr("fill",i.fill),i.stroke&&e.attr("stroke",i.stroke)})},e.prototype.nodes=function(){return this.$nodes},e.prototype.edges=function(){return this.$edges},e.prototype.nodesByName=function(){return this._nodesByName},e.prototype.edgesByName=function(){return this._edgesByName},e.prototype.linkedTo=function(e,i){var n=t();return this.findLinked(e,i,function(t,e){var i=null,n="->"+t;return e.endsWith(n)&&(i=e.substring(0,e.length-n.length)),i},n),n},e.prototype.linkedFrom=function(e,i){var n=t();return this.findLinked(e,i,function(t,e){var i=null,n=t+"->";return e.startsWith(n)&&(i=e.substring(n.length)),i},n),n},e.prototype.linked=function(e,i){var n=t();return this.findLinked(e,i,function(t,e){return"^"+name+"--(.*)$"},n),this.findLinked(e,i,function(t,e){return"^(.*)--"+name+"$"},n),n},e.prototype.tooltip=function(e,i){var n=this.options;e.each(function(){t(this).children("a[title]").each(function(){i?n.tooltips.show.call(this):n.tooltips.hide.call(this)})})},e.prototype.bringToFront=function(t){t.detach().appendTo(this.$graph)},e.prototype.sendToBack=function(t){this.$background.length?$element.insertAfter(this.$background):t.detach().prependTo(this.$graph)},e.prototype.highlight=function(e,i){var n=this,o=this.options,r=this.$nodes.add(this.$edges);e&&e.length>0?(r.not(e).each(function(){n.colorElement(t(this),o.highlight.unselected),n.tooltip(t(this))}),e.each(function(){n.colorElement(t(this),o.highlight.selected)}),i&&this.tooltip(e,!0)):(r.each(function(){n.restoreElement(t(this))}),this.tooltip(r))},e.prototype.destroy=function(){var t=this;this.hide(function(){t.$element.off("."+t.type).removeData(t.type)})};var i=t.fn.graphviz;t.fn.graphviz=function(i){return this.each(function(){var n=t(this),o=n.data("graphviz.svg"),r="object"==typeof i&&i;!o&&/destroy/.test(i)||(o||n.data("graphviz.svg",o=new e(this,r)),"string"==typeof i&&o[i]())})},t.fn.graphviz.Constructor=e,t.fn.graphviz.noConflict=function(){return t.fn.graphviz=i,this}}(jQuery);</script>
+		<script type="text/javascript">
+ 			$(document).ready(function(){
+                $("#graph").graphviz({
+                    svg: `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="8062pt" height="857pt"
+ viewBox="0.00 0.00 8062.48 856.66" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 852.66)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-852.66 8058.48,-852.66 8058.48,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_G</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M41.48,-8C41.48,-8 8034.48,-8 8034.48,-8 8040.48,-8 8046.48,-14 8046.48,-20 8046.48,-20 8046.48,-828.66 8046.48,-828.66 8046.48,-834.66 8040.48,-840.66 8034.48,-840.66 8034.48,-840.66 41.48,-840.66 41.48,-840.66 35.48,-840.66 29.48,-834.66 29.48,-828.66 29.48,-828.66 29.48,-20 29.48,-20 29.48,-14 35.48,-8 41.48,-8"/>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_api_gui_easicmd</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M1720.48,-16C1720.48,-16 7381.48,-16 7381.48,-16 7387.48,-16 7393.48,-22 7393.48,-28 7393.48,-28 7393.48,-727.92 7393.48,-727.92 7393.48,-733.92 7387.48,-739.92 7381.48,-739.92 7381.48,-739.92 1720.48,-739.92 1720.48,-739.92 1714.48,-739.92 1708.48,-733.92 1708.48,-727.92 1708.48,-727.92 1708.48,-28 1708.48,-28 1708.48,-22 1714.48,-16 1720.48,-16"/>
+<text text-anchor="middle" x="4550.98" y="-724.72" font-family="Times,serif" font-size="14.00">api_gui_easicmd</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_api_gui_easicmd__FullScreenApp</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M161.48,-554.44C161.48,-554.44 445.48,-554.44 445.48,-554.44 451.48,-554.44 457.48,-560.44 457.48,-566.44 457.48,-566.44 457.48,-727.92 457.48,-727.92 457.48,-733.92 451.48,-739.92 445.48,-739.92 445.48,-739.92 161.48,-739.92 161.48,-739.92 155.48,-739.92 149.48,-733.92 149.48,-727.92 149.48,-727.92 149.48,-566.44 149.48,-566.44 149.48,-560.44 155.48,-554.44 161.48,-554.44"/>
+<text text-anchor="middle" x="303.48" y="-724.72" font-family="Times,serif" font-size="14.00">api_gui_easicmd.FullScreenApp</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_api_gui_easicmd__Test</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M7413.48,-554.44C7413.48,-554.44 8026.48,-554.44 8026.48,-554.44 8032.48,-554.44 8038.48,-560.44 8038.48,-566.44 8038.48,-566.44 8038.48,-820.66 8038.48,-820.66 8038.48,-826.66 8032.48,-832.66 8026.48,-832.66 8026.48,-832.66 7413.48,-832.66 7413.48,-832.66 7407.48,-832.66 7401.48,-826.66 7401.48,-820.66 7401.48,-820.66 7401.48,-566.44 7401.48,-566.44 7401.48,-560.44 7407.48,-554.44 7413.48,-554.44"/>
+<text text-anchor="middle" x="7719.98" y="-817.46" font-family="Times,serif" font-size="14.00">api_gui_easicmd.Test</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_api_gui_easicmd__theme_gui</title>
+<path fill="#808080" fill-opacity="0.094118" stroke="black" d="M477.48,-554.44C477.48,-554.44 1688.48,-554.44 1688.48,-554.44 1694.48,-554.44 1700.48,-560.44 1700.48,-566.44 1700.48,-566.44 1700.48,-635.18 1700.48,-635.18 1700.48,-641.18 1694.48,-647.18 1688.48,-647.18 1688.48,-647.18 477.48,-647.18 477.48,-647.18 471.48,-647.18 465.48,-641.18 465.48,-635.18 465.48,-635.18 465.48,-566.44 465.48,-566.44 465.48,-560.44 471.48,-554.44 477.48,-554.44"/>
+<text text-anchor="middle" x="1082.98" y="-631.98" font-family="Times,serif" font-size="14.00">api_gui_easicmd.theme_gui</text>
+</g>
+<!-- api_gui_easicmd -->
+<g id="node1" class="node">
+<title>api_gui_easicmd</title>
+<ellipse fill="#ffffff" fill-opacity="0.698039" stroke="black" cx="3330.48" cy="-774.79" rx="86.38" ry="18"/>
+<text text-anchor="middle" x="3330.48" y="-771.09" font-family="Times,serif" font-size="14.00" fill="#000000">api_gui_easicmd</text>
+</g>
+<!-- api_gui_easicmd__FullScreenApp -->
+<g id="node22" class="node">
+<title>api_gui_easicmd__FullScreenApp</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6112.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="6112.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">FullScreenApp</text>
+<text text-anchor="middle" x="6112.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2228)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__FullScreenApp -->
+<g id="edge6" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__FullScreenApp</title>
+<path fill="none" stroke="#000000" d="M3416.92,-773.5C3856.81,-771.93 5830.97,-763.56 5958.48,-739.92 5989.94,-734.09 6023.42,-722.43 6051.1,-711.19"/>
+<polygon fill="#000000" stroke="#000000" points="6052.74,-714.3 6060.64,-707.24 6050.06,-707.83 6052.74,-714.3"/>
+</g>
+<!-- api_gui_easicmd__GUIIMKDIR -->
+<g id="node36" class="node">
+<title>api_gui_easicmd__GUIIMKDIR</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2908.48" cy="-499.57" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="2908.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">GUIIMKDIR</text>
+<text text-anchor="middle" x="2908.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:30)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIIMKDIR -->
+<g id="edge7" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIIMKDIR</title>
+<path fill="none" stroke="#000000" d="M3244.05,-773.72C2730.09,-773.17 97.24,-768.98 68.48,-739.92 39.48,-710.62 39.48,-583.74 68.48,-554.44 94.84,-527.81 2729.17,-530.01 2766.48,-526.44 2780.03,-525.15 2794.22,-523.24 2808.17,-521.03"/>
+<polygon fill="#000000" stroke="#000000" points="2808.97,-524.45 2818.28,-519.38 2807.84,-517.54 2808.97,-524.45"/>
+</g>
+<!-- api_gui_easicmd__GUIIRM -->
+<g id="node37" class="node">
+<title>api_gui_easicmd__GUIIRM</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6006.48" cy="-589.31" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="6006.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">GUIIRM</text>
+<text text-anchor="middle" x="6006.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:34)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIIRM -->
+<g id="edge11" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIIRM</title>
+<path fill="none" stroke="#000000" d="M3416.76,-773.62C3899.18,-772.53 6241.75,-765.94 6267.48,-739.92 6293.95,-713.14 6293.14,-682.74 6267.48,-655.18 6258.98,-646.05 6167.66,-649.88 6155.48,-647.18 6125.62,-640.57 6093.8,-629.08 6067.26,-618.15"/>
+<polygon fill="#000000" stroke="#000000" points="6068.31,-614.79 6057.73,-614.16 6065.6,-621.25 6068.31,-614.79"/>
+</g>
+<!-- api_gui_easicmd__GUIPULL -->
+<g id="node38" class="node">
+<title>api_gui_easicmd__GUIPULL</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6297.48" cy="-589.31" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="6297.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">GUIPULL</text>
+<text text-anchor="middle" x="6297.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:26)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIPULL -->
+<g id="edge5" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIPULL</title>
+<path fill="none" stroke="#000000" d="M3416.73,-773.58C3900.34,-772.27 6254.27,-764.66 6281.48,-739.92 6312.22,-711.97 6310.94,-661 6305.56,-626.41"/>
+<polygon fill="#000000" stroke="#000000" points="6308.95,-625.49 6303.79,-616.24 6302.06,-626.69 6308.95,-625.49"/>
+</g>
+<!-- api_gui_easicmd__GUIPUSH -->
+<g id="node39" class="node">
+<title>api_gui_easicmd__GUIPUSH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3621.48" cy="-682.05" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="3621.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">GUIPUSH</text>
+<text text-anchor="middle" x="3621.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:22)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIPUSH -->
+<g id="edge1" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__GUIPUSH</title>
+<path fill="none" stroke="#000000" d="M3391.95,-762.09C3419.05,-756.35 3451.11,-748.76 3479.48,-739.92 3505.89,-731.69 3534.32,-720.74 3558.75,-710.65"/>
+<polygon fill="#000000" stroke="#000000" points="3560.37,-713.76 3568.25,-706.68 3557.68,-707.3 3560.37,-713.76"/>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_META -->
+<g id="node47" class="node">
+<title>api_gui_easicmd__INIT_ADD_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4126.48" cy="-499.57" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4126.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_ADD_META</text>
+<text text-anchor="middle" x="4126.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:893)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_ADD_META -->
+<g id="edge16" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_ADD_META</title>
+<path fill="none" stroke="#000000" d="M3244.04,-773.69C2737.31,-773.03 173.52,-768.26 145.48,-739.92 130.98,-725.27 130.96,-569.07 145.48,-554.44 182.98,-516.66 3925.46,-531.23 3978.48,-526.44 3992.72,-525.15 4007.66,-523.23 4022.34,-521"/>
+<polygon fill="#000000" stroke="#000000" points="4023.11,-524.42 4032.44,-519.41 4022.02,-517.51 4023.11,-524.42"/>
+</g>
+<!-- api_gui_easicmd__INIT_EDIT -->
+<g id="node49" class="node">
+<title>api_gui_easicmd__INIT_EDIT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5803.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="5803.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_EDIT</text>
+<text text-anchor="middle" x="5803.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1885)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_EDIT -->
+<g id="edge18" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_EDIT</title>
+<path fill="none" stroke="#000000" d="M3416.97,-773.35C3824.5,-771.15 5537.93,-760.7 5649.48,-739.92 5680.93,-734.06 5714.42,-722.4 5742.1,-711.16"/>
+<polygon fill="#000000" stroke="#000000" points="5743.73,-714.27 5751.64,-707.21 5741.06,-707.8 5743.73,-714.27"/>
+</g>
+<!-- api_gui_easicmd__INIT_ICHMOD -->
+<g id="node50" class="node">
+<title>api_gui_easicmd__INIT_ICHMOD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3205.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3205.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_ICHMOD</text>
+<text text-anchor="middle" x="3205.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1758)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_ICHMOD -->
+<g id="edge12" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_ICHMOD</title>
+<path fill="none" stroke="#000000" d="M3243.88,-773.71C2731.87,-773.13 122,-768.74 93.48,-739.92 64.49,-710.62 64.47,-583.72 93.48,-554.44 122.38,-525.26 3009.56,-530.03 3050.48,-526.44 3065.53,-525.12 3081.32,-523.16 3096.82,-520.9"/>
+<polygon fill="#000000" stroke="#000000" points="3097.59,-524.33 3106.96,-519.38 3096.55,-517.4 3097.59,-524.33"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST -->
+<g id="node51" class="node">
+<title>api_gui_easicmd__INIT_IDUST</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="7205.48" cy="-409.83" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7205.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_IDUST</text>
+<text text-anchor="middle" x="7205.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1535)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_IDUST -->
+<g id="edge4" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_IDUST</title>
+<path fill="none" stroke="#000000" d="M3417.16,-774C3843.1,-774.84 5717.15,-776.36 6299.48,-739.92 6542.34,-724.72 7242.42,-731.47 7373.48,-526.44 7386.34,-506.32 7387.14,-492.29 7373.48,-472.7 7360.62,-454.27 7341.63,-441.31 7320.99,-432.21"/>
+<polygon fill="#000000" stroke="#000000" points="7322.31,-428.97 7311.73,-428.42 7319.66,-435.45 7322.31,-428.97"/>
+</g>
+<!-- api_gui_easicmd__INIT_RM_META -->
+<g id="node56" class="node">
+<title>api_gui_easicmd__INIT_RM_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3514.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3514.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_RM_META</text>
+<text text-anchor="middle" x="3514.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1077)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_RM_META -->
+<g id="edge13" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_RM_META</title>
+<path fill="none" stroke="#000000" d="M3244,-773.7C2734.16,-773.09 141.81,-768.56 113.48,-739.92 84.49,-710.62 84.46,-583.71 113.48,-554.44 145.23,-522.41 3315.55,-530.38 3360.48,-526.44 3375.32,-525.14 3390.89,-523.2 3406.19,-520.97"/>
+<polygon fill="#000000" stroke="#000000" points="3406.82,-524.41 3416.19,-519.46 3405.78,-517.49 3406.82,-524.41"/>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_NAME -->
+<g id="node58" class="node">
+<title>api_gui_easicmd__INIT_SEARCH_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2611.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2611.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_SEARCH_NAME</text>
+<text text-anchor="middle" x="2611.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1466)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_SEARCH_NAME -->
+<g id="edge2" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_SEARCH_NAME</title>
+<path fill="none" stroke="#000000" d="M3243.81,-773.72C2726.93,-773.22 72.47,-769.21 43.48,-739.92 -14.51,-681.33 -14.47,-613.07 43.48,-554.44 66.72,-530.92 2391.5,-528.91 2424.48,-526.44 2446.97,-524.76 2470.88,-522.11 2493.83,-519.14"/>
+<polygon fill="#000000" stroke="#000000" points="2494.49,-522.58 2503.94,-517.8 2493.57,-515.64 2494.49,-522.58"/>
+</g>
+<!-- api_gui_easicmd__INIT_SHOW_META -->
+<g id="node59" class="node">
+<title>api_gui_easicmd__INIT_SHOW_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3823.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3823.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_SHOW_META</text>
+<text text-anchor="middle" x="3823.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1227)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_SHOW_META -->
+<g id="edge9" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_SHOW_META</title>
+<path fill="none" stroke="#000000" d="M3244.13,-773.7C2736.47,-773.05 161.63,-768.37 133.48,-739.92 104.49,-710.62 104.45,-583.7 133.48,-554.44 168.07,-519.58 3620.55,-530.72 3669.48,-526.44 3684.32,-525.14 3699.89,-523.21 3715.19,-520.98"/>
+<polygon fill="#000000" stroke="#000000" points="3715.82,-524.42 3725.19,-519.47 3714.78,-517.5 3715.82,-524.42"/>
+</g>
+<!-- api_gui_easicmd__INIT_UPD_PATH -->
+<g id="node60" class="node">
+<title>api_gui_easicmd__INIT_UPD_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5181.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="5181.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_UPD_PATH</text>
+<text text-anchor="middle" x="5181.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1982)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_UPD_PATH -->
+<g id="edge17" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__INIT_UPD_PATH</title>
+<path fill="none" stroke="#000000" d="M3416.92,-773.75C3740.39,-773.37 4869,-769.88 5027.48,-739.92 5058.79,-734 5092.13,-722.4 5119.75,-711.22"/>
+<polygon fill="#000000" stroke="#000000" points="5121.36,-714.34 5129.27,-707.29 5118.69,-707.87 5121.36,-714.34"/>
+</g>
+<!-- api_gui_easicmd__create_and_wait_for_config -->
+<g id="node83" class="node">
+<title>api_gui_easicmd__create_and_wait_for_config</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5492.48" cy="-682.05" rx="147.57" ry="26.74"/>
+<text text-anchor="middle" x="5492.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">create_and_wait_for_config</text>
+<text text-anchor="middle" x="5492.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2145)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__create_and_wait_for_config -->
+<g id="edge10" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__create_and_wait_for_config</title>
+<path fill="none" stroke="#000000" d="M3416.87,-774.02C3776.68,-774.75 5146.35,-775.15 5336.48,-739.92 5368.44,-734 5402.51,-722.26 5430.63,-710.98"/>
+<polygon fill="#000000" stroke="#000000" points="5431.99,-714.2 5439.92,-707.18 5429.34,-707.72 5431.99,-714.2"/>
+</g>
+<!-- api_gui_easicmd__create_and_wait_for_password -->
+<g id="node84" class="node">
+<title>api_gui_easicmd__create_and_wait_for_password</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3937.48" cy="-682.05" rx="165.43" ry="26.74"/>
+<text text-anchor="middle" x="3937.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">create_and_wait_for_password</text>
+<text text-anchor="middle" x="3937.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2218)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__create_and_wait_for_password -->
+<g id="edge8" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__create_and_wait_for_password</title>
+<path fill="none" stroke="#000000" d="M3416.74,-773.06C3504.73,-770.91 3644.8,-763.61 3763.48,-739.92 3798.08,-733.02 3835.39,-721.41 3866.56,-710.47"/>
+<polygon fill="#000000" stroke="#000000" points="3867.77,-713.75 3876.02,-707.1 3865.43,-707.16 3867.77,-713.75"/>
+</g>
+<!-- api_gui_easicmd__help_gui -->
+<g id="node88" class="node">
+<title>api_gui_easicmd__help_gui</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3040.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3040.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">help_gui</text>
+<text text-anchor="middle" x="3040.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1995)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__help_gui -->
+<g id="edge15" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__help_gui</title>
+<path fill="none" stroke="#000000" d="M3274.28,-761.1C3249.9,-755.23 3221.11,-747.81 3195.48,-739.92 3167.18,-731.21 3136.47,-720.26 3109.92,-710.31"/>
+<polygon fill="#000000" stroke="#000000" points="3110.92,-706.95 3100.33,-706.69 3108.45,-713.5 3110.92,-706.95"/>
+</g>
+<!-- api_gui_easicmd__theme_gui -->
+<g id="node94" class="node">
+<title>api_gui_easicmd__theme_gui</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="1862.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="1862.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">theme_gui</text>
+<text text-anchor="middle" x="1862.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2023)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__theme_gui -->
+<g id="edge14" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__theme_gui</title>
+<path fill="none" stroke="#000000" d="M3248.93,-768.75C3010.96,-754.04 2314.93,-711.02 2009.28,-692.12"/>
+<polygon fill="#000000" stroke="#000000" points="2009.21,-688.61 1999.02,-691.49 2008.78,-695.6 2009.21,-688.61"/>
+</g>
+<!-- api_gui_easicmd__FullScreenApp____init__ -->
+<g id="node97" class="node">
+<title>api_gui_easicmd__FullScreenApp____init__</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="303.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="303.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">__init__</text>
+<text text-anchor="middle" x="303.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2229)</text>
+</g>
+<!-- api_gui_easicmd&#45;&gt;api_gui_easicmd__FullScreenApp____init__ -->
+<g id="edge3" class="edge">
+<title>api_gui_easicmd&#45;&gt;api_gui_easicmd__FullScreenApp____init__</title>
+<path fill="none" stroke="#000000" d="M3244.52,-772.6C3002.27,-769.11 2293.26,-758 1704.48,-739.92 1248.87,-725.93 710.22,-701.98 453.76,-690.13"/>
+<polygon fill="#000000" stroke="#000000" points="453.79,-686.62 443.64,-689.66 453.46,-693.62 453.79,-686.62"/>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH -->
+<g id="node2" class="node">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5568.48" cy="-409.83" rx="161.85" ry="26.74"/>
+<text text-anchor="middle" x="5568.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">ADDMETA_GET_IRODS_PATH</text>
+<text text-anchor="middle" x="5568.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:832)</text>
+</g>
+<!-- api_gui_easicmd__GET_ADDMETA_FILE_NAME -->
+<g id="node23" class="node">
+<title>api_gui_easicmd__GET_ADDMETA_FILE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5525.48" cy="-320.09" rx="158.28" ry="26.74"/>
+<text text-anchor="middle" x="5525.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_ADDMETA_FILE_NAME</text>
+<text text-anchor="middle" x="5525.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:805)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_ADDMETA_FILE_NAME -->
+<g id="edge81" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_ADDMETA_FILE_NAME</title>
+<path fill="none" stroke="#000000" d="M5555.81,-382.98C5551.69,-374.58 5547.05,-365.1 5542.66,-356.14"/>
+<polygon fill="#000000" stroke="#000000" points="5545.75,-354.5 5538.2,-347.06 5539.46,-357.58 5545.75,-354.5"/>
+</g>
+<!-- api_gui_easicmd__GET_IRODS_PATH -->
+<g id="node28" class="node">
+<title>api_gui_easicmd__GET_IRODS_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4919.48" cy="-320.09" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="4919.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_IRODS_PATH</text>
+<text text-anchor="middle" x="4919.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:93)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge79" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M5434.48,-394.65C5332.11,-383.29 5187.61,-366.13 5061.48,-346.96 5049.26,-345.1 5036.48,-343 5023.81,-340.82"/>
+<polygon fill="#000000" stroke="#000000" points="5024.13,-337.32 5013.68,-339.05 5022.93,-344.22 5024.13,-337.32"/>
+</g>
+<!-- api_gui_easicmd__GIVE_META -->
+<g id="node33" class="node">
+<title>api_gui_easicmd__GIVE_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5542.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5542.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">GIVE_META</text>
+<text text-anchor="middle" x="5542.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:757)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GIVE_META -->
+<g id="edge83" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GIVE_META</title>
+<path fill="none" stroke="#000000" d="M5646.14,-386.17C5664.43,-377.01 5681.72,-364.35 5692.48,-346.96 5705.04,-326.65 5705.76,-313.07 5692.48,-293.22 5680.97,-276.02 5663.7,-263.59 5644.94,-254.62"/>
+<polygon fill="#000000" stroke="#000000" points="5646.19,-251.35 5635.63,-250.49 5643.35,-257.75 5646.19,-251.35"/>
+</g>
+<!-- api_gui_easicmd__get_next_level_folders -->
+<g id="node87" class="node">
+<title>api_gui_easicmd__get_next_level_folders</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5687.48" cy="-50.87" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5687.48" y="-54.67" font-family="Times,serif" font-size="14.00" fill="#000000">get_next_level_folders</text>
+<text text-anchor="middle" x="5687.48" y="-39.67" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:148)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge80" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M5651.05,-386.54C5670.55,-377.39 5689.21,-364.64 5701.48,-346.96 5756.07,-268.29 5723.59,-147.42 5702,-87.74"/>
+<polygon fill="#000000" stroke="#000000" points="5705.15,-86.17 5698.38,-78.02 5698.59,-88.61 5705.15,-86.17"/>
+</g>
+<!-- api_gui_easicmd__on_treeview_open -->
+<g id="node90" class="node">
+<title>api_gui_easicmd__on_treeview_open</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5880.48" cy="-320.09" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5880.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">on_treeview_open</text>
+<text text-anchor="middle" x="5880.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:175)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge84" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M5648.42,-386.35C5693,-373.81 5748.54,-358.19 5794.11,-345.38"/>
+<polygon fill="#000000" stroke="#000000" points="5795.29,-348.68 5803.97,-342.61 5793.4,-341.94 5795.29,-348.68"/>
+</g>
+<!-- api_gui_easicmd__populate_treeview -->
+<g id="node92" class="node">
+<title>api_gui_easicmd__populate_treeview</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5984.48" cy="-50.87" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5984.48" y="-54.67" font-family="Times,serif" font-size="14.00" fill="#000000">populate_treeview</text>
+<text text-anchor="middle" x="5984.48" y="-39.67" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:164)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge82" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M5715.96,-398.61C5842.56,-388.3 6007.86,-370.54 6028.48,-346.96 6093.02,-273.16 6038.06,-147.17 6005.04,-86.51"/>
+<polygon fill="#000000" stroke="#000000" points="6008.06,-84.75 6000.14,-77.7 6001.94,-88.14 6008.06,-84.75"/>
+</g>
+<!-- api_gui_easicmd__treeview_filter -->
+<g id="node96" class="node">
+<title>api_gui_easicmd__treeview_filter</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5209.48" cy="-320.09" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5209.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">treeview_filter</text>
+<text text-anchor="middle" x="5209.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:194)</text>
+</g>
+<!-- api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge78" class="edge">
+<title>api_gui_easicmd__ADDMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M5480.2,-387.25C5426.55,-374.14 5358.09,-357.41 5303.44,-344.05"/>
+<polygon fill="#000000" stroke="#000000" points="5303.95,-340.58 5293.4,-341.6 5302.29,-347.38 5303.95,-340.58"/>
+</g>
+<!-- api_gui_easicmd__ADD_META_CMD -->
+<g id="node3" class="node">
+<title>api_gui_easicmd__ADD_META_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5553.48" cy="-140.61" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5553.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">ADD_META_CMD</text>
+<text text-anchor="middle" x="5553.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:728)</text>
+</g>
+<!-- api_gui_easicmd__ADD_PATH -->
+<g id="node4" class="node">
+<title>api_gui_easicmd__ADD_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4774.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="4774.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">ADD_PATH</text>
+<text text-anchor="middle" x="4774.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1926)</text>
+</g>
+<!-- api_gui_easicmd__BUILD_SEARCH_CMD -->
+<g id="node5" class="node">
+<title>api_gui_easicmd__BUILD_SEARCH_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="1862.48" cy="-320.09" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="1862.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">BUILD_SEARCH_CMD</text>
+<text text-anchor="middle" x="1862.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1365)</text>
+</g>
+<!-- api_gui_easicmd__CLEAN_ICHMOD -->
+<g id="node6" class="node">
+<title>api_gui_easicmd__CLEAN_ICHMOD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2964.48" cy="-50.87" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2964.48" y="-54.67" font-family="Times,serif" font-size="14.00" fill="#000000">CLEAN_ICHMOD</text>
+<text text-anchor="middle" x="2964.48" y="-39.67" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1585)</text>
+</g>
+<!-- api_gui_easicmd__CLEAN_PATH -->
+<g id="node7" class="node">
+<title>api_gui_easicmd__CLEAN_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5083.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="5083.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">CLEAN_PATH</text>
+<text text-anchor="middle" x="5083.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1922)</text>
+</g>
+<!-- api_gui_easicmd__CLEAR_SEARCH_TEXT -->
+<g id="node8" class="node">
+<title>api_gui_easicmd__CLEAR_SEARCH_TEXT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2171.48" cy="-320.09" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2171.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">CLEAR_SEARCH_TEXT</text>
+<text text-anchor="middle" x="2171.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1268)</text>
+</g>
+<!-- api_gui_easicmd__CLEAR_TEXT -->
+<g id="node9" class="node">
+<title>api_gui_easicmd__CLEAR_TEXT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4948.48" cy="-140.61" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4948.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">CLEAR_TEXT</text>
+<text text-anchor="middle" x="4948.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:722)</text>
+</g>
+<!-- api_gui_easicmd__CMD_IMKDIR -->
+<g id="node10" class="node">
+<title>api_gui_easicmd__CMD_IMKDIR</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3781.48" cy="-140.61" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="3781.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">CMD_IMKDIR</text>
+<text text-anchor="middle" x="3781.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:507)</text>
+</g>
+<!-- api_gui_easicmd__CREATE_IRODS_INFO_GUI -->
+<g id="node11" class="node">
+<title>api_gui_easicmd__CREATE_IRODS_INFO_GUI</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5693.48" cy="-499.57" rx="149.81" ry="26.74"/>
+<text text-anchor="middle" x="5693.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">CREATE_IRODS_INFO_GUI</text>
+<text text-anchor="middle" x="5693.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2134)</text>
+</g>
+<!-- api_gui_easicmd__DESTROY -->
+<g id="node12" class="node">
+<title>api_gui_easicmd__DESTROY</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6236.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6236.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">DESTROY</text>
+<text text-anchor="middle" x="6236.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:588)</text>
+</g>
+<!-- api_gui_easicmd__DOWNLOAD -->
+<g id="node13" class="node">
+<title>api_gui_easicmd__DOWNLOAD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6572.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6572.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">DOWNLOAD</text>
+<text text-anchor="middle" x="6572.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:352)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_ADD -->
+<g id="node14" class="node">
+<title>api_gui_easicmd__EDIT_ADD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6909.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="6909.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">EDIT_ADD</text>
+<text text-anchor="middle" x="6909.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1812)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_ADD_GETVALUE -->
+<g id="node15" class="node">
+<title>api_gui_easicmd__EDIT_ADD_GETVALUE</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6909.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="6909.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">EDIT_ADD_GETVALUE</text>
+<text text-anchor="middle" x="6909.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1804)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_ADD&#45;&gt;api_gui_easicmd__EDIT_ADD_GETVALUE -->
+<g id="edge147" class="edge">
+<title>api_gui_easicmd__EDIT_ADD&#45;&gt;api_gui_easicmd__EDIT_ADD_GETVALUE</title>
+<path fill="none" stroke="#000000" d="M6909.48,-561.99C6909.48,-554.02 6909.48,-545.13 6909.48,-536.64"/>
+<polygon fill="#000000" stroke="#000000" points="6912.98,-536.57 6909.48,-526.57 6905.98,-536.57 6912.98,-536.57"/>
+</g>
+<!-- api_gui_easicmd__UPDATE_DICT -->
+<g id="node77" class="node">
+<title>api_gui_easicmd__UPDATE_DICT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6896.48" cy="-409.83" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="6896.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">UPDATE_DICT</text>
+<text text-anchor="middle" x="6896.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1797)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_ADD_GETVALUE&#45;&gt;api_gui_easicmd__UPDATE_DICT -->
+<g id="edge146" class="edge">
+<title>api_gui_easicmd__EDIT_ADD_GETVALUE&#45;&gt;api_gui_easicmd__UPDATE_DICT</title>
+<path fill="none" stroke="#000000" d="M6905.58,-472.25C6904.4,-464.28 6903.08,-455.39 6901.82,-446.9"/>
+<polygon fill="#000000" stroke="#000000" points="6905.26,-446.21 6900.33,-436.83 6898.33,-447.24 6905.26,-446.21"/>
+</g>
+<!-- api_gui_easicmd__EDIT_EDIT -->
+<g id="node16" class="node">
+<title>api_gui_easicmd__EDIT_EDIT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6600.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="6600.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">EDIT_EDIT</text>
+<text text-anchor="middle" x="6600.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1846)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_ADD_GETVALUE -->
+<g id="edge149" class="edge">
+<title>api_gui_easicmd__EDIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_ADD_GETVALUE</title>
+<path fill="none" stroke="#000000" d="M6677.65,-566.4C6721.7,-553.89 6777.05,-538.17 6822.62,-525.23"/>
+<polygon fill="#000000" stroke="#000000" points="6823.82,-528.53 6832.48,-522.43 6821.91,-521.8 6823.82,-528.53"/>
+</g>
+<!-- api_gui_easicmd__EDIT_RM_VALUE -->
+<g id="node18" class="node">
+<title>api_gui_easicmd__EDIT_RM_VALUE</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6600.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="6600.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">EDIT_RM_VALUE</text>
+<text text-anchor="middle" x="6600.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1838)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_RM_VALUE -->
+<g id="edge150" class="edge">
+<title>api_gui_easicmd__EDIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_RM_VALUE</title>
+<path fill="none" stroke="#000000" d="M6600.48,-561.99C6600.48,-554.02 6600.48,-545.13 6600.48,-536.64"/>
+<polygon fill="#000000" stroke="#000000" points="6603.98,-536.57 6600.48,-526.57 6596.98,-536.57 6603.98,-536.57"/>
+</g>
+<!-- api_gui_easicmd__EDIT_RM_ATTR -->
+<g id="node17" class="node">
+<title>api_gui_easicmd__EDIT_RM_ATTR</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="7218.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7218.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">EDIT_RM_ATTR</text>
+<text text-anchor="middle" x="7218.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1877)</text>
+</g>
+<!-- api_gui_easicmd__EDIT_RM_ATTR&#45;&gt;api_gui_easicmd__UPDATE_DICT -->
+<g id="edge151" class="edge">
+<title>api_gui_easicmd__EDIT_RM_ATTR&#45;&gt;api_gui_easicmd__UPDATE_DICT</title>
+<path fill="none" stroke="#000000" d="M7139.3,-476.99C7092.69,-464.3 7033.64,-448.2 6985.43,-435.07"/>
+<polygon fill="#000000" stroke="#000000" points="6986.2,-431.65 6975.63,-432.4 6984.36,-438.41 6986.2,-431.65"/>
+</g>
+<!-- api_gui_easicmd__EDIT_RM_VALUE&#45;&gt;api_gui_easicmd__UPDATE_DICT -->
+<g id="edge148" class="edge">
+<title>api_gui_easicmd__EDIT_RM_VALUE&#45;&gt;api_gui_easicmd__UPDATE_DICT</title>
+<path fill="none" stroke="#000000" d="M6675.17,-476.43C6716.89,-464.06 6769,-448.62 6812.17,-435.82"/>
+<polygon fill="#000000" stroke="#000000" points="6813.22,-439.16 6821.81,-432.96 6811.23,-432.45 6813.22,-439.16"/>
+</g>
+<!-- api_gui_easicmd__EXEC_SEARCH_CMD -->
+<g id="node19" class="node">
+<title>api_gui_easicmd__EXEC_SEARCH_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2480.48" cy="-320.09" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2480.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">EXEC_SEARCH_CMD</text>
+<text text-anchor="middle" x="2480.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1339)</text>
+</g>
+<!-- api_gui_easicmd__PRINT_SEARCH -->
+<g id="node66" class="node">
+<title>api_gui_easicmd__PRINT_SEARCH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2480.48" cy="-230.35" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2480.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">PRINT_SEARCH</text>
+<text text-anchor="middle" x="2480.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1353)</text>
+</g>
+<!-- api_gui_easicmd__EXEC_SEARCH_CMD&#45;&gt;api_gui_easicmd__PRINT_SEARCH -->
+<g id="edge115" class="edge">
+<title>api_gui_easicmd__EXEC_SEARCH_CMD&#45;&gt;api_gui_easicmd__PRINT_SEARCH</title>
+<path fill="none" stroke="#000000" d="M2480.48,-292.77C2480.48,-284.8 2480.48,-275.91 2480.48,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="2483.98,-267.35 2480.48,-257.35 2476.98,-267.35 2483.98,-267.35"/>
+</g>
+<!-- api_gui_easicmd__FILE_NAME_CMD -->
+<g id="node20" class="node">
+<title>api_gui_easicmd__FILE_NAME_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3098.48" cy="-320.09" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3098.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">FILE_NAME_CMD</text>
+<text text-anchor="middle" x="3098.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1425)</text>
+</g>
+<!-- api_gui_easicmd__PRINT_NAME -->
+<g id="node65" class="node">
+<title>api_gui_easicmd__PRINT_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2799.48" cy="-230.35" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2799.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">PRINT_NAME</text>
+<text text-anchor="middle" x="2799.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1432)</text>
+</g>
+<!-- api_gui_easicmd__FILE_NAME_CMD&#45;&gt;api_gui_easicmd__PRINT_NAME -->
+<g id="edge119" class="edge">
+<title>api_gui_easicmd__FILE_NAME_CMD&#45;&gt;api_gui_easicmd__PRINT_NAME</title>
+<path fill="none" stroke="#000000" d="M3023.03,-296.95C2980.81,-284.56 2928.05,-269.08 2884.39,-256.27"/>
+<polygon fill="#000000" stroke="#000000" points="2885.23,-252.87 2874.64,-253.41 2883.25,-259.58 2885.23,-252.87"/>
+</g>
+<!-- api_gui_easicmd__FOLDER_NAME_CMD -->
+<g id="node21" class="node">
+<title>api_gui_easicmd__FOLDER_NAME_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2789.48" cy="-320.09" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2789.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">FOLDER_NAME_CMD</text>
+<text text-anchor="middle" x="2789.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1444)</text>
+</g>
+<!-- api_gui_easicmd__FOLDER_NAME_CMD&#45;&gt;api_gui_easicmd__PRINT_NAME -->
+<g id="edge120" class="edge">
+<title>api_gui_easicmd__FOLDER_NAME_CMD&#45;&gt;api_gui_easicmd__PRINT_NAME</title>
+<path fill="none" stroke="#000000" d="M2792.48,-292.77C2793.39,-284.8 2794.4,-275.91 2795.37,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="2798.86,-267.69 2796.51,-257.35 2791.9,-266.89 2798.86,-267.69"/>
+</g>
+<!-- api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="node27" class="node">
+<title>api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4927.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4927.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">GET_IRODS_FILE_PATH</text>
+<text text-anchor="middle" x="4927.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:125)</text>
+</g>
+<!-- api_gui_easicmd__GET_ADDMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="edge76" class="edge">
+<title>api_gui_easicmd__GET_ADDMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<path fill="none" stroke="#000000" d="M5412.12,-301.25C5393.86,-298.49 5375.16,-295.72 5357.48,-293.22 5233.68,-275.7 5202.12,-275.78 5078.48,-257.22 5065.25,-255.23 5051.39,-253.03 5037.66,-250.77"/>
+<polygon fill="#000000" stroke="#000000" points="5038.13,-247.3 5027.7,-249.12 5036.99,-254.21 5038.13,-247.3"/>
+</g>
+<!-- api_gui_easicmd__GET_ADDMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GIVE_META -->
+<g id="edge77" class="edge">
+<title>api_gui_easicmd__GET_ADDMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GIVE_META</title>
+<path fill="none" stroke="#000000" d="M5530.58,-292.77C5532.12,-284.8 5533.84,-275.91 5535.49,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="5538.97,-267.84 5537.44,-257.35 5532.1,-266.51 5538.97,-267.84"/>
+</g>
+<!-- api_gui_easicmd__GET_ICHMOD_FILE_NAME -->
+<g id="node24" class="node">
+<title>api_gui_easicmd__GET_ICHMOD_FILE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3453.48" cy="-320.09" rx="150.73" ry="26.74"/>
+<text text-anchor="middle" x="3453.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_ICHMOD_FILE_NAME</text>
+<text text-anchor="middle" x="3453.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1669)</text>
+</g>
+<!-- api_gui_easicmd__GET_ICHMOD_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="edge135" class="edge">
+<title>api_gui_easicmd__GET_ICHMOD_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<path fill="none" stroke="#000000" d="M3562.72,-301.44C3586.02,-298.22 3610.52,-295.25 3633.48,-293.22 4108.78,-251.22 4230.66,-292.99 4706.48,-257.22 4738.46,-254.82 4772.93,-251.25 4804.93,-247.53"/>
+<polygon fill="#000000" stroke="#000000" points="4805.7,-250.96 4815.22,-246.32 4804.88,-244.01 4805.7,-250.96"/>
+</g>
+<!-- api_gui_easicmd__USER_OR_GROUP -->
+<g id="node78" class="node">
+<title>api_gui_easicmd__USER_OR_GROUP</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3118.48" cy="-230.35" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3118.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">USER_OR_GROUP</text>
+<text text-anchor="middle" x="3118.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1638)</text>
+</g>
+<!-- api_gui_easicmd__GET_ICHMOD_FILE_NAME&#45;&gt;api_gui_easicmd__USER_OR_GROUP -->
+<g id="edge136" class="edge">
+<title>api_gui_easicmd__GET_ICHMOD_FILE_NAME&#45;&gt;api_gui_easicmd__USER_OR_GROUP</title>
+<path fill="none" stroke="#000000" d="M3371.1,-297.51C3322.24,-284.72 3260.23,-268.48 3209.87,-255.29"/>
+<polygon fill="#000000" stroke="#000000" points="3210.52,-251.84 3199.96,-252.69 3208.75,-258.61 3210.52,-251.84"/>
+</g>
+<!-- api_gui_easicmd__GET_IRM_FILE_NAME -->
+<g id="node25" class="node">
+<title>api_gui_easicmd__GET_IRM_FILE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6236.48" cy="-320.09" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6236.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_IRM_FILE_NAME</text>
+<text text-anchor="middle" x="6236.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:596)</text>
+</g>
+<!-- api_gui_easicmd__GET_IRM_FILE_NAME&#45;&gt;api_gui_easicmd__DESTROY -->
+<g id="edge63" class="edge">
+<title>api_gui_easicmd__GET_IRM_FILE_NAME&#45;&gt;api_gui_easicmd__DESTROY</title>
+<path fill="none" stroke="#000000" d="M6236.48,-292.77C6236.48,-284.8 6236.48,-275.91 6236.48,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="6239.98,-267.35 6236.48,-257.35 6232.98,-267.35 6239.98,-267.35"/>
+</g>
+<!-- api_gui_easicmd__GET_IRM_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="edge62" class="edge">
+<title>api_gui_easicmd__GET_IRM_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<path fill="none" stroke="#000000" d="M6126.28,-303.6C6094.75,-299.65 6060.31,-295.8 6028.48,-293.22 5607.33,-259.11 5498.73,-300.99 5078.48,-257.22 5064.08,-255.72 5048.97,-253.69 5034.11,-251.42"/>
+<polygon fill="#000000" stroke="#000000" points="5034.3,-247.91 5023.88,-249.81 5033.22,-254.82 5034.3,-247.91"/>
+</g>
+<!-- api_gui_easicmd__GET_IRODS_FILE -->
+<g id="node26" class="node">
+<title>api_gui_easicmd__GET_IRODS_FILE</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6652.48" cy="-320.09" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6652.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_IRODS_FILE</text>
+<text text-anchor="middle" x="6652.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:372)</text>
+</g>
+<!-- api_gui_easicmd__GET_IRODS_FILE&#45;&gt;api_gui_easicmd__DOWNLOAD -->
+<g id="edge41" class="edge">
+<title>api_gui_easicmd__GET_IRODS_FILE&#45;&gt;api_gui_easicmd__DOWNLOAD</title>
+<path fill="none" stroke="#000000" d="M6628.91,-293.24C6620.69,-284.23 6611.35,-273.98 6602.67,-264.46"/>
+<polygon fill="#000000" stroke="#000000" points="6605.2,-262.05 6595.88,-257.02 6600.03,-266.76 6605.2,-262.05"/>
+</g>
+<!-- api_gui_easicmd__GET_IRODS_FILE&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="edge43" class="edge">
+<title>api_gui_easicmd__GET_IRODS_FILE&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<path fill="none" stroke="#000000" d="M6533.88,-305.88C6487.35,-301.15 6433.46,-296.26 6384.48,-293.22 5804.92,-257.3 5656.32,-314.39 5078.48,-257.22 5063.96,-255.78 5048.73,-253.78 5033.77,-251.51"/>
+<polygon fill="#000000" stroke="#000000" points="5033.88,-247.98 5023.46,-249.9 5032.8,-254.9 5033.88,-247.98"/>
+</g>
+<!-- api_gui_easicmd__WHERE_IN_LOCAL -->
+<g id="node79" class="node">
+<title>api_gui_easicmd__WHERE_IN_LOCAL</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6862.48" cy="-230.35" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="6862.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">WHERE_IN_LOCAL</text>
+<text text-anchor="middle" x="6862.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:88)</text>
+</g>
+<!-- api_gui_easicmd__GET_IRODS_FILE&#45;&gt;api_gui_easicmd__WHERE_IN_LOCAL -->
+<g id="edge42" class="edge">
+<title>api_gui_easicmd__GET_IRODS_FILE&#45;&gt;api_gui_easicmd__WHERE_IN_LOCAL</title>
+<path fill="none" stroke="#000000" d="M6709.03,-295.46C6736.1,-284.15 6768.67,-270.55 6796.82,-258.78"/>
+<polygon fill="#000000" stroke="#000000" points="6798.31,-261.95 6806.19,-254.87 6795.61,-255.49 6798.31,-261.95"/>
+</g>
+<!-- api_gui_easicmd__GET_NAME -->
+<g id="node29" class="node">
+<title>api_gui_easicmd__GET_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3781.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="3781.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">GET_NAME</text>
+<text text-anchor="middle" x="3781.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:511)</text>
+</g>
+<!-- api_gui_easicmd__GET_NAME&#45;&gt;api_gui_easicmd__CMD_IMKDIR -->
+<g id="edge54" class="edge">
+<title>api_gui_easicmd__GET_NAME&#45;&gt;api_gui_easicmd__CMD_IMKDIR</title>
+<path fill="none" stroke="#000000" d="M3781.48,-203.03C3781.48,-195.06 3781.48,-186.17 3781.48,-177.68"/>
+<polygon fill="#000000" stroke="#000000" points="3784.98,-177.61 3781.48,-167.61 3777.98,-177.61 3784.98,-177.61"/>
+</g>
+<!-- api_gui_easicmd__GET_RMMETA_FILE_NAME -->
+<g id="node30" class="node">
+<title>api_gui_easicmd__GET_RMMETA_FILE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4191.48" cy="-320.09" rx="152.97" ry="26.74"/>
+<text text-anchor="middle" x="4191.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_RMMETA_FILE_NAME</text>
+<text text-anchor="middle" x="4191.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:989)</text>
+</g>
+<!-- api_gui_easicmd__GET_RMMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="edge89" class="edge">
+<title>api_gui_easicmd__GET_RMMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<path fill="none" stroke="#000000" d="M4311.61,-303.45C4338.54,-300.01 4366.98,-296.44 4393.48,-293.22 4532.48,-276.33 4567.38,-273.36 4706.48,-257.22 4737.03,-253.67 4769.96,-249.83 4800.84,-246.22"/>
+<polygon fill="#000000" stroke="#000000" points="4801.26,-249.69 4810.78,-245.06 4800.44,-242.74 4801.26,-249.69"/>
+</g>
+<!-- api_gui_easicmd__GET_RM_ATTR -->
+<g id="node31" class="node">
+<title>api_gui_easicmd__GET_RM_ATTR</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4191.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4191.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">GET_RM_ATTR</text>
+<text text-anchor="middle" x="4191.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:951)</text>
+</g>
+<!-- api_gui_easicmd__GET_RMMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GET_RM_ATTR -->
+<g id="edge90" class="edge">
+<title>api_gui_easicmd__GET_RMMETA_FILE_NAME&#45;&gt;api_gui_easicmd__GET_RM_ATTR</title>
+<path fill="none" stroke="#000000" d="M4191.48,-292.77C4191.48,-284.8 4191.48,-275.91 4191.48,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="4194.98,-267.35 4191.48,-257.35 4187.98,-267.35 4194.98,-267.35"/>
+</g>
+<!-- api_gui_easicmd__GET_RM_ATTR&#45;&gt;api_gui_easicmd__CLEAR_TEXT -->
+<g id="edge88" class="edge">
+<title>api_gui_easicmd__GET_RM_ATTR&#45;&gt;api_gui_easicmd__CLEAR_TEXT</title>
+<path fill="none" stroke="#000000" d="M4305.03,-214.73C4334.78,-210.98 4366.82,-207.01 4396.48,-203.48 4541.13,-186.25 4707.28,-167.81 4819.19,-155.59"/>
+<polygon fill="#000000" stroke="#000000" points="4819.61,-159.06 4829.17,-154.5 4818.85,-152.1 4819.61,-159.06"/>
+</g>
+<!-- api_gui_easicmd__RM_META_CMD -->
+<g id="node70" class="node">
+<title>api_gui_easicmd__RM_META_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4191.48" cy="-140.61" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4191.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">RM_META_CMD</text>
+<text text-anchor="middle" x="4191.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:934)</text>
+</g>
+<!-- api_gui_easicmd__GET_RM_ATTR&#45;&gt;api_gui_easicmd__RM_META_CMD -->
+<g id="edge87" class="edge">
+<title>api_gui_easicmd__GET_RM_ATTR&#45;&gt;api_gui_easicmd__RM_META_CMD</title>
+<path fill="none" stroke="#000000" d="M4191.48,-203.03C4191.48,-195.06 4191.48,-186.17 4191.48,-177.68"/>
+<polygon fill="#000000" stroke="#000000" points="4194.98,-177.61 4191.48,-167.61 4187.98,-177.61 4194.98,-177.61"/>
+</g>
+<!-- api_gui_easicmd__GET_SHOW_META_FILE_NAME -->
+<g id="node32" class="node">
+<title>api_gui_easicmd__GET_SHOW_META_FILE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4575.48" cy="-320.09" rx="173.48" ry="26.74"/>
+<text text-anchor="middle" x="4575.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GET_SHOW_META_FILE_NAME</text>
+<text text-anchor="middle" x="4575.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1138)</text>
+</g>
+<!-- api_gui_easicmd__GET_SHOW_META_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH -->
+<g id="edge102" class="edge">
+<title>api_gui_easicmd__GET_SHOW_META_FILE_NAME&#45;&gt;api_gui_easicmd__GET_IRODS_FILE_PATH</title>
+<path fill="none" stroke="#000000" d="M4664.3,-296.95C4716.35,-283.98 4781.99,-267.61 4834.7,-254.48"/>
+<polygon fill="#000000" stroke="#000000" points="4835.87,-257.79 4844.73,-251.98 4834.18,-251 4835.87,-257.79"/>
+</g>
+<!-- api_gui_easicmd__GUI_SHOW_META -->
+<g id="node42" class="node">
+<title>api_gui_easicmd__GUI_SHOW_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4551.48" cy="-230.35" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="4551.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">GUI_SHOW_META</text>
+<text text-anchor="middle" x="4551.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1130)</text>
+</g>
+<!-- api_gui_easicmd__GET_SHOW_META_FILE_NAME&#45;&gt;api_gui_easicmd__GUI_SHOW_META -->
+<g id="edge101" class="edge">
+<title>api_gui_easicmd__GET_SHOW_META_FILE_NAME&#45;&gt;api_gui_easicmd__GUI_SHOW_META</title>
+<path fill="none" stroke="#000000" d="M4568.41,-293.24C4566.16,-285.01 4563.63,-275.76 4561.22,-266.97"/>
+<polygon fill="#000000" stroke="#000000" points="4564.6,-266.04 4558.58,-257.32 4557.84,-267.89 4564.6,-266.04"/>
+</g>
+<!-- api_gui_easicmd__GIVE_META&#45;&gt;api_gui_easicmd__ADD_META_CMD -->
+<g id="edge74" class="edge">
+<title>api_gui_easicmd__GIVE_META&#45;&gt;api_gui_easicmd__ADD_META_CMD</title>
+<path fill="none" stroke="#000000" d="M5545.78,-203.03C5546.78,-195.06 5547.89,-186.17 5548.96,-177.68"/>
+<polygon fill="#000000" stroke="#000000" points="5552.45,-177.97 5550.22,-167.61 5545.5,-177.1 5552.45,-177.97"/>
+</g>
+<!-- api_gui_easicmd__GIVE_META&#45;&gt;api_gui_easicmd__CLEAR_TEXT -->
+<g id="edge75" class="edge">
+<title>api_gui_easicmd__GIVE_META&#45;&gt;api_gui_easicmd__CLEAR_TEXT</title>
+<path fill="none" stroke="#000000" d="M5442.93,-211.53C5426.11,-208.71 5408.81,-205.92 5392.48,-203.48 5266.2,-184.63 5233.84,-185.73 5107.48,-167.48 5092.49,-165.32 5076.73,-162.91 5061.2,-160.46"/>
+<polygon fill="#000000" stroke="#000000" points="5061.46,-156.96 5051.03,-158.85 5060.36,-163.87 5061.46,-156.96"/>
+</g>
+<!-- api_gui_easicmd__GIVE_META&#45;&gt;api_gui_easicmd__GIVE_META -->
+<g id="edge73" class="edge">
+<title>api_gui_easicmd__GIVE_META&#45;&gt;api_gui_easicmd__GIVE_META</title>
+<path fill="none" stroke="#000000" d="M5653.81,-246.54C5680.24,-245.24 5699.78,-239.85 5699.78,-230.35 5699.78,-222.12 5685.08,-216.96 5663.95,-214.89"/>
+<polygon fill="#000000" stroke="#000000" points="5664.04,-211.39 5653.81,-214.16 5663.53,-218.37 5664.04,-211.39"/>
+</g>
+<!-- api_gui_easicmd__GIVE_NAME -->
+<g id="node34" class="node">
+<title>api_gui_easicmd__GIVE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3781.48" cy="-320.09" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="3781.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GIVE_NAME</text>
+<text text-anchor="middle" x="3781.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:520)</text>
+</g>
+<!-- api_gui_easicmd__GIVE_NAME&#45;&gt;api_gui_easicmd__GET_NAME -->
+<g id="edge55" class="edge">
+<title>api_gui_easicmd__GIVE_NAME&#45;&gt;api_gui_easicmd__GET_NAME</title>
+<path fill="none" stroke="#000000" d="M3781.48,-292.77C3781.48,-284.8 3781.48,-275.91 3781.48,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="3784.98,-267.35 3781.48,-257.35 3777.98,-267.35 3784.98,-267.35"/>
+</g>
+<!-- api_gui_easicmd__GUIADDMETA -->
+<g id="node35" class="node">
+<title>api_gui_easicmd__GUIADDMETA</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3325.48" cy="-589.31" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="3325.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">GUIADDMETA</text>
+<text text-anchor="middle" x="3325.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:38)</text>
+</g>
+<!-- api_gui_easicmd__GUIADDMETA&#45;&gt;api_gui_easicmd__INIT_ADD_META -->
+<g id="edge23" class="edge">
+<title>api_gui_easicmd__GUIADDMETA&#45;&gt;api_gui_easicmd__INIT_ADD_META</title>
+<path fill="none" stroke="#000000" d="M3402.37,-567.31C3423.34,-562.32 3446.16,-557.54 3467.48,-554.44 3692.56,-521.7 3752.5,-552.29 3978.48,-526.44 3992.03,-524.89 4006.23,-522.89 4020.23,-520.7"/>
+<polygon fill="#000000" stroke="#000000" points="4021.07,-524.11 4030.39,-519.07 4019.96,-517.2 4021.07,-524.11"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR -->
+<g id="node52" class="node">
+<title>api_gui_easicmd__INIT_IMKDIR</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3769.48" cy="-409.83" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="3769.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_IMKDIR</text>
+<text text-anchor="middle" x="3769.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:534)</text>
+</g>
+<!-- api_gui_easicmd__GUIIMKDIR&#45;&gt;api_gui_easicmd__INIT_IMKDIR -->
+<g id="edge21" class="edge">
+<title>api_gui_easicmd__GUIIMKDIR&#45;&gt;api_gui_easicmd__INIT_IMKDIR</title>
+<path fill="none" stroke="#000000" d="M3000.66,-480.17C3017.2,-477.33 3034.31,-474.69 3050.48,-472.7 3298.46,-442.26 3363.23,-464.92 3611.48,-436.7 3627.14,-434.92 3643.63,-432.66 3659.79,-430.22"/>
+<polygon fill="#000000" stroke="#000000" points="3660.46,-433.65 3669.81,-428.67 3659.39,-426.74 3660.46,-433.65"/>
+</g>
+<!-- api_gui_easicmd__INIT_IRM -->
+<g id="node53" class="node">
+<title>api_gui_easicmd__INIT_IRM</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6000.48" cy="-499.57" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6000.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_IRM</text>
+<text text-anchor="middle" x="6000.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:685)</text>
+</g>
+<!-- api_gui_easicmd__GUIIRM&#45;&gt;api_gui_easicmd__INIT_IRM -->
+<g id="edge22" class="edge">
+<title>api_gui_easicmd__GUIIRM&#45;&gt;api_gui_easicmd__INIT_IRM</title>
+<path fill="none" stroke="#000000" d="M6004.68,-561.99C6004.13,-554.02 6003.52,-545.13 6002.94,-536.64"/>
+<polygon fill="#000000" stroke="#000000" points="6006.43,-536.31 6002.26,-526.57 5999.45,-536.79 6006.43,-536.31"/>
+</g>
+<!-- api_gui_easicmd__INIT_PULL -->
+<g id="node54" class="node">
+<title>api_gui_easicmd__INIT_PULL</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6297.48" cy="-499.57" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6297.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_PULL</text>
+<text text-anchor="middle" x="6297.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:466)</text>
+</g>
+<!-- api_gui_easicmd__GUIPULL&#45;&gt;api_gui_easicmd__INIT_PULL -->
+<g id="edge20" class="edge">
+<title>api_gui_easicmd__GUIPULL&#45;&gt;api_gui_easicmd__INIT_PULL</title>
+<path fill="none" stroke="#000000" d="M6297.48,-561.99C6297.48,-554.02 6297.48,-545.13 6297.48,-536.64"/>
+<polygon fill="#000000" stroke="#000000" points="6300.98,-536.57 6297.48,-526.57 6293.98,-536.57 6300.98,-536.57"/>
+</g>
+<!-- api_gui_easicmd__INIT_PUSH -->
+<g id="node55" class="node">
+<title>api_gui_easicmd__INIT_PUSH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4162.48" cy="-589.31" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4162.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_PUSH</text>
+<text text-anchor="middle" x="4162.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:310)</text>
+</g>
+<!-- api_gui_easicmd__GUIPUSH&#45;&gt;api_gui_easicmd__INIT_PUSH -->
+<g id="edge19" class="edge">
+<title>api_gui_easicmd__GUIPUSH&#45;&gt;api_gui_easicmd__INIT_PUSH</title>
+<path fill="none" stroke="#000000" d="M3717.29,-663.34C3732.73,-660.56 3748.54,-657.76 3763.48,-655.18 3858.82,-638.75 3967.18,-621.2 4046.89,-608.51"/>
+<polygon fill="#000000" stroke="#000000" points="4047.63,-611.93 4056.96,-606.91 4046.53,-605.02 4047.63,-611.93"/>
+</g>
+<!-- api_gui_easicmd__GUI_GET_LOCAL_OBJECT -->
+<g id="node40" class="node">
+<title>api_gui_easicmd__GUI_GET_LOCAL_OBJECT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4427.48" cy="-499.57" rx="143.59" ry="26.74"/>
+<text text-anchor="middle" x="4427.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">GUI_GET_LOCAL_OBJECT</text>
+<text text-anchor="middle" x="4427.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:77)</text>
+</g>
+<!-- api_gui_easicmd__GUI_IDUSH -->
+<g id="node41" class="node">
+<title>api_gui_easicmd__GUI_IDUSH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="7199.48" cy="-320.09" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7199.48" y="-323.89" font-family="Times,serif" font-size="14.00" fill="#000000">GUI_IDUSH</text>
+<text text-anchor="middle" x="7199.48" y="-308.89" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1505)</text>
+</g>
+<!-- api_gui_easicmd__PRINT_IDUST -->
+<g id="node63" class="node">
+<title>api_gui_easicmd__PRINT_IDUST</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="7199.48" cy="-230.35" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7199.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">PRINT_IDUST</text>
+<text text-anchor="middle" x="7199.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1512)</text>
+</g>
+<!-- api_gui_easicmd__GUI_IDUSH&#45;&gt;api_gui_easicmd__PRINT_IDUST -->
+<g id="edge125" class="edge">
+<title>api_gui_easicmd__GUI_IDUSH&#45;&gt;api_gui_easicmd__PRINT_IDUST</title>
+<path fill="none" stroke="#000000" d="M7199.48,-292.77C7199.48,-284.8 7199.48,-275.91 7199.48,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="7202.98,-267.35 7199.48,-257.35 7195.98,-267.35 7202.98,-267.35"/>
+</g>
+<!-- api_gui_easicmd__PRINT_META -->
+<g id="node64" class="node">
+<title>api_gui_easicmd__PRINT_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4551.48" cy="-140.61" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="4551.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">PRINT_META</text>
+<text text-anchor="middle" x="4551.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1118)</text>
+</g>
+<!-- api_gui_easicmd__GUI_SHOW_META&#45;&gt;api_gui_easicmd__PRINT_META -->
+<g id="edge100" class="edge">
+<title>api_gui_easicmd__GUI_SHOW_META&#45;&gt;api_gui_easicmd__PRINT_META</title>
+<path fill="none" stroke="#000000" d="M4551.48,-203.03C4551.48,-195.06 4551.48,-186.17 4551.48,-177.68"/>
+<polygon fill="#000000" stroke="#000000" points="4554.98,-177.61 4551.48,-167.61 4547.98,-177.61 4554.98,-177.61"/>
+</g>
+<!-- api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="node43" class="node">
+<title>api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4390.48" cy="-409.83" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="4390.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">GUI_TYPE_OBJECT</text>
+<text text-anchor="middle" x="4390.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:68)</text>
+</g>
+<!-- api_gui_easicmd__ICHMOD_BUILD_CMD -->
+<g id="node44" class="node">
+<title>api_gui_easicmd__ICHMOD_BUILD_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3118.48" cy="-140.61" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3118.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">ICHMOD_BUILD_CMD</text>
+<text text-anchor="middle" x="3118.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1607)</text>
+</g>
+<!-- api_gui_easicmd__ICHMOD_BUILD_CMD&#45;&gt;api_gui_easicmd__CLEAN_ICHMOD -->
+<g id="edge133" class="edge">
+<title>api_gui_easicmd__ICHMOD_BUILD_CMD&#45;&gt;api_gui_easicmd__CLEAN_ICHMOD</title>
+<path fill="none" stroke="#000000" d="M3075.17,-114.94C3057.05,-104.61 3035.82,-92.52 3016.83,-81.7"/>
+<polygon fill="#000000" stroke="#000000" points="3018.41,-78.57 3007.99,-76.66 3014.95,-84.65 3018.41,-78.57"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_CMD -->
+<g id="node45" class="node">
+<title>api_gui_easicmd__ICHMOD_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3273.48" cy="-50.87" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3273.48" y="-54.67" font-family="Times,serif" font-size="14.00" fill="#000000">ICHMOD_CMD</text>
+<text text-anchor="middle" x="3273.48" y="-39.67" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1590)</text>
+</g>
+<!-- api_gui_easicmd__ICHMOD_BUILD_CMD&#45;&gt;api_gui_easicmd__ICHMOD_CMD -->
+<g id="edge132" class="edge">
+<title>api_gui_easicmd__ICHMOD_BUILD_CMD&#45;&gt;api_gui_easicmd__ICHMOD_CMD</title>
+<path fill="none" stroke="#000000" d="M3162.07,-114.94C3180.31,-104.61 3201.67,-92.52 3220.79,-81.7"/>
+<polygon fill="#000000" stroke="#000000" points="3222.7,-84.63 3229.68,-76.66 3219.25,-78.54 3222.7,-84.63"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH -->
+<g id="node46" class="node">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3456.48" cy="-409.83" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3456.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">ICHMOD_IRODS_PATH</text>
+<text text-anchor="middle" x="3456.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1696)</text>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_ICHMOD_FILE_NAME -->
+<g id="edge142" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_ICHMOD_FILE_NAME</title>
+<path fill="none" stroke="#000000" d="M3455.58,-382.51C3455.31,-374.54 3455,-365.65 3454.71,-357.16"/>
+<polygon fill="#000000" stroke="#000000" points="3458.21,-356.97 3454.37,-347.09 3451.21,-357.21 3458.21,-356.97"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge138" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M3559.21,-390.71C3579.78,-387.65 3601.27,-384.86 3621.48,-382.96 4124.41,-335.75 4254.61,-394.89 4757.48,-346.96 4775.3,-345.26 4794.14,-342.84 4812.42,-340.15"/>
+<polygon fill="#000000" stroke="#000000" points="4813.14,-343.58 4822.5,-338.63 4812.09,-336.66 4813.14,-343.58"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__USER_OR_GROUP -->
+<g id="edge139" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__USER_OR_GROUP</title>
+<path fill="none" stroke="#000000" d="M3357.95,-389.89C3329.76,-380.66 3300.69,-367.03 3278.48,-346.96 3258.94,-329.3 3272.16,-311.79 3253.48,-293.22 3238.63,-278.46 3219.62,-266.83 3200.58,-257.85"/>
+<polygon fill="#000000" stroke="#000000" points="3201.8,-254.56 3191.24,-253.64 3198.92,-260.94 3201.8,-254.56"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge140" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M3353.74,-390.75C3330.16,-381.58 3307.83,-367.76 3293.48,-346.96 3279.91,-327.3 3281.34,-313.79 3293.48,-293.22 3377.34,-151.11 3459.33,-157.31 3618.48,-113.74 3801.76,-63.56 5094.56,-54.07 5538.35,-52.28"/>
+<polygon fill="#000000" stroke="#000000" points="5538.37,-55.78 5548.35,-52.24 5538.34,-48.78 5538.37,-55.78"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge143" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M3558.31,-390.61C3579.14,-387.52 3600.97,-384.74 3621.48,-382.96 4538.62,-303.47 4774.63,-417.83 5692.48,-346.96 5716.05,-345.14 5741.17,-342.31 5765.13,-339.17"/>
+<polygon fill="#000000" stroke="#000000" points="5765.87,-342.61 5775.32,-337.82 5764.94,-335.67 5765.87,-342.61"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge141" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M3553.13,-389.62C3576.29,-380.46 3598.6,-366.93 3613.48,-346.96 3675.65,-263.54 3557.41,-184.71 3633.48,-113.74 3678.21,-72.01 5774.57,-83.49 5835.48,-77.74 5849.81,-76.39 5864.84,-74.43 5879.62,-72.18"/>
+<polygon fill="#000000" stroke="#000000" points="5880.45,-75.59 5889.79,-70.58 5879.37,-68.68 5880.45,-75.59"/>
+</g>
+<!-- api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge137" class="edge">
+<title>api_gui_easicmd__ICHMOD_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M3558.76,-390.67C3579.46,-387.59 3601.12,-384.8 3621.48,-382.96 4259.07,-325.26 4424.41,-410.25 5061.48,-346.96 5075.5,-345.57 5090.2,-343.61 5104.66,-341.39"/>
+<polygon fill="#000000" stroke="#000000" points="5105.29,-344.83 5114.62,-339.81 5104.2,-337.92 5105.29,-344.83"/>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_META&#45;&gt;api_gui_easicmd__ADDMETA_GET_IRODS_PATH -->
+<g id="edge86" class="edge">
+<title>api_gui_easicmd__INIT_ADD_META&#45;&gt;api_gui_easicmd__ADDMETA_GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M4222.15,-479.92C4239.5,-477.09 4257.49,-474.51 4274.48,-472.7 4680.05,-429.49 4784.2,-458.66 5191.48,-436.7 5264.23,-432.78 5344.8,-427.39 5412.72,-422.55"/>
+<polygon fill="#000000" stroke="#000000" points="5413.35,-426.01 5423.08,-421.81 5412.85,-419.03 5413.35,-426.01"/>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge85" class="edge">
+<title>api_gui_easicmd__INIT_ADD_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M4194.46,-475.98C4230.79,-463.9 4275.64,-449 4313.27,-436.49"/>
+<polygon fill="#000000" stroke="#000000" points="4314.79,-439.67 4323.18,-433.2 4312.59,-433.03 4314.79,-439.67"/>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_PATH -->
+<g id="node48" class="node">
+<title>api_gui_easicmd__INIT_ADD_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4872.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="4872.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_ADD_PATH</text>
+<text text-anchor="middle" x="4872.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1955)</text>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_PATH&#45;&gt;api_gui_easicmd__ADD_PATH -->
+<g id="edge155" class="edge">
+<title>api_gui_easicmd__INIT_ADD_PATH&#45;&gt;api_gui_easicmd__ADD_PATH</title>
+<path fill="none" stroke="#000000" d="M4844.92,-655.53C4833.96,-645.39 4821.22,-633.59 4809.61,-622.84"/>
+<polygon fill="#000000" stroke="#000000" points="4811.89,-620.18 4802.17,-615.95 4807.13,-625.31 4811.89,-620.18"/>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_PATH&#45;&gt;api_gui_easicmd__CLEAN_PATH -->
+<g id="edge157" class="edge">
+<title>api_gui_easicmd__INIT_ADD_PATH&#45;&gt;api_gui_easicmd__CLEAN_PATH</title>
+<path fill="none" stroke="#000000" d="M4928.19,-657.09C4955.95,-645.15 4989.69,-630.65 5018.61,-618.21"/>
+<polygon fill="#000000" stroke="#000000" points="5020.01,-621.41 5027.82,-614.25 5017.25,-614.98 5020.01,-621.41"/>
+</g>
+<!-- api_gui_easicmd__RM_PATH -->
+<g id="node71" class="node">
+<title>api_gui_easicmd__RM_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5392.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="5392.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">RM_PATH</text>
+<text text-anchor="middle" x="5392.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1942)</text>
+</g>
+<!-- api_gui_easicmd__INIT_ADD_PATH&#45;&gt;api_gui_easicmd__RM_PATH -->
+<g id="edge156" class="edge">
+<title>api_gui_easicmd__INIT_ADD_PATH&#45;&gt;api_gui_easicmd__RM_PATH</title>
+<path fill="none" stroke="#000000" d="M4972.05,-662.4C4990.11,-659.57 5008.81,-656.99 5026.48,-655.18 5073.38,-650.38 5192.23,-656.35 5238.48,-647.18 5269.61,-641.01 5302.8,-629.44 5330.37,-618.35"/>
+<polygon fill="#000000" stroke="#000000" points="5331.95,-621.48 5339.87,-614.45 5329.29,-615 5331.95,-621.48"/>
+</g>
+<!-- api_gui_easicmd__INIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_ADD -->
+<g id="edge154" class="edge">
+<title>api_gui_easicmd__INIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_ADD</title>
+<path fill="none" stroke="#000000" d="M5901.77,-662.19C5920.21,-659.32 5939.38,-656.78 5957.48,-655.18 6045.8,-647.37 6668.27,-663.22 6755.48,-647.18 6786.95,-641.39 6820.43,-629.74 6848.11,-618.49"/>
+<polygon fill="#000000" stroke="#000000" points="6849.75,-621.6 6857.65,-614.53 6847.07,-615.13 6849.75,-621.6"/>
+</g>
+<!-- api_gui_easicmd__INIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_EDIT -->
+<g id="edge153" class="edge">
+<title>api_gui_easicmd__INIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_EDIT</title>
+<path fill="none" stroke="#000000" d="M5902.19,-662.22C5920.51,-659.37 5939.52,-656.83 5957.48,-655.18 6010.82,-650.29 6386.76,-656.67 6439.48,-647.18 6472.5,-641.24 6507.8,-629.43 6536.91,-618.11"/>
+<polygon fill="#000000" stroke="#000000" points="6538.52,-621.23 6546.53,-614.29 6535.94,-614.72 6538.52,-621.23"/>
+</g>
+<!-- api_gui_easicmd__INIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_RM_ATTR -->
+<g id="edge152" class="edge">
+<title>api_gui_easicmd__INIT_EDIT&#45;&gt;api_gui_easicmd__EDIT_RM_ATTR</title>
+<path fill="none" stroke="#000000" d="M5901.76,-662.15C5920.21,-659.28 5939.38,-656.76 5957.48,-655.18 5988.11,-652.51 7036.3,-659.5 7064.48,-647.18 7116.26,-624.54 7110.02,-592.85 7151.48,-554.44 7159.52,-546.98 7168.47,-539.37 7177.14,-532.3"/>
+<polygon fill="#000000" stroke="#000000" points="7179.4,-534.98 7184.99,-525.98 7175.01,-529.53 7179.4,-534.98"/>
+</g>
+<!-- api_gui_easicmd__INIT_ICHMOD&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge144" class="edge">
+<title>api_gui_easicmd__INIT_ICHMOD&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M3305.46,-479.9C3323.39,-477.08 3341.95,-474.52 3359.48,-472.7 3752.8,-431.86 3855.45,-480.24 4248.48,-436.7 4261.71,-435.24 4275.56,-433.26 4289.2,-431.06"/>
+<polygon fill="#000000" stroke="#000000" points="4289.8,-434.51 4299.09,-429.42 4288.65,-427.6 4289.8,-434.51"/>
+</g>
+<!-- api_gui_easicmd__INIT_ICHMOD&#45;&gt;api_gui_easicmd__ICHMOD_IRODS_PATH -->
+<g id="edge145" class="edge">
+<title>api_gui_easicmd__INIT_ICHMOD&#45;&gt;api_gui_easicmd__ICHMOD_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M3271.42,-475.52C3305.01,-463.78 3346.01,-449.44 3380.88,-437.26"/>
+<polygon fill="#000000" stroke="#000000" points="3382.25,-440.49 3390.54,-433.88 3379.94,-433.88 3382.25,-440.49"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge127" class="edge">
+<title>api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M7106.76,-390.02C7088.45,-387.17 7069.43,-384.62 7051.48,-382.96 6170.65,-301.46 5941.72,-434.52 5061.48,-346.96 5048.03,-345.62 5033.95,-343.7 5020.1,-341.5"/>
+<polygon fill="#000000" stroke="#000000" points="5020.51,-338.02 5010.07,-339.85 5019.37,-344.93 5020.51,-338.02"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__GUI_IDUSH -->
+<g id="edge130" class="edge">
+<title>api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__GUI_IDUSH</title>
+<path fill="none" stroke="#000000" d="M7203.68,-382.51C7203.13,-374.54 7202.52,-365.65 7201.94,-357.16"/>
+<polygon fill="#000000" stroke="#000000" points="7205.43,-356.83 7201.26,-347.09 7198.45,-357.31 7205.43,-356.83"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge128" class="edge">
+<title>api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M7299.19,-389.07C7320.88,-379.92 7341.41,-366.53 7354.48,-346.96 7372.18,-320.44 7376.07,-226.94 7354.48,-203.48 7347.31,-195.7 5846.97,-79.08 5836.48,-77.74 5823.07,-76.02 5809.02,-73.95 5795.14,-71.73"/>
+<polygon fill="#000000" stroke="#000000" points="5795.5,-68.25 5785.07,-70.1 5794.38,-75.16 5795.5,-68.25"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge131" class="edge">
+<title>api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M7105.91,-390.18C7087.85,-387.34 7069.14,-384.77 7051.48,-382.96 6625.4,-339.39 6515.39,-381.42 6088.48,-346.96 6060.01,-344.66 6029.44,-341.34 6000.74,-337.84"/>
+<polygon fill="#000000" stroke="#000000" points="6001.03,-334.35 5990.67,-336.6 6000.17,-341.3 6001.03,-334.35"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge129" class="edge">
+<title>api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M7308.83,-390.88C7332.55,-381.71 7355.02,-367.86 7369.48,-346.96 7405.75,-294.51 7410.96,-251.91 7369.48,-203.48 7289.89,-110.55 6470.96,-69.81 6131.08,-56.81"/>
+<polygon fill="#000000" stroke="#000000" points="6131.05,-53.31 6120.92,-56.43 6130.78,-60.31 6131.05,-53.31"/>
+</g>
+<!-- api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge126" class="edge">
+<title>api_gui_easicmd__INIT_IDUST&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M7106.76,-390.07C7088.44,-387.21 7069.43,-384.65 7051.48,-382.96 6302.17,-312.43 6107.58,-419.54 5358.48,-346.96 5344.25,-345.58 5329.34,-343.62 5314.67,-341.39"/>
+<polygon fill="#000000" stroke="#000000" points="5314.99,-337.89 5304.57,-339.8 5313.91,-344.81 5314.99,-337.89"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge57" class="edge">
+<title>api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M3865.4,-390.3C3883,-387.44 3901.25,-384.82 3918.48,-382.96 4289.56,-342.95 4386.13,-384.45 4757.48,-346.96 4775.17,-345.17 4793.87,-342.72 4812.03,-340.03"/>
+<polygon fill="#000000" stroke="#000000" points="4812.69,-343.47 4822.06,-338.52 4811.65,-336.55 4812.69,-343.47"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__GIVE_NAME -->
+<g id="edge60" class="edge">
+<title>api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__GIVE_NAME</title>
+<path fill="none" stroke="#000000" d="M3773.08,-382.51C3774.17,-374.54 3775.38,-365.65 3776.54,-357.16"/>
+<polygon fill="#000000" stroke="#000000" points="3780.03,-357.48 3777.92,-347.09 3773.1,-356.53 3780.03,-357.48"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge58" class="edge">
+<title>api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M3865.98,-390.42C3890.18,-381.25 3913.71,-367.52 3929.48,-346.96 3961.2,-305.6 3916.33,-149.26 3954.48,-113.74 4011.97,-60.2 5128.04,-52.84 5538.05,-51.94"/>
+<polygon fill="#000000" stroke="#000000" points="5538.2,-55.44 5548.2,-51.92 5538.19,-48.44 5538.2,-55.44"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge61" class="edge">
+<title>api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M3864.57,-390.11C3882.42,-387.22 3900.97,-384.65 3918.48,-382.96 4703.45,-307.29 4906.3,-408.82 5692.48,-346.96 5716.04,-345.11 5741.17,-342.26 5765.13,-339.12"/>
+<polygon fill="#000000" stroke="#000000" points="5765.87,-342.55 5775.31,-337.76 5764.94,-335.62 5765.87,-342.55"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge59" class="edge">
+<title>api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M3867.46,-390.71C3894.18,-381.53 3921.07,-367.72 3940.48,-346.96 4014.12,-268.18 3921.97,-179.47 4007.48,-113.74 4047.74,-82.79 5784.92,-82.6 5835.48,-77.74 5849.7,-76.37 5864.62,-74.42 5879.28,-72.19"/>
+<polygon fill="#000000" stroke="#000000" points="5880.05,-75.61 5889.39,-70.6 5878.96,-68.69 5880.05,-75.61"/>
+</g>
+<!-- api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge56" class="edge">
+<title>api_gui_easicmd__INIT_IMKDIR&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M3864.99,-390.2C3882.71,-387.33 3901.11,-384.73 3918.48,-382.96 4424.1,-331.36 4555.88,-398.85 5061.48,-346.96 5075.39,-345.53 5089.97,-343.57 5104.33,-341.35"/>
+<polygon fill="#000000" stroke="#000000" points="5104.89,-344.81 5114.22,-339.78 5103.79,-337.89 5104.89,-344.81"/>
+</g>
+<!-- api_gui_easicmd__INIT_IRM&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge71" class="edge">
+<title>api_gui_easicmd__INIT_IRM&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M5905.62,-479.88C5888.02,-477.01 5869.74,-474.43 5852.48,-472.7 5268.09,-413.98 5115.61,-497.88 4531.48,-436.7 4518.46,-435.34 4504.84,-433.44 4491.41,-431.29"/>
+<polygon fill="#000000" stroke="#000000" points="4491.63,-427.78 4481.2,-429.6 4490.49,-434.69 4491.63,-427.78"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER -->
+<g id="node61" class="node">
+<title>api_gui_easicmd__IRM_GET_FOLDER</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6236.48" cy="-409.83" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6236.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">IRM_GET_FOLDER</text>
+<text text-anchor="middle" x="6236.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:623)</text>
+</g>
+<!-- api_gui_easicmd__INIT_IRM&#45;&gt;api_gui_easicmd__IRM_GET_FOLDER -->
+<g id="edge72" class="edge">
+<title>api_gui_easicmd__INIT_IRM&#45;&gt;api_gui_easicmd__IRM_GET_FOLDER</title>
+<path fill="none" stroke="#000000" d="M6062.79,-475.4C6094.11,-463.76 6132.23,-449.59 6164.76,-437.49"/>
+<polygon fill="#000000" stroke="#000000" points="6166.07,-440.74 6174.22,-433.98 6163.63,-434.18 6166.07,-440.74"/>
+</g>
+<!-- api_gui_easicmd__INIT_PULL&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge53" class="edge">
+<title>api_gui_easicmd__INIT_PULL&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M6202.38,-479.88C6184.54,-476.99 6165.99,-474.41 6148.48,-472.7 5433.02,-403.02 5246.6,-509.79 4531.48,-436.7 4518.23,-435.35 4504.36,-433.43 4490.7,-431.24"/>
+<polygon fill="#000000" stroke="#000000" points="4491.25,-427.78 4480.81,-429.6 4490.11,-434.69 4491.25,-427.78"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS -->
+<g id="node68" class="node">
+<title>api_gui_easicmd__PULL_FROM_IRODS</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="6533.48" cy="-409.83" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="6533.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">PULL_FROM_IRODS</text>
+<text text-anchor="middle" x="6533.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:402)</text>
+</g>
+<!-- api_gui_easicmd__INIT_PULL&#45;&gt;api_gui_easicmd__PULL_FROM_IRODS -->
+<g id="edge52" class="edge">
+<title>api_gui_easicmd__INIT_PULL&#45;&gt;api_gui_easicmd__PULL_FROM_IRODS</title>
+<path fill="none" stroke="#000000" d="M6359.79,-475.4C6391.11,-463.76 6429.23,-449.59 6461.76,-437.49"/>
+<polygon fill="#000000" stroke="#000000" points="6463.07,-440.74 6471.22,-433.98 6460.63,-434.18 6463.07,-440.74"/>
+</g>
+<!-- api_gui_easicmd__INIT_PUSH&#45;&gt;api_gui_easicmd__GUI_GET_LOCAL_OBJECT -->
+<g id="edge39" class="edge">
+<title>api_gui_easicmd__INIT_PUSH&#45;&gt;api_gui_easicmd__GUI_GET_LOCAL_OBJECT</title>
+<path fill="none" stroke="#000000" d="M4230.38,-565.83C4266.56,-553.85 4311.24,-539.06 4348.91,-526.58"/>
+<polygon fill="#000000" stroke="#000000" points="4350.44,-529.76 4358.83,-523.3 4348.24,-523.12 4350.44,-529.76"/>
+</g>
+<!-- api_gui_easicmd__INIT_PUSH&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge38" class="edge">
+<title>api_gui_easicmd__INIT_PUSH&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M4245.1,-567.54C4266.31,-562.72 4289.15,-557.97 4310.48,-554.44 4369.99,-544.58 4540.08,-571.24 4580.48,-526.44 4596.47,-508.7 4594.51,-492.03 4580.48,-472.7 4568.9,-456.75 4530.16,-442.77 4490.66,-432.15"/>
+<polygon fill="#000000" stroke="#000000" points="4491.45,-428.74 4480.89,-429.6 4489.68,-435.52 4491.45,-428.74"/>
+</g>
+<!-- api_gui_easicmd__WHERE_TO_IRODS -->
+<g id="node80" class="node">
+<title>api_gui_easicmd__WHERE_TO_IRODS</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4748.48" cy="-499.57" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4748.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">WHERE_TO_IRODS</text>
+<text text-anchor="middle" x="4748.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:259)</text>
+</g>
+<!-- api_gui_easicmd__INIT_PUSH&#45;&gt;api_gui_easicmd__WHERE_TO_IRODS -->
+<g id="edge40" class="edge">
+<title>api_gui_easicmd__INIT_PUSH&#45;&gt;api_gui_easicmd__WHERE_TO_IRODS</title>
+<path fill="none" stroke="#000000" d="M4244.7,-567.54C4266.01,-562.7 4289.01,-557.94 4310.48,-554.44 4436.1,-533.98 4469.32,-543.28 4595.48,-526.44 4609.58,-524.56 4624.38,-522.35 4638.98,-520.03"/>
+<polygon fill="#000000" stroke="#000000" points="4639.73,-523.46 4649.04,-518.41 4638.62,-516.55 4639.73,-523.46"/>
+</g>
+<!-- api_gui_easicmd__INIT_RM_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge98" class="edge">
+<title>api_gui_easicmd__INIT_RM_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M3615.33,-480.08C3633,-477.28 3651.24,-474.68 3668.48,-472.7 3925.07,-443.27 3992.1,-467.9 4248.48,-436.7 4261.36,-435.13 4274.85,-433.14 4288.16,-430.96"/>
+<polygon fill="#000000" stroke="#000000" points="4289.01,-434.37 4298.29,-429.26 4287.85,-427.46 4289.01,-434.37"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH -->
+<g id="node69" class="node">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4083.48" cy="-409.83" rx="156.04" ry="26.74"/>
+<text text-anchor="middle" x="4083.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">RMMETA_GET_IRODS_PATH</text>
+<text text-anchor="middle" x="4083.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1015)</text>
+</g>
+<!-- api_gui_easicmd__INIT_RM_META&#45;&gt;api_gui_easicmd__RMMETA_GET_IRODS_PATH -->
+<g id="edge99" class="edge">
+<title>api_gui_easicmd__INIT_RM_META&#45;&gt;api_gui_easicmd__RMMETA_GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M3618.8,-480.71C3635.41,-477.97 3652.41,-475.21 3668.48,-472.7 3778.95,-455.44 3806.9,-453.31 3917.48,-436.7 3931.54,-434.59 3946.26,-432.34 3960.89,-430.09"/>
+<polygon fill="#000000" stroke="#000000" points="3961.64,-433.52 3970.99,-428.53 3960.58,-426.6 3961.64,-433.52"/>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_META -->
+<g id="node57" class="node">
+<title>api_gui_easicmd__INIT_SEARCH_META</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2269.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2269.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">INIT_SEARCH_META</text>
+<text text-anchor="middle" x="2269.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1371)</text>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge116" class="edge">
+<title>api_gui_easicmd__INIT_SEARCH_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M2377.52,-481.43C2403.33,-477.94 2430.83,-474.73 2456.48,-472.7 3250.61,-410.01 3455.86,-516.34 4248.48,-436.7 4261.92,-435.35 4276,-433.42 4289.85,-431.22"/>
+<polygon fill="#000000" stroke="#000000" points="4290.58,-434.64 4299.88,-429.57 4289.45,-427.74 4290.58,-434.64"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_GET_CMD -->
+<g id="node74" class="node">
+<title>api_gui_easicmd__SEARCH_GET_CMD</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2236.48" cy="-409.83" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2236.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">SEARCH_GET_CMD</text>
+<text text-anchor="middle" x="2236.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1275)</text>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_META&#45;&gt;api_gui_easicmd__SEARCH_GET_CMD -->
+<g id="edge117" class="edge">
+<title>api_gui_easicmd__INIT_SEARCH_META&#45;&gt;api_gui_easicmd__SEARCH_GET_CMD</title>
+<path fill="none" stroke="#000000" d="M2259.76,-472.72C2256.63,-464.4 2253.11,-455.04 2249.77,-446.17"/>
+<polygon fill="#000000" stroke="#000000" points="2253.04,-444.93 2246.24,-436.8 2246.49,-447.39 2253.04,-444.93"/>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_NAME&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge122" class="edge">
+<title>api_gui_easicmd__INIT_SEARCH_NAME&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M2710.84,-479.85C2729.28,-476.99 2748.42,-474.42 2766.48,-472.7 3422.38,-410.31 3593.06,-503.95 4248.48,-436.7 4261.92,-435.32 4275.99,-433.38 4289.84,-431.16"/>
+<polygon fill="#000000" stroke="#000000" points="4290.58,-434.59 4299.88,-429.51 4289.44,-427.68 4290.58,-434.59"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_FILE_NAME -->
+<g id="node72" class="node">
+<title>api_gui_easicmd__SEARCH_FILE_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3098.48" cy="-409.83" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="3098.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">SEARCH_FILE_NAME</text>
+<text text-anchor="middle" x="3098.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1410)</text>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_NAME&#45;&gt;api_gui_easicmd__SEARCH_FILE_NAME -->
+<g id="edge123" class="edge">
+<title>api_gui_easicmd__INIT_SEARCH_NAME&#45;&gt;api_gui_easicmd__SEARCH_FILE_NAME</title>
+<path fill="none" stroke="#000000" d="M2712.98,-480.28C2792.94,-465.88 2904.3,-445.81 2986.78,-430.95"/>
+<polygon fill="#000000" stroke="#000000" points="2987.47,-434.39 2996.69,-429.17 2986.23,-427.5 2987.47,-434.39"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_FOLDER_NAME -->
+<g id="node73" class="node">
+<title>api_gui_easicmd__SEARCH_FOLDER_NAME</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="2700.48" cy="-409.83" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="2700.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">SEARCH_FOLDER_NAME</text>
+<text text-anchor="middle" x="2700.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1451)</text>
+</g>
+<!-- api_gui_easicmd__INIT_SEARCH_NAME&#45;&gt;api_gui_easicmd__SEARCH_FOLDER_NAME -->
+<g id="edge124" class="edge">
+<title>api_gui_easicmd__INIT_SEARCH_NAME&#45;&gt;api_gui_easicmd__SEARCH_FOLDER_NAME</title>
+<path fill="none" stroke="#000000" d="M2637.7,-472.72C2646.93,-463.62 2657.44,-453.26 2667.18,-443.66"/>
+<polygon fill="#000000" stroke="#000000" points="2669.78,-446.01 2674.44,-436.5 2664.86,-441.02 2669.78,-446.01"/>
+</g>
+<!-- api_gui_easicmd__INIT_SHOW_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT -->
+<g id="edge110" class="edge">
+<title>api_gui_easicmd__INIT_SHOW_META&#45;&gt;api_gui_easicmd__GUI_TYPE_OBJECT</title>
+<path fill="none" stroke="#000000" d="M3927.62,-480.71C3944.6,-477.93 3962.02,-475.17 3978.48,-472.7 4098.2,-454.73 4128.89,-455.56 4248.48,-436.7 4260.59,-434.79 4273.25,-432.67 4285.82,-430.48"/>
+<polygon fill="#000000" stroke="#000000" points="4286.63,-433.89 4295.87,-428.71 4285.42,-427 4286.63,-433.89"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH -->
+<g id="node75" class="node">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4713.48" cy="-409.83" rx="172.57" ry="26.74"/>
+<text text-anchor="middle" x="4713.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">SHOWMETA_GET_IRODS_PATH</text>
+<text text-anchor="middle" x="4713.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:1165)</text>
+</g>
+<!-- api_gui_easicmd__INIT_SHOW_META&#45;&gt;api_gui_easicmd__SHOWMETA_GET_IRODS_PATH -->
+<g id="edge111" class="edge">
+<title>api_gui_easicmd__INIT_SHOW_META&#45;&gt;api_gui_easicmd__SHOWMETA_GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M3924.57,-480.19C3942.49,-477.37 3961,-474.72 3978.48,-472.7 4223.59,-444.35 4287.05,-462.18 4532.48,-436.7 4549.11,-434.97 4566.55,-432.86 4583.78,-430.6"/>
+<polygon fill="#000000" stroke="#000000" points="4584.44,-434.04 4593.88,-429.25 4583.51,-427.1 4584.44,-434.04"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__DESTROY -->
+<g id="edge67" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__DESTROY</title>
+<path fill="none" stroke="#000000" d="M6328.42,-389.43C6350.39,-380.26 6371.28,-366.78 6384.48,-346.96 6397.71,-327.08 6397.71,-313.1 6384.48,-293.22 6373.14,-276.19 6356.11,-263.84 6337.61,-254.88"/>
+<polygon fill="#000000" stroke="#000000" points="6338.97,-251.66 6328.42,-250.75 6336.1,-258.04 6338.97,-251.66"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__GET_IRM_FILE_NAME -->
+<g id="edge66" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__GET_IRM_FILE_NAME</title>
+<path fill="none" stroke="#000000" d="M6236.48,-382.51C6236.48,-374.54 6236.48,-365.65 6236.48,-357.16"/>
+<polygon fill="#000000" stroke="#000000" points="6239.98,-357.09 6236.48,-347.09 6232.98,-357.09 6239.98,-357.09"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge65" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M6103.4,-401.88C5797.11,-385.87 5067.89,-347.71 5061.48,-346.96 5048.49,-345.44 5034.89,-343.47 5021.48,-341.28"/>
+<polygon fill="#000000" stroke="#000000" points="5021.7,-337.77 5011.26,-339.58 5020.55,-344.68 5021.7,-337.77"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge68" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M6333.88,-390.61C6357.19,-381.44 6379.38,-367.67 6393.48,-346.96 6407.58,-326.25 6393.75,-212.83 6384.48,-203.48 6332.38,-150.94 6119.61,-200.65 6053.48,-167.48 6024.32,-152.85 6031.99,-129.59 6003.48,-113.74 5994.19,-108.57 5884.34,-87.7 5796.73,-71.61"/>
+<polygon fill="#000000" stroke="#000000" points="5797.17,-68.13 5786.71,-69.77 5795.91,-75.02 5797.17,-68.13"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge70" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M6153.01,-388.26C6099.31,-375.02 6029.43,-357.8 5973.88,-344.11"/>
+<polygon fill="#000000" stroke="#000000" points="5974.58,-340.68 5964.04,-341.68 5972.91,-347.48 5974.58,-340.68"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge69" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M6349.63,-394.06C6376.8,-384.9 6402.76,-370.26 6419.48,-346.96 6439.28,-319.36 6401.5,-205.79 6399.48,-203.48 6327.5,-121.4 6207.3,-83.73 6114.73,-66.45"/>
+<polygon fill="#000000" stroke="#000000" points="6115.19,-62.98 6104.73,-64.64 6113.95,-69.87 6115.19,-62.98"/>
+</g>
+<!-- api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge64" class="edge">
+<title>api_gui_easicmd__IRM_GET_FOLDER&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M6100.7,-403.54C5927.82,-395.83 5620.14,-378.81 5358.48,-346.96 5344.95,-345.31 5330.78,-343.27 5316.79,-341.06"/>
+<polygon fill="#000000" stroke="#000000" points="5317.08,-337.56 5306.65,-339.43 5315.96,-344.47 5317.08,-337.56"/>
+</g>
+<!-- api_gui_easicmd__PASSWORD_REGISTER_GUI -->
+<g id="node62" class="node">
+<title>api_gui_easicmd__PASSWORD_REGISTER_GUI</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5370.48" cy="-499.57" rx="155.63" ry="26.74"/>
+<text text-anchor="middle" x="5370.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">PASSWORD_REGISTER_GUI</text>
+<text text-anchor="middle" x="5370.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2208)</text>
+</g>
+<!-- api_gui_easicmd__PROGRESS_BAR -->
+<g id="node67" class="node">
+<title>api_gui_easicmd__PROGRESS_BAR</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4569.48" cy="-682.05" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="4569.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">PROGRESS_BAR</text>
+<text text-anchor="middle" x="4569.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:132)</text>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__DOWNLOAD -->
+<g id="edge45" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__DOWNLOAD</title>
+<path fill="none" stroke="#000000" d="M6517.44,-382.74C6504.87,-358.75 6491.51,-322.56 6504.48,-293.22 6509.47,-281.93 6517.65,-271.81 6526.64,-263.19"/>
+<polygon fill="#000000" stroke="#000000" points="6529.21,-265.59 6534.33,-256.31 6524.54,-260.37 6529.21,-265.59"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__GET_IRODS_FILE -->
+<g id="edge50" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__GET_IRODS_FILE</title>
+<path fill="none" stroke="#000000" d="M6567.58,-383.69C6580.9,-373.87 6596.31,-362.5 6610.31,-352.18"/>
+<polygon fill="#000000" stroke="#000000" points="6612.4,-354.99 6618.37,-346.24 6608.25,-349.35 6612.4,-354.99"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge47" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M6437.98,-390.14C6420.25,-387.28 6401.85,-384.7 6384.48,-382.96 5799.17,-324.5 5646.54,-407.85 5061.48,-346.96 5048.14,-345.57 5034.17,-343.63 5020.43,-341.44"/>
+<polygon fill="#000000" stroke="#000000" points="5020.9,-337.97 5010.46,-339.79 5019.76,-344.87 5020.9,-337.97"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__WHERE_IN_LOCAL -->
+<g id="edge46" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__WHERE_IN_LOCAL</title>
+<path fill="none" stroke="#000000" d="M6664.56,-400.74C6711.22,-392.42 6761.74,-376.6 6800.48,-346.96 6826.46,-327.08 6842.81,-293.11 6852.15,-267.12"/>
+<polygon fill="#000000" stroke="#000000" points="6855.48,-268.19 6855.39,-257.6 6848.85,-265.93 6855.48,-268.19"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge48" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M6635.96,-391.6C6762.32,-367.87 6965.28,-320.72 7004.48,-257.22 7017.02,-236.9 7020.87,-220.86 7004.48,-203.48 6957.51,-153.68 6457.52,-174.97 6389.48,-167.48 6141.98,-140.23 6082.03,-118.98 5836.48,-77.74 5823.99,-75.64 5810.93,-73.42 5797.94,-71.19"/>
+<polygon fill="#000000" stroke="#000000" points="5798.49,-67.73 5788.04,-69.49 5797.3,-74.63 5798.49,-67.73"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge51" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M6434.21,-390.87C6417.62,-388.08 6400.58,-385.34 6384.48,-382.96 6253.37,-363.62 6220.01,-363.14 6088.48,-346.96 6061.54,-343.65 6032.64,-340.07 6005.21,-336.66"/>
+<polygon fill="#000000" stroke="#000000" points="6005.53,-333.17 5995.18,-335.41 6004.67,-340.12 6005.53,-333.17"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge49" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M6648.11,-394.47C6791.56,-376.47 7018.71,-347.83 7019.48,-346.96 7040.55,-323.03 7040.33,-227.6 7019.48,-203.48 6961.59,-136.5 6391.41,-83.6 6122.94,-62.18"/>
+<polygon fill="#000000" stroke="#000000" points="6122.98,-58.68 6112.73,-61.37 6122.42,-65.66 6122.98,-58.68"/>
+</g>
+<!-- api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge44" class="edge">
+<title>api_gui_easicmd__PULL_FROM_IRODS&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M6437.96,-390.26C6420.24,-387.38 6401.84,-384.76 6384.48,-382.96 5930.64,-335.82 5812.32,-394.1 5358.48,-346.96 5344.37,-345.49 5329.58,-343.5 5315.02,-341.25"/>
+<polygon fill="#000000" stroke="#000000" points="5315.42,-337.77 5304.99,-339.67 5314.32,-344.69 5315.42,-337.77"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge92" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M4192.02,-390.47C4210.81,-387.68 4230.18,-385.04 4248.48,-382.96 4473.82,-357.37 4532.17,-372.87 4757.48,-346.96 4774.91,-344.96 4793.33,-342.42 4811.25,-339.72"/>
+<polygon fill="#000000" stroke="#000000" points="4811.79,-343.18 4821.15,-338.21 4810.73,-336.26 4811.79,-343.18"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_RMMETA_FILE_NAME -->
+<g id="edge95" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_RMMETA_FILE_NAME</title>
+<path fill="none" stroke="#000000" d="M4114.72,-383.45C4126.47,-373.9 4139.98,-362.92 4152.37,-352.86"/>
+<polygon fill="#000000" stroke="#000000" points="4154.76,-355.43 4160.31,-346.41 4150.34,-350 4154.76,-355.43"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_RM_ATTR -->
+<g id="edge96" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_RM_ATTR</title>
+<path fill="none" stroke="#000000" d="M4053.91,-383.38C4044.19,-373.16 4034.58,-360.58 4029.48,-346.96 4021.09,-324.6 4015.93,-312.89 4029.48,-293.22 4042.06,-274.94 4060.83,-262.06 4081.18,-252.98"/>
+<polygon fill="#000000" stroke="#000000" points="4082.72,-256.13 4090.62,-249.07 4080.04,-249.66 4082.72,-256.13"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge93" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M4031.04,-384.39C4016.55,-374.88 4002.58,-362.47 3994.48,-346.96 3946.46,-255.1 3922.53,-188.36 3994.48,-113.74 4047.59,-58.65 5133.52,-52.24 5537.67,-51.77"/>
+<polygon fill="#000000" stroke="#000000" points="5537.97,-55.27 5547.97,-51.76 5537.97,-48.27 5537.97,-55.27"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge97" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M4189.74,-390.08C4209.22,-387.24 4229.42,-384.68 4248.48,-382.96 4887.84,-325.12 5052.6,-398.8 5692.48,-346.96 5715.9,-345.06 5740.86,-342.22 5764.68,-339.09"/>
+<polygon fill="#000000" stroke="#000000" points="5765.37,-342.53 5774.81,-337.74 5764.44,-335.6 5765.37,-342.53"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge94" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M4045.53,-383.46C4033.98,-373.57 4022.7,-361.17 4016.48,-346.96 3989.68,-285.74 3992.53,-158.5 4043.48,-113.74 4080.88,-80.88 5785.92,-82.51 5835.48,-77.74 5849.7,-76.37 5864.62,-74.41 5879.28,-72.18"/>
+<polygon fill="#000000" stroke="#000000" points="5880.05,-75.6 5889.39,-70.59 5878.96,-68.69 5880.05,-75.6"/>
+</g>
+<!-- api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge91" class="edge">
+<title>api_gui_easicmd__RMMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M4190.65,-390.26C4209.86,-387.43 4229.72,-384.84 4248.48,-382.96 4608.36,-346.89 4701.92,-386.18 5061.48,-346.96 5075.14,-345.47 5089.46,-343.5 5103.57,-341.3"/>
+<polygon fill="#000000" stroke="#000000" points="5104.48,-344.7 5113.8,-339.67 5103.37,-337.79 5104.48,-344.7"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_FILE_NAME&#45;&gt;api_gui_easicmd__FILE_NAME_CMD -->
+<g id="edge118" class="edge">
+<title>api_gui_easicmd__SEARCH_FILE_NAME&#45;&gt;api_gui_easicmd__FILE_NAME_CMD</title>
+<path fill="none" stroke="#000000" d="M3098.48,-382.51C3098.48,-374.54 3098.48,-365.65 3098.48,-357.16"/>
+<polygon fill="#000000" stroke="#000000" points="3101.98,-357.09 3098.48,-347.09 3094.98,-357.09 3101.98,-357.09"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_FOLDER_NAME&#45;&gt;api_gui_easicmd__FOLDER_NAME_CMD -->
+<g id="edge121" class="edge">
+<title>api_gui_easicmd__SEARCH_FOLDER_NAME&#45;&gt;api_gui_easicmd__FOLDER_NAME_CMD</title>
+<path fill="none" stroke="#000000" d="M2726.7,-382.98C2735.93,-373.88 2746.44,-363.52 2756.18,-353.92"/>
+<polygon fill="#000000" stroke="#000000" points="2758.78,-356.27 2763.44,-346.76 2753.86,-351.28 2758.78,-356.27"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_GET_CMD&#45;&gt;api_gui_easicmd__BUILD_SEARCH_CMD -->
+<g id="edge112" class="edge">
+<title>api_gui_easicmd__SEARCH_GET_CMD&#45;&gt;api_gui_easicmd__BUILD_SEARCH_CMD</title>
+<path fill="none" stroke="#000000" d="M2148.79,-388.26C2092.15,-374.97 2018.39,-357.67 1959.93,-343.95"/>
+<polygon fill="#000000" stroke="#000000" points="1960.47,-340.49 1949.94,-341.61 1958.87,-347.3 1960.47,-340.49"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_GET_CMD&#45;&gt;api_gui_easicmd__CLEAR_SEARCH_TEXT -->
+<g id="edge114" class="edge">
+<title>api_gui_easicmd__SEARCH_GET_CMD&#45;&gt;api_gui_easicmd__CLEAR_SEARCH_TEXT</title>
+<path fill="none" stroke="#000000" d="M2217.33,-382.98C2210.85,-374.23 2203.51,-364.33 2196.64,-355.05"/>
+<polygon fill="#000000" stroke="#000000" points="2199.26,-352.71 2190.49,-346.76 2193.63,-356.87 2199.26,-352.71"/>
+</g>
+<!-- api_gui_easicmd__SEARCH_GET_CMD&#45;&gt;api_gui_easicmd__EXEC_SEARCH_CMD -->
+<g id="edge113" class="edge">
+<title>api_gui_easicmd__SEARCH_GET_CMD&#45;&gt;api_gui_easicmd__EXEC_SEARCH_CMD</title>
+<path fill="none" stroke="#000000" d="M2300.9,-385.66C2333.29,-374.02 2372.69,-359.85 2406.33,-347.75"/>
+<polygon fill="#000000" stroke="#000000" points="2407.89,-350.91 2416.11,-344.24 2405.52,-344.33 2407.89,-350.91"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge105" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M4770.86,-384.39C4796.95,-373.28 4827.94,-360.08 4854.84,-348.62"/>
+<polygon fill="#000000" stroke="#000000" points="4856.35,-351.78 4864.18,-344.64 4853.61,-345.34 4856.35,-351.78"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_SHOW_META_FILE_NAME -->
+<g id="edge108" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GET_SHOW_META_FILE_NAME</title>
+<path fill="none" stroke="#000000" d="M4673.56,-383.45C4658.11,-373.63 4640.29,-362.3 4624.1,-352"/>
+<polygon fill="#000000" stroke="#000000" points="4625.62,-348.82 4615.3,-346.41 4621.86,-354.73 4625.62,-348.82"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GUI_SHOW_META -->
+<g id="edge103" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__GUI_SHOW_META</title>
+<path fill="none" stroke="#000000" d="M4597.35,-389.93C4508.57,-374.91 4400.22,-355.13 4393.48,-346.96 4378.28,-328.54 4380.02,-312.95 4393.48,-293.22 4405.45,-275.68 4423.2,-263.11 4442.54,-254.11"/>
+<polygon fill="#000000" stroke="#000000" points="4444.04,-257.27 4451.83,-250.09 4441.26,-250.85 4444.04,-257.27"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge106" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M4735.92,-383.03C4743.94,-372.5 4752.28,-359.79 4757.48,-346.96 4797.08,-249.28 4720.22,-182.07 4800.48,-113.74 4855.23,-67.13 5300.15,-55.59 5538.29,-52.77"/>
+<polygon fill="#000000" stroke="#000000" points="5538.46,-56.26 5548.42,-52.65 5538.38,-49.26 5538.46,-56.26"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge109" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M4832.23,-390.27C4853.26,-387.47 4874.98,-384.88 4895.48,-382.96 5248.52,-349.97 5339.36,-379.16 5692.48,-346.96 5715.59,-344.85 5740.21,-341.95 5763.77,-338.84"/>
+<polygon fill="#000000" stroke="#000000" points="5764.35,-342.29 5773.79,-337.5 5763.42,-335.36 5764.35,-342.29"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge107" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M4593.78,-390.4C4500.51,-375.46 4385.61,-355.53 4378.48,-346.96 4359.52,-324.18 4346.03,-160.54 4396.48,-113.74 4455.1,-59.35 5755.9,-85.6 5835.48,-77.74 5849.7,-76.34 5864.61,-74.36 5879.28,-72.12"/>
+<polygon fill="#000000" stroke="#000000" points="5880.04,-75.54 5889.38,-70.52 5878.96,-68.62 5880.04,-75.54"/>
+</g>
+<!-- api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge104" class="edge">
+<title>api_gui_easicmd__SHOWMETA_GET_IRODS_PATH&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M4824.48,-389.19C4906.36,-374.71 5017.28,-355.09 5099.03,-340.63"/>
+<polygon fill="#000000" stroke="#000000" points="5100.12,-343.99 5109.36,-338.8 5098.9,-337.1 5100.12,-343.99"/>
+</g>
+<!-- api_gui_easicmd__Test -->
+<g id="node76" class="node">
+<title>api_gui_easicmd__Test</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4266.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="4266.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">Test</text>
+<text text-anchor="middle" x="4266.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2252)</text>
+</g>
+<!-- api_gui_easicmd__USER_OR_GROUP&#45;&gt;api_gui_easicmd__ICHMOD_BUILD_CMD -->
+<g id="edge134" class="edge">
+<title>api_gui_easicmd__USER_OR_GROUP&#45;&gt;api_gui_easicmd__ICHMOD_BUILD_CMD</title>
+<path fill="none" stroke="#000000" d="M3118.48,-203.03C3118.48,-195.06 3118.48,-186.17 3118.48,-177.68"/>
+<polygon fill="#000000" stroke="#000000" points="3121.98,-177.61 3118.48,-167.61 3114.98,-177.61 3121.98,-177.61"/>
+</g>
+<!-- api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge34" class="edge">
+<title>api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M4844.15,-479.94C4861.51,-477.1 4879.49,-474.52 4896.48,-472.7 5289.66,-430.56 5397.7,-514.14 5785.48,-436.7 5898.38,-414.15 5962.66,-441.42 6028.48,-346.96 6112.55,-226.29 5889.62,-123.82 5764.97,-77.81"/>
+<polygon fill="#000000" stroke="#000000" points="5766.03,-74.48 5755.44,-74.33 5763.63,-81.05 5766.03,-74.48"/>
+</g>
+<!-- api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__on_treeview_open -->
+<g id="edge37" class="edge">
+<title>api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__on_treeview_open</title>
+<path fill="none" stroke="#000000" d="M4844.15,-479.97C4861.51,-477.13 4879.49,-474.54 4896.48,-472.7 5082.89,-452.51 5564.31,-503.58 5739.48,-436.7 5784.49,-419.52 5825.81,-381.9 5851.93,-354.23"/>
+<polygon fill="#000000" stroke="#000000" points="5854.66,-356.43 5858.88,-346.71 5849.52,-351.67 5854.66,-356.43"/>
+</g>
+<!-- api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge35" class="edge">
+<title>api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M4843.74,-479.94C4861.23,-477.09 4879.36,-474.5 4896.48,-472.7 5117.41,-449.52 5682.74,-500.66 5895.48,-436.7 5987.61,-409 6078.48,-417.29 6078.48,-321.09 6078.48,-321.09 6078.48,-321.09 6078.48,-229.35 6078.48,-173.99 6042.32,-119.03 6014.86,-85.27"/>
+<polygon fill="#000000" stroke="#000000" points="6017.53,-83.01 6008.44,-77.57 6012.15,-87.49 6017.53,-83.01"/>
+</g>
+<!-- api_gui_easicmd__to_irods_and_beyond -->
+<g id="node95" class="node">
+<title>api_gui_easicmd__to_irods_and_beyond</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5043.48" cy="-409.83" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5043.48" y="-413.63" font-family="Times,serif" font-size="14.00" fill="#000000">to_irods_and_beyond</text>
+<text text-anchor="middle" x="5043.48" y="-398.63" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:235)</text>
+</g>
+<!-- api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__to_irods_and_beyond -->
+<g id="edge36" class="edge">
+<title>api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__to_irods_and_beyond</title>
+<path fill="none" stroke="#000000" d="M4822.16,-476.66C4864.12,-464.17 4916.83,-448.5 4960.28,-435.58"/>
+<polygon fill="#000000" stroke="#000000" points="4961.38,-438.9 4969.97,-432.69 4959.39,-432.19 4961.38,-438.9"/>
+</g>
+<!-- api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__treeview_filter -->
+<g id="edge33" class="edge">
+<title>api_gui_easicmd__WHERE_TO_IRODS&#45;&gt;api_gui_easicmd__treeview_filter</title>
+<path fill="none" stroke="#000000" d="M4847.48,-480.54C4863.82,-477.77 4880.61,-475.05 4896.48,-472.7 4961.8,-463.01 5144.01,-482.62 5191.48,-436.7 5212.26,-416.59 5215.5,-383.09 5214.27,-357.31"/>
+<polygon fill="#000000" stroke="#000000" points="5217.75,-356.88 5213.55,-347.15 5210.77,-357.37 5217.75,-356.88"/>
+</g>
+<!-- api_gui_easicmd__checkbox_event -->
+<g id="node81" class="node">
+<title>api_gui_easicmd__checkbox_event</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5051.48" cy="-499.57" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="5051.48" y="-503.37" font-family="Times,serif" font-size="14.00" fill="#000000">checkbox_event</text>
+<text text-anchor="middle" x="5051.48" y="-488.37" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2204)</text>
+</g>
+<!-- api_gui_easicmd__config_gui -->
+<g id="node82" class="node">
+<title>api_gui_easicmd__config_gui</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5701.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="5701.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">config_gui</text>
+<text text-anchor="middle" x="5701.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2080)</text>
+</g>
+<!-- api_gui_easicmd__config_gui&#45;&gt;api_gui_easicmd__CREATE_IRODS_INFO_GUI -->
+<g id="edge161" class="edge">
+<title>api_gui_easicmd__config_gui&#45;&gt;api_gui_easicmd__CREATE_IRODS_INFO_GUI</title>
+<path fill="none" stroke="#000000" d="M5699.08,-561.99C5698.35,-554.02 5697.54,-545.13 5696.77,-536.64"/>
+<polygon fill="#000000" stroke="#000000" points="5700.24,-536.22 5695.85,-526.57 5693.27,-536.85 5700.24,-536.22"/>
+</g>
+<!-- api_gui_easicmd__create_and_wait_for_config&#45;&gt;api_gui_easicmd__config_gui -->
+<g id="edge162" class="edge">
+<title>api_gui_easicmd__create_and_wait_for_config&#45;&gt;api_gui_easicmd__config_gui</title>
+<path fill="none" stroke="#000000" d="M5547.66,-657.09C5575.04,-645.2 5608.29,-630.77 5636.85,-618.37"/>
+<polygon fill="#000000" stroke="#000000" points="5638.57,-621.44 5646.35,-614.25 5635.78,-615.02 5638.57,-621.44"/>
+</g>
+<!-- api_gui_easicmd__pswd_gui -->
+<g id="node93" class="node">
+<title>api_gui_easicmd__pswd_gui</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="4465.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="4465.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">pswd_gui</text>
+<text text-anchor="middle" x="4465.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2153)</text>
+</g>
+<!-- api_gui_easicmd__create_and_wait_for_password&#45;&gt;api_gui_easicmd__pswd_gui -->
+<g id="edge165" class="edge">
+<title>api_gui_easicmd__create_and_wait_for_password&#45;&gt;api_gui_easicmd__pswd_gui</title>
+<path fill="none" stroke="#000000" d="M4050.98,-662.38C4071.09,-659.59 4091.87,-657.03 4111.48,-655.18 4199.6,-646.88 4223.66,-664.41 4310.48,-647.18 4341.79,-640.97 4375.19,-629.4 4402.94,-618.31"/>
+<polygon fill="#000000" stroke="#000000" points="4404.56,-621.42 4412.51,-614.41 4401.93,-614.94 4404.56,-621.42"/>
+</g>
+<!-- api_gui_easicmd__expand_tree_to_nodeX -->
+<g id="node85" class="node">
+<title>api_gui_easicmd__expand_tree_to_nodeX</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5226.48" cy="-230.35" rx="139.1" ry="26.74"/>
+<text text-anchor="middle" x="5226.48" y="-234.15" font-family="Times,serif" font-size="14.00" fill="#000000">expand_tree_to_node</text>
+<text text-anchor="middle" x="5226.48" y="-219.15" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:209)</text>
+</g>
+<!-- api_gui_easicmd__expand_tree_to_nodeX&#45;&gt;api_gui_easicmd__expand_tree_to_nodeX -->
+<g id="edge28" class="edge">
+<title>api_gui_easicmd__expand_tree_to_nodeX&#45;&gt;api_gui_easicmd__expand_tree_to_nodeX</title>
+<path fill="none" stroke="#000000" d="M5337.81,-246.54C5364.24,-245.24 5383.78,-239.85 5383.78,-230.35 5383.78,-222.12 5369.08,-216.96 5347.95,-214.89"/>
+<polygon fill="#000000" stroke="#000000" points="5348.04,-211.39 5337.81,-214.16 5347.53,-218.37 5348.04,-211.39"/>
+</g>
+<!-- api_gui_easicmd__on_treeview_open_parent -->
+<g id="node91" class="node">
+<title>api_gui_easicmd__on_treeview_open_parent</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="5256.48" cy="-140.61" rx="140.01" ry="26.74"/>
+<text text-anchor="middle" x="5256.48" y="-144.41" font-family="Times,serif" font-size="14.00" fill="#000000">on_treeview_open_parent</text>
+<text text-anchor="middle" x="5256.48" y="-129.41" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:224)</text>
+</g>
+<!-- api_gui_easicmd__expand_tree_to_nodeX&#45;&gt;api_gui_easicmd__on_treeview_open_parent -->
+<g id="edge29" class="edge">
+<title>api_gui_easicmd__expand_tree_to_nodeX&#45;&gt;api_gui_easicmd__on_treeview_open_parent</title>
+<path fill="none" stroke="#000000" d="M5235.32,-203.5C5238.13,-195.27 5241.29,-186.02 5244.3,-177.23"/>
+<polygon fill="#000000" stroke="#000000" points="5247.67,-178.17 5247.6,-167.58 5241.05,-175.91 5247.67,-178.17"/>
+</g>
+<!-- api_gui_easicmd__fill_listbox -->
+<g id="node86" class="node">
+<title>api_gui_easicmd__fill_listbox</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3609.48" cy="-589.31" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="3609.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">fill_listbox</text>
+<text text-anchor="middle" x="3609.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:63)</text>
+</g>
+<!-- api_gui_easicmd__listbox_filter -->
+<g id="node89" class="node">
+<title>api_gui_easicmd__listbox_filter</title>
+<ellipse fill="#fecccc" fill-opacity="0.698039" stroke="black" cx="3337.48" cy="-682.05" rx="132.87" ry="26.74"/>
+<text text-anchor="middle" x="3337.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">listbox_filter</text>
+<text text-anchor="middle" x="3337.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:47)</text>
+</g>
+<!-- api_gui_easicmd__listbox_filter&#45;&gt;api_gui_easicmd__fill_listbox -->
+<g id="edge24" class="edge">
+<title>api_gui_easicmd__listbox_filter&#45;&gt;api_gui_easicmd__fill_listbox</title>
+<path fill="none" stroke="#000000" d="M3420.81,-661.01C3436.42,-656.78 3452.52,-652.1 3467.48,-647.18 3493.42,-638.64 3521.44,-627.79 3545.68,-617.85"/>
+<polygon fill="#000000" stroke="#000000" points="3547.21,-621.01 3555.11,-613.95 3544.54,-614.54 3547.21,-621.01"/>
+</g>
+<!-- api_gui_easicmd__on_treeview_open&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge26" class="edge">
+<title>api_gui_easicmd__on_treeview_open&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M5861.62,-292.98C5826.51,-244.36 5751.13,-140 5712.07,-85.92"/>
+<polygon fill="#000000" stroke="#000000" points="5714.82,-83.75 5706.13,-77.69 5709.14,-87.85 5714.82,-83.75"/>
+</g>
+<!-- api_gui_easicmd__on_treeview_open&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge25" class="edge">
+<title>api_gui_easicmd__on_treeview_open&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M5890.64,-292.98C5909.4,-244.77 5949.51,-141.72 5970.7,-87.27"/>
+<polygon fill="#000000" stroke="#000000" points="5974.06,-88.28 5974.43,-77.69 5967.54,-85.74 5974.06,-88.28"/>
+</g>
+<!-- api_gui_easicmd__on_treeview_open_parent&#45;&gt;api_gui_easicmd__get_next_level_folders -->
+<g id="edge31" class="edge">
+<title>api_gui_easicmd__on_treeview_open_parent&#45;&gt;api_gui_easicmd__get_next_level_folders</title>
+<path fill="none" stroke="#000000" d="M5350,-120.57C5419.04,-106.52 5513,-87.39 5584.24,-72.89"/>
+<polygon fill="#000000" stroke="#000000" points="5585.04,-76.3 5594.14,-70.87 5583.64,-69.44 5585.04,-76.3"/>
+</g>
+<!-- api_gui_easicmd__on_treeview_open_parent&#45;&gt;api_gui_easicmd__populate_treeview -->
+<g id="edge30" class="edge">
+<title>api_gui_easicmd__on_treeview_open_parent&#45;&gt;api_gui_easicmd__populate_treeview</title>
+<path fill="none" stroke="#000000" d="M5354.47,-121.33C5371.44,-118.53 5388.94,-115.86 5405.48,-113.74 5595.7,-89.31 5645.26,-102.17 5835.48,-77.74 5848.89,-76.02 5862.93,-73.94 5876.82,-71.72"/>
+<polygon fill="#000000" stroke="#000000" points="5877.57,-75.15 5886.88,-70.09 5876.45,-68.24 5877.57,-75.15"/>
+</g>
+<!-- api_gui_easicmd__pswd_gui&#45;&gt;api_gui_easicmd__PASSWORD_REGISTER_GUI -->
+<g id="edge163" class="edge">
+<title>api_gui_easicmd__pswd_gui&#45;&gt;api_gui_easicmd__PASSWORD_REGISTER_GUI</title>
+<path fill="none" stroke="#000000" d="M4548.94,-567.26C4571.68,-562.27 4596.41,-557.51 4619.48,-554.44 4878.39,-520.04 4946.65,-553.05 5206.48,-526.44 5221.65,-524.89 5237.56,-522.87 5253.24,-520.65"/>
+<polygon fill="#000000" stroke="#000000" points="5254.12,-524.06 5263.51,-519.16 5253.11,-517.13 5254.12,-524.06"/>
+</g>
+<!-- api_gui_easicmd__pswd_gui&#45;&gt;api_gui_easicmd__checkbox_event -->
+<g id="edge164" class="edge">
+<title>api_gui_easicmd__pswd_gui&#45;&gt;api_gui_easicmd__checkbox_event</title>
+<path fill="none" stroke="#000000" d="M4551.48,-567.55C4573.55,-562.74 4597.31,-557.99 4619.48,-554.44 4741.66,-534.9 4773.83,-542.86 4896.48,-526.44 4910.08,-524.62 4924.32,-522.52 4938.42,-520.31"/>
+<polygon fill="#000000" stroke="#000000" points="4939.32,-523.71 4948.65,-518.69 4938.23,-516.8 4939.32,-523.71"/>
+</g>
+<!-- api_gui_easicmd__theme_gui__dark_theme -->
+<g id="node103" class="node">
+<title>api_gui_easicmd__theme_gui__dark_theme</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="619.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="619.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">dark_theme</text>
+<text text-anchor="middle" x="619.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2043)</text>
+</g>
+<!-- api_gui_easicmd__theme_gui&#45;&gt;api_gui_easicmd__theme_gui__dark_theme -->
+<g id="edge160" class="edge">
+<title>api_gui_easicmd__theme_gui&#45;&gt;api_gui_easicmd__theme_gui__dark_theme</title>
+<path fill="none" stroke="#000000" d="M1717.64,-679.14C1442.48,-675.13 863.52,-664.72 773.48,-647.18 742.32,-641.11 709.13,-629.56 681.57,-618.44"/>
+<polygon fill="#000000" stroke="#000000" points="682.65,-615.1 672.07,-614.54 679.99,-621.58 682.65,-615.1"/>
+</g>
+<!-- api_gui_easicmd__theme_gui__light_theme -->
+<g id="node104" class="node">
+<title>api_gui_easicmd__theme_gui__light_theme</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="1546.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="1546.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">light_theme</text>
+<text text-anchor="middle" x="1546.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2048)</text>
+</g>
+<!-- api_gui_easicmd__theme_gui&#45;&gt;api_gui_easicmd__theme_gui__light_theme -->
+<g id="edge159" class="edge">
+<title>api_gui_easicmd__theme_gui&#45;&gt;api_gui_easicmd__theme_gui__light_theme</title>
+<path fill="none" stroke="#000000" d="M1764.2,-662.13C1744.31,-657.7 1723.63,-652.65 1704.48,-647.18 1675.01,-638.76 1643.11,-627.67 1615.74,-617.52"/>
+<polygon fill="#000000" stroke="#000000" points="1616.85,-614.2 1606.25,-613.97 1614.4,-620.75 1616.85,-614.2"/>
+</g>
+<!-- api_gui_easicmd__theme_gui__system_theme -->
+<g id="node106" class="node">
+<title>api_gui_easicmd__theme_gui__system_theme</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="1237.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="1237.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">system_theme</text>
+<text text-anchor="middle" x="1237.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2053)</text>
+</g>
+<!-- api_gui_easicmd__theme_gui&#45;&gt;api_gui_easicmd__theme_gui__system_theme -->
+<g id="edge158" class="edge">
+<title>api_gui_easicmd__theme_gui&#45;&gt;api_gui_easicmd__theme_gui__system_theme</title>
+<path fill="none" stroke="#000000" d="M1721.45,-675.28C1605.99,-669.75 1452.18,-660.29 1391.48,-647.18 1360.83,-640.56 1328.07,-629.12 1300.69,-618.24"/>
+<polygon fill="#000000" stroke="#000000" points="1301.82,-614.92 1291.24,-614.42 1299.2,-621.41 1301.82,-614.92"/>
+</g>
+<!-- api_gui_easicmd__to_irods_and_beyond&#45;&gt;api_gui_easicmd__GET_IRODS_PATH -->
+<g id="edge32" class="edge">
+<title>api_gui_easicmd__to_irods_and_beyond&#45;&gt;api_gui_easicmd__GET_IRODS_PATH</title>
+<path fill="none" stroke="#000000" d="M5007.94,-383.69C4994.06,-373.87 4978.01,-362.5 4963.41,-352.18"/>
+<polygon fill="#000000" stroke="#000000" points="4965.2,-349.16 4955.02,-346.24 4961.16,-354.87 4965.2,-349.16"/>
+</g>
+<!-- api_gui_easicmd__treeview_filter&#45;&gt;api_gui_easicmd__expand_tree_to_nodeX -->
+<g id="edge27" class="edge">
+<title>api_gui_easicmd__treeview_filter&#45;&gt;api_gui_easicmd__expand_tree_to_nodeX</title>
+<path fill="none" stroke="#000000" d="M5214.58,-292.77C5216.12,-284.8 5217.84,-275.91 5219.49,-267.42"/>
+<polygon fill="#000000" stroke="#000000" points="5222.97,-267.84 5221.44,-257.35 5216.1,-266.51 5222.97,-267.84"/>
+</g>
+<!-- api_gui_easicmd__FullScreenApp__toggle_geom -->
+<g id="node98" class="node">
+<title>api_gui_easicmd__FullScreenApp__toggle_geom</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="303.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="303.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">toggle_geom</text>
+<text text-anchor="middle" x="303.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2246)</text>
+</g>
+<!-- api_gui_easicmd__FullScreenApp____init__&#45;&gt;api_gui_easicmd__FullScreenApp__toggle_geom -->
+<g id="edge166" class="edge">
+<title>api_gui_easicmd__FullScreenApp____init__&#45;&gt;api_gui_easicmd__FullScreenApp__toggle_geom</title>
+<path fill="none" stroke="#000000" d="M303.48,-654.81C303.48,-645.89 303.48,-635.76 303.48,-626.22"/>
+<polygon fill="#000000" stroke="#000000" points="306.98,-626.18 303.48,-616.18 299.98,-626.18 306.98,-626.18"/>
+</g>
+<!-- api_gui_easicmd__Test____init__ -->
+<g id="node99" class="node">
+<title>api_gui_easicmd__Test____init__</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="7575.48" cy="-774.79" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7575.48" y="-778.59" font-family="Times,serif" font-size="14.00" fill="#000000">__init__</text>
+<text text-anchor="middle" x="7575.48" y="-763.59" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2253)</text>
+</g>
+<!-- api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test____init__ -->
+<g id="edge169" class="edge">
+<title>api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test____init__</title>
+<path fill="none" stroke="#000000" d="M7688.3,-791.85C7717.31,-790.76 7739.14,-785.08 7739.14,-774.79 7739.14,-765.75 7722.28,-760.26 7698.5,-758.33"/>
+<polygon fill="#000000" stroke="#000000" points="7698.49,-754.82 7688.3,-757.73 7698.08,-761.81 7698.49,-754.82"/>
+</g>
+<!-- api_gui_easicmd__Test__copy -->
+<g id="node100" class="node">
+<title>api_gui_easicmd__Test__copy</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="7555.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7555.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">copy</text>
+<text text-anchor="middle" x="7555.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2259)</text>
+</g>
+<!-- api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test__copy -->
+<g id="edge170" class="edge">
+<title>api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test__copy</title>
+<path fill="none" stroke="#000000" d="M7455.51,-759.48C7435.02,-754.62 7418.17,-748.23 7411.48,-739.92 7399.67,-725.25 7401.45,-671.12 7411.48,-655.18 7422.59,-637.51 7440.01,-624.54 7458.97,-615.06"/>
+<polygon fill="#000000" stroke="#000000" points="7460.49,-618.22 7468.07,-610.82 7457.53,-611.87 7460.49,-618.22"/>
+</g>
+<!-- api_gui_easicmd__Test__cut -->
+<g id="node101" class="node">
+<title>api_gui_easicmd__Test__cut</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="7575.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7575.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">cut</text>
+<text text-anchor="middle" x="7575.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2264)</text>
+</g>
+<!-- api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test__cut -->
+<g id="edge168" class="edge">
+<title>api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test__cut</title>
+<path fill="none" stroke="#000000" d="M7569.29,-747.55C7568.73,-738.63 7568.59,-728.5 7568.86,-718.96"/>
+<polygon fill="#000000" stroke="#000000" points="7572.36,-719.07 7569.32,-708.92 7565.37,-718.76 7572.36,-719.07"/>
+</g>
+<!-- api_gui_easicmd__Test__paste -->
+<g id="node102" class="node">
+<title>api_gui_easicmd__Test__paste</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="7884.48" cy="-682.05" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="7884.48" y="-685.85" font-family="Times,serif" font-size="14.00" fill="#000000">paste</text>
+<text text-anchor="middle" x="7884.48" y="-670.85" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2268)</text>
+</g>
+<!-- api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test__paste -->
+<g id="edge167" class="edge">
+<title>api_gui_easicmd__Test____init__&#45;&gt;api_gui_easicmd__Test__paste</title>
+<path fill="none" stroke="#000000" d="M7667.61,-753.85C7685.56,-749.67 7704.16,-744.98 7721.48,-739.92 7750.72,-731.37 7782.39,-720.05 7810.02,-709.75"/>
+<polygon fill="#000000" stroke="#000000" points="7811.48,-712.95 7819.62,-706.16 7809.02,-706.39 7811.48,-712.95"/>
+</g>
+<!-- api_gui_easicmd__Test__copy&#45;&gt;api_gui_easicmd__Test____init__ -->
+<g id="edge171" class="edge">
+<title>api_gui_easicmd__Test__copy&#45;&gt;api_gui_easicmd__Test____init__</title>
+<path fill="none" stroke="#000000" d="M7481.39,-612.59C7461.2,-622.25 7441.59,-635.92 7429.48,-655.18 7419.45,-671.12 7417.67,-725.25 7429.48,-739.92 7434.01,-745.55 7443.2,-750.29 7454.86,-754.28"/>
+<polygon fill="#000000" stroke="#000000" points="7454.12,-757.71 7464.7,-757.32 7456.18,-751.03 7454.12,-757.71"/>
+</g>
+<!-- api_gui_easicmd__Test__cut&#45;&gt;api_gui_easicmd__Test____init__ -->
+<g id="edge173" class="edge">
+<title>api_gui_easicmd__Test__cut&#45;&gt;api_gui_easicmd__Test____init__</title>
+<path fill="none" stroke="#000000" d="M7581.64,-708.92C7582.21,-717.81 7582.37,-727.92 7582.11,-737.48"/>
+<polygon fill="#000000" stroke="#000000" points="7578.61,-737.4 7581.66,-747.55 7585.6,-737.71 7578.61,-737.4"/>
+</g>
+<!-- api_gui_easicmd__Test__cut&#45;&gt;api_gui_easicmd__Test__copy -->
+<g id="edge172" class="edge">
+<title>api_gui_easicmd__Test__cut&#45;&gt;api_gui_easicmd__Test__copy</title>
+<path fill="none" stroke="#000000" d="M7569.69,-654.81C7567.73,-645.89 7565.5,-635.76 7563.39,-626.22"/>
+<polygon fill="#000000" stroke="#000000" points="7566.75,-625.2 7561.18,-616.18 7559.91,-626.7 7566.75,-625.2"/>
+</g>
+<!-- api_gui_easicmd__Test__paste&#45;&gt;api_gui_easicmd__Test____init__ -->
+<g id="edge174" class="edge">
+<title>api_gui_easicmd__Test__paste&#45;&gt;api_gui_easicmd__Test____init__</title>
+<path fill="none" stroke="#000000" d="M7832.96,-707.29C7805.51,-718.2 7771.07,-730.68 7739.48,-739.92 7723.01,-744.73 7705.39,-749.21 7688.01,-753.23"/>
+<polygon fill="#000000" stroke="#000000" points="7686.79,-749.92 7677.81,-755.54 7688.34,-756.74 7686.79,-749.92"/>
+</g>
+<!-- api_gui_easicmd__theme_gui__radiobutton_event -->
+<g id="node105" class="node">
+<title>api_gui_easicmd__theme_gui__radiobutton_event</title>
+<ellipse fill="#ff9999" fill-opacity="0.698039" stroke="black" cx="928.48" cy="-589.31" rx="145.83" ry="26.74"/>
+<text text-anchor="middle" x="928.48" y="-593.11" font-family="Times,serif" font-size="14.00" fill="#000000">radiobutton_event</text>
+<text text-anchor="middle" x="928.48" y="-578.11" font-family="Times,serif" font-size="14.00" fill="#000000">(api_gui_easicmd.py:2040)</text>
+</g>
+</g>
+</svg>
+`,
+                    ready: function() {
+                        var gv = this
+                        gv.nodes().click(function () {
+                            var $set = $()
+                            $set.push(this)
+                            $set = $set.add(gv.linkedFrom(this, true))
+                            $set = $set.add(gv.linkedTo(this, true))
+                            gv.highlight($set, true)
+                            gv.bringToFront($set)
+                        })
+                        $(document).keydown(function (evt) {
+                            if (evt.keyCode == 27) {
+                                gv.highlight()
+                            }
+                        })
+                    }
+                });
+            });
+		</script>
+	</body>
+</html>
