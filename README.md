@@ -29,7 +29,7 @@
   - [ADD_META : ADD METADATA ASSOCIATED WITH AN OBJECT ON IRODS](#add_meta--add-metadata-associated-with-an-object-on-irods)
   - [RM_META : REMOVING METADATA ASSOCIATED WITH AN OBJECT ON IRODS](#rm_meta--removing-metadata-associated-with-an-object-on-irods)
   - [SHOW_META : SHOW ALL THE METADATA ASSOCIATED WITH AN OBJECT ON IRODS](#show_meta--show-all-the-metadata-associated-with-an-object-on-irods)
-  - [SEARCH_BY_META : SEARCH FOR IRODS OBJECTS (FOLDER/FILE) BASED ON THE METADATA](#search_by_meta--search-for-irods-objects-folderfile-based-on-the-metadata)
+  - [SEARCH_BY_META : SEARCH FOR IRODS OBJECTS (FOLDER/FILE) BASED ON THE METADATA (NOT WORKING YET WITH PYTHON API)](#search_by_meta--search-for-irods-objects-folderfile-based-on-the-metadata-not-working-yet-with-python-api)
   - [SEARCH_NAME : SEARCH FOR IRODS OBJECT BASED ON (PARTS) OF THE OBJECT NAME](#search_name--search-for-irods-object-based-on-parts-of-the-object-name)
   - [IDUSH : AN IRODS EQUIVALENT TO du -sh](#idush--an-irods-equivalent-to-du--sh)
   - [ICHMOD : SHARE YOUR DATA DIRECTLY IN IRODS](#ichmod--share-your-data-directly-in-irods)
@@ -37,6 +37,7 @@
   - [ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH](#add-to-the-list-of-collection-an-additional-path)
 - [To-Do List](#to-do-list)
 - [Known Issues](#known-issues)
+- [Function Dependency View](#function-dependency-view)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
