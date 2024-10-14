@@ -1,0 +1,17 @@
+{
+    "extends": [
+      "local>cc-in2p3/renovatebot/config-presets//default",
+      "local>cc-in2p3/renovatebot/config-presets//python/default"
+    ],
+    "lockFileMaintenance": {
+      "enabled": true
+    },
+    "automerge": false,
+    "major": {
+      "automerge": false
+    },
+    "minor": {
+      "automerge": false
+    },
+    "baseBranches": ["develop"]
+  }
