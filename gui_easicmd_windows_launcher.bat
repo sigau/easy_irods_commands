@@ -1,5 +1,12 @@
 @echo off
 
+:: Author: Gautier Debaecker
+:: Date: October 2024
+:: Copyright (c) 2024 by Gautier Debaecker
+:: Special thanks to Beyoncé for the inspiration
+:: GitHub: https://github.com/sigau
+:: License: MIT License
+
 REM Chemin vers l'environnement virtuel
 set ENV_PATH=env_easicmd
 
