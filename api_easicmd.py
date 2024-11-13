@@ -31,7 +31,8 @@ from irods.user import iRODSUser
 from irods.collection import iRODSCollection
 from irods.access import iRODSAccess
 from cryptography.fernet import Fernet
-
+from pathlib import Path
+from git import Repo
 
 ## two # (##) mean a commentary and one # (#) mean a option you can change at your own risk
 
@@ -52,48 +53,56 @@ if missing:
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
+
+##########################################################################################################################################################################################################################################################################################
+#### config filename independently of the OS
+##########################################################################################################################################################################################################################################################################################
+
+
+pickle_meta_dictionary_path_filename = ".easicmd_irods_metadata_local_save.pkl"
+pickle_irods_path_path_filename = ".easicmd_irods_collection_save.pkl"
+pickle_additional_path_path_filename = ".easicmd_irods_additional_path_save.pkl"
+irods_key_path_filename = ".easicmd.key"
+irods_password_path_filename = ".easicmd.psw"
+irods_info_files_filename = ".easicmd.info"
+
 ##########################################################################################################################################################################################################################################################################################
 ####  identify platform
 ##########################################################################################################################################################################################################################################################################################
-
 global pickle_meta_dictionary_path
 global pickle_irods_path_path
 global pickle_additional_path_path
 global irods_key_path
 global irods_password_path
 global irods_info_files
+global config_folder
+
+config_folder = os.path.expanduser("~/.easicmd_config")
 
 if platform.system() == "Linux":
-    pickle_meta_dictionary_path = os.path.expanduser(
-        "~/.neo_irods_metadata_local_save.pkl"
-    )
-    pickle_irods_path_path = os.path.expanduser("~/.neo_irods_collection_save.pkl")
-    pickle_additional_path_path = os.path.expanduser(
-        "~/.neo_irods_additional_path_save.pkl"
-    )
-    irods_key_path = os.path.expanduser("~/.easicmd.key")
-    irods_password_path = os.path.expanduser("~/.easicmd.psw")
-    irods_info_files = os.path.expanduser("~/.easicmd.info")
+    pickle_meta_dictionary_path = os.path.expanduser(f"{config_folder}/{pickle_meta_dictionary_path_filename}")
+    pickle_irods_path_path = os.path.expanduser(f"{config_folder}/{pickle_irods_path_path_filename}")
+    pickle_additional_path_path = os.path.expanduser(f"{config_folder}/{pickle_additional_path_path_filename}")
+    irods_key_path = os.path.expanduser(f"{config_folder}/{irods_key_path_filename}")
+    irods_password_path = os.path.expanduser(f"{config_folder}/{irods_password_path_filename}")
+    irods_info_files = os.path.expanduser(f"{config_folder}/{irods_info_files_filename}")
 
 elif platform.system() == "Windows":
-    pickle_meta_dictionary_path = os.path.expanduser("~\.irods_metadata_local_save.pkl")
-    pickle_irods_path_path = os.path.expanduser("~\.irods_collection_save.pkl")
-    pickle_additional_path_path = os.path.expanduser(
-        "~\.irods_additional_path_save.pkl"
-    )
-    irods_key_path = os.path.expanduser("~\.easicmd.key")
-    irods_password_path = os.path.expanduser("~\.easicmd.psw")
-    irods_info_files = os.path.expanduser("~\.easicmd.info")
+    config_folder = os.path.expanduser("~\.easicmd_config")
+    pickle_meta_dictionary_path = os.path.expanduser(f"{config_folder}\{pickle_meta_dictionary_path_filename}")
+    pickle_irods_path_path = os.path.expanduser(f"{config_folder}\{pickle_irods_path_path_filename}")
+    pickle_additional_path_path = os.path.expanduser(f"{config_folder}\{pickle_additional_path_path_filename}")
+    irods_key_path = os.path.expanduser(f"{config_folder}\{irods_key_path_filename}")
+    irods_password_path = os.path.expanduser(f"{config_folder}\{irods_password_path_filename}")
+    irods_info_files = os.path.expanduser(f"{config_folder}\{irods_info_files_filename}")
 
 elif platform.system() == "Darwin":
-    pickle_meta_dictionary_path = os.path.expanduser("~/.irods_metadata_local_save.pkl")
-    pickle_irods_path_path = os.path.expanduser("~/.irods_collection_save.pkl")
-    pickle_additional_path_path = os.path.expanduser(
-        "~/.irods_additional_path_save.pkl"
-    )
-    irods_key_path = os.path.expanduser("~/.easicmd.key")
-    irods_password_path = os.path.expanduser("~/.easicmd.psw")
-    irods_info_files = os.path.expanduser("~/.easicmd.info")
+    pickle_meta_dictionary_path = os.path.expanduser(f"{config_folder}/{pickle_meta_dictionary_path_filename}")
+    pickle_irods_path_path = os.path.expanduser(f"{config_folder}/{pickle_irods_path_path_filename}")
+    pickle_additional_path_path = os.path.expanduser(f"{config_folder}/{pickle_additional_path_path_filename}")
+    irods_key_path = os.path.expanduser(f"{config_folder}/{irods_key_path_filename}")
+    irods_password_path = os.path.expanduser(f"{config_folder}/{irods_password_path_filename}")
+    irods_info_files = os.path.expanduser(f"{config_folder}/{irods_info_files_filename}")
 
 
 ##########################################################################################################################################################################################################################################################################################
@@ -102,6 +111,115 @@ elif platform.system() == "Darwin":
 nb_threads = os.cpu_count() - 1
 if nb_threads == 0:
     nb_threads = 1
+
+
+##########################################################################################################################################################################################################################################################################################
+#### git function's definition
+##########################################################################################################################################################################################################################################################################################
+def git_newbranch(branch_name): 
+
+    global gitrepo
+    repo = gitrepo
+    git_cmd = repo.git
+
+    ## Vérifie si la branche existe déjà
+    if branch_name in repo.heads:
+        print(f"Branch '{branch_name}' already exists. Checking it out.")
+        repo.git.checkout(branch_name)
+    else:
+        ## Crée et bascule sur la nouvelle branche
+        git_cmd.checkout("--orphan", branch_name)
+        repo.index.commit(f"Initial commit for branch {branch_name}")
+        print(f"Checked out new branch '{branch_name}'")
+
+def SWITCH_USER_CLI():
+    global gitrepo
+    repo = gitrepo
+    git_cmd = repo.git
+
+    list_branch = []
+    for branch in repo.heads:
+        list_branch.append(branch.name)
+
+    branch_completer = WordCompleter(list_branch)
+    bascule_branch = prompt("switch to (tab to list) :", completer=branch_completer)
+
+    repo.git.checkout(bascule_branch)
+    print(f"switch to {bascule_branch}")
+
+
+def git_add_file():
+    
+    global gitrepo
+    repo = gitrepo
+    git_cmd = repo.git
+    
+    file_paths = [
+        pickle_meta_dictionary_path,
+        pickle_irods_path_path,
+        pickle_additional_path_path,
+        irods_key_path,
+        irods_password_path,
+        irods_info_files
+    ]
+
+    ## Ajoute tous les fichiers au commit initial
+    repo.index.add(file_paths)
+    repo.index.commit("Initial commit with required files")
+    print("Initial commit created with specified files.")
+
+
+def NEW_USER():
+    global irods_config
+    print("creation d'un nouvel utilsateur")
+
+    ## Recuperation de la config irods + creation de la branche
+    get_irods_config_info()
+    ##recuperation du password 
+    get_irods_password(new_branch=True)
+    irods_config["password"] = PASSWORD
+    ## Creation d'un nouveau easicmd_irods_collection_save.pkl 
+    initialise_irods_collection() 
+    ## Creation d'un nouveau easicmd_irods_additional_path_save.pickle
+    irods_collection()
+    ##creation du dictionnaire
+    building_attributes_dictionnary()
+    ##add and commit the config files
+    git_add_file()
+    
+    print("new user create")
+
+
+    
+##########################################################################################################################################################################################################################################################################################
+####  initialize function
+##########################################################################################################################################################################################################################################################################################
+
+## function which, when the script is run for the first time, will create the config folder and initialise the git to provide for multicounting 
+## plus you don't have to check that the folder exists to create config files later
+def initialize():
+
+    global gitrepo
+
+    ##create config folder
+    if not os.path.isdir(config_folder):
+        os.mkdir(config_folder)
+
+    ## initialize git 
+    if platform.system() == "Windows":
+        gitconfig=f"{config_folder}\.git"
+    else :
+        gitconfig=f"{config_folder}/.git"
+
+    if not os.path.isdir(gitconfig):
+        gitrepo=Repo.init(config_folder)
+
+    else:
+        gitrepo=Repo(config_folder)
+    
+
+
+initialize()
 
 ##########################################################################################################################################################################################################################################################################################
 ####  main function
@@ -234,8 +352,15 @@ def main():
             else:
                 SEARCH_BY_NAME(tofind, type_iobject=None)
 
-        elif sys.argv[1] == "test":
+        elif sys.argv[1] == "speedtest":
             PUSH_SPEEDTEST(sys.argv[2], sys.argv[3])
+        
+        elif sys.argv[1] == "new_user" : 
+            NEW_USER()
+        
+        elif sys.argv[1] == "switch_user" :
+            SWITCH_USER_CLI()
+
 
         else:
             help()
@@ -317,6 +442,7 @@ def help():
 #                                    `\ /'
 
 
+
 ##########################################################################################################################################################################################################################################################################################
 #### tools function's definition (function that will only be use by other functions to avoid redundancy )
 ##########################################################################################################################################################################################################################################################################################
@@ -370,13 +496,13 @@ def save_pswd(PASSWORD):
         file.write(encrypted_message)
 
 
-def get_irods_password():
+def get_irods_password(new_branch=False):
     global PASSWORD
     PASSWORD = ""
 
     ## Verify if a key path exist
     ## If it exist the password has been save and encrypt so we have to decrypt it
-    if os.path.isfile(irods_key_path):
+    if os.path.isfile(irods_key_path) and new_branch == False:
         ## Charger la clé depuis le fichier
         loaded_key = load_key()
 
@@ -388,6 +514,7 @@ def get_irods_password():
         PASSWORD = decrypt_message(loaded_encrypted_message, loaded_key)
 
     ## password wasn't save we can just ask it
+    ## or we want to create a new branch
     else:
         caller = __name__
         if caller == "__main__":
@@ -398,6 +525,22 @@ def get_irods_password():
             )
             if answer == "Y" or answer == "y" or answer == "yes" or answer == "YES":
                 save_pswd(PASSWORD)
+
+
+def get_irods_config_info():
+    global irods_config
+    print(f"creating the irods config file in {irods_info_files} (equivalent to irods_environment.json with icommand/iinit)")
+
+    host = input("host: ")
+    port = input("port: ")
+    user = input("user: ")
+    zone = input("zone: ")
+    irods_config = {"host": host, "port": port, "user": user, "zone": zone}
+    
+    git_newbranch(f"{user}_{zone}_{port}")
+
+    with open(irods_info_files, "w") as f:
+        json.dump(irods_config, f)
 
 
 def get_irods_info():
@@ -415,21 +558,15 @@ def get_irods_info():
         ## I'm calling from api_easicmd.py
         caller = __name__
         if caller == "__main__":
-            print(
-                f"creating the irods config file in {irods_info_files} (equivalent to irods_environment.json with icommand/iinit)"
-            )
-            host = input("host: ")
-            port = input("port: ")
-            user = input("user: ")
-            zone = input("zone: ")
-            irods_config = {"host": host, "port": port, "user": user, "zone": zone}
-            with open(irods_info_files, "w") as f:
-                json.dump(irods_config, f)
+            get_irods_config_info()
             get_irods_password()
             irods_config["password"] = PASSWORD
 
         ## else : I'm calling from api_gui_easicmd.py
 
+        ## si c'est le premier run on crée un fichier dictionnaire + les irods path et additional path
+        first_time_dictionnary()
+        git_add_file()
 
 def irods_collection():
     ##create a list with all the collection in irods for autocompletion later
@@ -669,6 +806,11 @@ def asking(string):
         ask = "-" + ask
         call_iobject(ask)
 
+def first_time_dictionnary():
+    ## la premiere fois que le script va tourner ça generera le fichier irods path and dictionnary
+    if not os.path.isfile(pickle_additional_path_path):
+        building_attributes_dictionnary()
+        get_irods_addin_path()
 
 def building_attributes_dictionnary():
     global dico_attribute
