@@ -221,6 +221,13 @@ def initialize():
 
 initialize()
 
+
+
+##########################################################################################################################################################################################################################################################################################
+####  HELP TEXT (should change depending on the download localisation github/gitlab )
+##########################################################################################################################################################################################################################################################################################
+
+
 ##########################################################################################################################################################################################################################################################################################
 ####  main function
 ##########################################################################################################################################################################################################################################################################################
@@ -394,6 +401,7 @@ def help():
     print(
         "\tirm\t: irm [option]\n\t\t option are [-f] for a file and [-C] for a folder \n\t\t allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion\n"
     )
+    print("\tnew_user\t: create a new config file correponding to another irods user/zone ")
     print(
         "\tpull\t: pull [option] [local path]\n\t\t  irsync/iget folder/file from irods to local with autocompletion\n\t\t  For a file add option -f\n\t\t  For a folder add option -C\n\t\t  path can be full path or '.' for current folder\n\t\t  if no path given, a list of all the folder from root will be proposed (can be very long if you have many)\n"
     )
@@ -415,6 +423,7 @@ def help():
     print(
         "\tshow_meta\t: show_meta [option] or show_meta\n\t\t option are [-f] for a file and [-C] for a folder\n "
     )
+    print("\tswitch_user\t: allow to switch between the differents users provided")
     # print("\tsynchro\t: synchro [local path to folder] [optional:irods path]\n\t\t synchronise the contain of a local folder with irods [in irods path if given or in /zone/home/user by default] based on the sha256\n\t\t the folder will be synchronised on /zone/home/user/  \n\t\t can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]' ")
     print("\n\tSee some examples on https://github.com/sigau/easy_irods_commands ")
 
@@ -562,11 +571,12 @@ def get_irods_info():
             get_irods_password()
             irods_config["password"] = PASSWORD
 
-        ## else : I'm calling from api_gui_easicmd.py
-
         ## si c'est le premier run on crée un fichier dictionnaire + les irods path et additional path
         first_time_dictionnary()
         git_add_file()
+
+        ## else : I'm calling from api_gui_easicmd.py
+        ## I create it with the gui
 
 def irods_collection():
     ##create a list with all the collection in irods for autocompletion later

@@ -2155,6 +2155,8 @@ def CREATE_IRODS_INFO_GUI():
     with open(irods_info_files, "w") as f:
         json.dump(irods_config_gui, f)
 
+    easicmd.git_newbranch(f"{username_gui.get()}_{zone_gui.get()}_{port_gui.get()}")
+
 
 def create_and_wait_for_config():
     win_config = config_gui()
@@ -2285,8 +2287,7 @@ class Test(Text):  ###allow control c/v/x in tkinter
 
 
 try:
-    easicmd.get_irods_info()
-
+    
     ##########################################################################################################################################################################################################################################################################################
     #### number of threads to used
     ##########################################################################################################################################################################################################################################################################################
@@ -2502,56 +2503,76 @@ try:
     theme_bouton = customtkinter.CTkButton(root, text="theme", command=theme_gui)
     theme_bouton.pack(pady=10, anchor="w", side=BOTTOM)
 
-    ## If no irods config info file create one
-    if not os.path.isfile(irods_info_files):
-        showwarning(
-            title="missing irods config file",
-            message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}",
-        )
-        create_and_wait_for_config()
+##########################################################################################################################################################################################################################################################################################
+#### First time verification
+##########################################################################################################################################################################################################################################################################################
+    file_paths = [
+        pickle_meta_dictionary_path,
+        pickle_irods_path_path,
+        pickle_additional_path_path,
+        irods_key_path,
+        irods_password_path,
+        irods_info_files
+    ]
+    missing_files = [file for file in file_paths if not os.path.exists(file)]
+    if missing_files:
+        print("missing files")
+        ## If no irods config info file create one
+        if not os.path.isfile(irods_info_files):
+            showwarning(
+                title="missing irods config file",
+                message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}",
+            )
+            create_and_wait_for_config()
 
-    ## if no irods password
-    if not os.path.isfile(irods_password_path):
-        create_and_wait_for_password()
+        ## if no irods password
+        if not os.path.isfile(irods_password_path):
+            create_and_wait_for_password()
 
-    ### IF no metadata dictionary found create it
-    save_dict = os.path.expanduser(pickle_meta_dictionary_path)
-    if not os.path.isfile(save_dict):
-        showwarning(
-            title="missing dictionary",
-            message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
-        )
-        easicmd.building_attributes_dictionnary()
-        # print("easicmd.building_attributes_dictionnary()")
-        showwarning(
-            title="missing dictionary", message=f"It's done\nthanks for waiting"
-        )
+        ### IF no metadata dictionary found create it
+        save_dict = os.path.expanduser(pickle_meta_dictionary_path)
+        if not os.path.isfile(save_dict):
+            showwarning(
+                title="missing dictionary",
+                message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
+            )
+            easicmd.building_attributes_dictionnary()
+            # print("easicmd.building_attributes_dictionnary()")
+            showwarning(
+                title="missing dictionary", message=f"It's done\nthanks for waiting"
+            )
 
-    ### If no collection pickle create one
-    pickles_path = os.path.expanduser(pickle_irods_path_path)
-    if not os.path.isfile(pickles_path):
-        showwarning(
-            title="missing collection file",
-            message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
-        )
-        easicmd.get_irods_collection()
-        showwarning(
-            title="missing collection file", message=f"It's done\nthanks for waiting"
-        )
+        ### If no collection pickle create one
+        pickles_path = os.path.expanduser(pickle_irods_path_path)
+        if not os.path.isfile(pickles_path):
+            showwarning(
+                title="missing collection file",
+                message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
+            )
+            easicmd.get_irods_collection()
+            showwarning(
+                title="missing collection file", message=f"It's done\nthanks for waiting"
+            )
 
-    ### If no irods addin path file create one
-    pickles_additionals_path = os.path.expanduser(pickle_additional_path_path)
-    if not os.path.isfile(pickles_additionals_path):
-        showwarning(
-            title="missing irods addin path file",
-            message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
-        )
-        easicmd.get_irods_addin_path()
-        showwarning(
-            title="missing irods addin path file",
-            message=f"It's done\nthanks for waiting",
-        )
+        ### If no irods addin path file create one
+        pickles_additionals_path = os.path.expanduser(pickle_additional_path_path)
+        if not os.path.isfile(pickles_additionals_path):
+            showwarning(
+                title="missing irods addin path file",
+                message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
+            )
+            easicmd.get_irods_addin_path()
+            showwarning(
+                title="missing irods addin path file",
+                message=f"It's done\nthanks for waiting",
+            )
+        
+        git_add_file()
 
+##########################################################################################################################################################################################################################################################################################
+#### 
+##########################################################################################################################################################################################################################################################################################
+    easicmd.get_irods_info()
     root.mainloop()
 
 except TclError:
