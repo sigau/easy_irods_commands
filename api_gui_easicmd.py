@@ -2314,34 +2314,48 @@ try:
     ## PUSH DATA TO IRODS
     push_frame = customtkinter.CTkFrame(data, width=200, height=150)
     push_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    push_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         push_frame, text="Send local data to irods", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(push_frame, text="PUSH", command=GUIPUSH).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        push_frame, text="PUSH", command=GUIPUSH
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ##PULL DATA TO IRODS
+
+   ## PULL DATA TO IRODS
     pull_frame = customtkinter.CTkFrame(data, width=200, height=150)
     pull_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    pull_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         pull_frame, text="Get data from irods to a local folder", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(pull_frame, text="PULL", command=GUIPULL).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        pull_frame, text="PULL", command=GUIPULL
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ##CREATE A DIRECTORY IN IRODS
+    ## CREATE A DIRECTORY IN IRODS
     imkdir_frame = customtkinter.CTkFrame(data, width=200, height=150)
     imkdir_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+    imkdir_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         imkdir_frame, text="Create a ifolder in irods", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(imkdir_frame, text="IMKDIR", command=GUIIMKDIR).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        imkdir_frame, text="IMKDIR", command=GUIIMKDIR
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
     ## REMOVE DATA FROM IRODS
     irm_frame = customtkinter.CTkFrame(data, width=200, height=150)
     irm_frame.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
+    irm_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         irm_frame, text="Remove data from irods", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(irm_frame, text="IRM", command=GUIIRM).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        irm_frame, text="IRM", command=GUIIRM
+    ).grid(row=1, column=0, pady=10, sticky="n")
+
 
     ##################################################################################################
     ### Work with metadata (add_meta, rm_meta, show_meta)
@@ -2355,37 +2369,41 @@ try:
         font=("", 15),
     ).grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
-    ##ADD METADATA
+    ## ADD METADATA
     addmeta_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
     addmeta_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    addmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         addmeta_frame, text="Add metadata to data already on irods", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(addmeta_frame, text="Add Meta", command=INIT_ADD_META).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(addmeta_frame, text="Add Meta", command=INIT_ADD_META).grid(row=1, column=0, pady=10, sticky="n")
 
     ## REMOVE METADATA
     rmmeta_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
     rmmeta_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    rmmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         rmmeta_frame, text="Remove metadata from data on irods", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(rmmeta_frame, text="Remove Meta", command=INIT_RM_META).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(rmmeta_frame, text="Remove Meta", command=INIT_RM_META).grid(row=1, column=0, pady=10, sticky="n")
 
     ## SHOW METADATA
     showmeta_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
     showmeta_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+    showmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         showmeta_frame, text="Show metadata associated with data", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(showmeta_frame, text="Show Meta", command=INIT_SHOW_META).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(showmeta_frame, text="Show Meta", command=INIT_SHOW_META).grid(row=1, column=0, pady=10, sticky="n")
 
     ## EDIT METADATA DICTIONARY
     edit_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
     edit_frame.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
+    edit_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         edit_frame, text="Edit metadata autocompletion dictionary", font=("", 15)
-    ).grid(row=0, column=0, padx=10, pady=10)
-    customtkinter.CTkButton(edit_frame, text="Edit Meta", command=INIT_EDIT).grid(row=1, column=0, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(edit_frame, text="Edit Meta", command=INIT_EDIT).grid(row=1, column=0, pady=10, sticky="n")
 
     ##################################################################################################
     ### Configuration des lignes et colonnes principales pour permettre une adaptation
@@ -2415,67 +2433,68 @@ try:
     ## SEARCH BY METADATA
     searchmeta_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
     searchmeta_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    searchmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         searchmeta_frame,
         text="Search data by metadata (SQL-like)",
         font=("", 15),
-    ).grid(row=0, column=0, padx=10, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
     customtkinter.CTkButton(
         searchmeta_frame, text="Not Working Yet", command=None
-    ).grid(row=1, column=0, pady=10)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
     ## SEARCH BY NAME
     searchname_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
     searchname_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    searchname_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         searchname_frame,
         text="Search data by name",
         font=("", 15),
-    ).grid(row=0, column=0, padx=10, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
     customtkinter.CTkButton(
         searchname_frame, text="Search by Name", command=INIT_SEARCH_NAME
-    ).grid(row=1, column=0, pady=10)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
     ## GET SIZE OF IRODS FOLDER (IDUSH)
     idush_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
     idush_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+    idush_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         idush_frame,
         text="Get folder size on irods (IDUSH)",
         font=("", 15),
-    ).grid(row=0, column=0, padx=10, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
     customtkinter.CTkButton(
         idush_frame, text="IDUSH", command=INIT_IDUST
-    ).grid(row=1, column=0, pady=10)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
     # MANAGE USER PERMISSIONS (ICHMOD)
     ichmod_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
     ichmod_frame.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
+    ichmod_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         ichmod_frame,
         text="Manage user permissions (ICHMOD)",
         font=("", 15),
-    ).grid(row=0, column=0, padx=10, pady=10)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
     customtkinter.CTkButton(
         ichmod_frame, text="ICHMOD", command=INIT_ICHMOD
-    ).grid(row=1, column=0, pady=10)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
     ## UPDATE IRODS COLLECTION
     updpath_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
     updpath_frame.grid(row=1, column=4, padx=10, pady=10, sticky="nsew")
-
+    updpath_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         updpath_frame,
         text="Update the irods collection, e.g.: someone gave you access to a folder that wasn't in your local list, or you worked on IRODS from another computer.",
         font=("", 15),
-        wraplength=300,  # Limite la largeur du texte à 180 pixels
-        anchor="center",  # Centre le texte à l'intérieur de la tuile
-    ).grid(row=0, column=0, padx=10, pady=10)
-
+        wraplength=300,  # Limite la largeur du texte à 300 pixels
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
     customtkinter.CTkButton(
-        updpath_frame, text="Update", command=INIT_UPD_PATH, anchor="center"
-    ).grid(row=1, column=0, pady=10)
-
+        updpath_frame, text="Update", command=INIT_UPD_PATH
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
 
     ##################################################################################################
