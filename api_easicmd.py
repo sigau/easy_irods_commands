@@ -33,25 +33,11 @@ from irods.access import iRODSAccess
 from cryptography.fernet import Fernet
 from pathlib import Path
 from git import Repo
-
-## two # (##) mean a commentary and one # (#) mean a option you can change at your own risk
-
-##########################################################################################################################################################################################################################################################################################
-####  install dependancy (bad and temporary methods)
-##########################################################################################################################################################################################################################################################################################
-
-required = {"prompt_toolkit"}
-installed = {pkg.key for pkg in pkg_resources.working_set}
-missing = required - installed
-
-if missing:
-    python = sys.executable
-    subprocess.check_call(
-        [python, "-m", "pip", "install", *missing], stdout=subprocess.DEVNULL
-    )
-
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
+
+
+## two # (##) mean a commentary and one # (#) mean a option you can change at your own risk
 
 
 ##########################################################################################################################################################################################################################################################################################
