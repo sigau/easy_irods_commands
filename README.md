@@ -1,4 +1,5 @@
 # EASy-Irods-CoMmanDs (easicmd)
+<!--docker run --entrypoint doctoc --rm -it -v $(pwd):/usr/src jorgeandrada/doctoc README.md --notitle -->
 
 <!-- TOC -->
 
@@ -34,7 +35,9 @@
   - [IDUSH : AN IRODS EQUIVALENT TO du -sh](#idush--an-irods-equivalent-to-du--sh)
   - [ICHMOD : SHARE YOUR DATA DIRECTLY IN IRODS](#ichmod--share-your-data-directly-in-irods)
   - [EDITING THE AUTOCOMPLETION DICTIONARY](#editing-the-autocompletion-dictionary)
-  - [ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH](#add-to-the-list-of-collection-an-additional-path)
+  - [ADD A NEW USER](#add-a-new-user)
+  - [SWITCH BETWEEN USERS](#switch-between-users)
+  - [ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH (only with legacy version)](#add-to-the-list-of-collection-an-additional-path-only-with-legacy-version)
 - [To-Do List](#to-do-list)
 - [Known Issues](#known-issues)
 - [Function Dependency View](#function-dependency-view)
@@ -119,6 +122,8 @@ Possible COMMANDS :
 		 options are [-f] for a file and [-C] for a folder 
 		 allow to irm one or multiple (if * used) folder/file in irods. You don't need to know the path in irods as it will be helped by autocompletion
 
+  new_user: create a new config file correponding to another irods user/zone
+
 	pull	: pull [option] [local path]
 		  irsync/iget folder/file from irods to local with autocompletion
 		  For a file add option -f
@@ -143,6 +148,8 @@ Possible COMMANDS :
 	show_meta	: show_meta [option] or show_meta
 		 option are [-f] for a file and [-C] for a folder
  
+  switch_user : allow to switch between the differents users provided
+
 	synchro	: synchro [local path to folder] [optional:irods path]
 		 synchronise the contain of a local folder with irods [in irods path if given or in /zone/home/user by default] based on the sha256 
 		 can be fully automated with the help of when-changed (https://github.com/joh/when-changed) with : when-changed -r -q [folder] -c 'easicmd.py synchro [folder]'
@@ -659,19 +666,67 @@ You can edit it with this function, you can create a new key/attribut and add va
 
 ![screenshot/editing_remove.webm.gif](screenshot/editing_remove.webm.gif)
 
+### ADD A NEW USER
+If you have several irods accounts (for example on several zones) you can add them in easicmd and switch from one to the other easily.
+As with the first use, you will have to fill in the configuration information for the irods account (host, port, user, zone and password). 
 
-### ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH
+
+```
+$ ./api_easicmd.py new_user
+creation d'un nouvel utilsateur
+creating the irods config file in /home/gdebaeck/.easicmd_config/.easicmd.info (equivalent to irods_environment.json with icommand/iinit)
+host: ccirods.in2p3.fr
+port: 5596
+user: gdebaeck
+zone: tempZone
+Checked out new branch 'gdebaeck_tempZone_5596'
+ENTER YOUR IRODS PASSWORD : *************
+Do you want to save it for later (the password will be encrypt and stock in /home/gdebaeck/.easicmd_config/.easicmd.psw [Y/N] : Y
+create a file with all the irods folder to save time later
+if you already have some irods folder it can take a bit of time 
+a list or your irods collection have been save 
+Dictionary have been save in /home/gdebaeck/.easicmd_config/.easicmd_irods_metadata_local_save.pkl
+Initial commit created with specified files.
+new user create
+```
+
+**With the GUI**:
+![screenshot/new_user.gif](screenshot/new_user.gif)
+
+### SWITCH BETWEEN USERS
+
+
+
+```
+$./api_easicmd.py switch_user
+switch to (tab to list) :rods_tempZone_5590
+                          gdebaeck_fits_5555      
+                          gdebaeck_tempZone_5590  
+                          rods_tempZone_5590      
+                          tga_tempZone_5590       
+
+switch to rods_tempZone_5590
+
+```
+
+**With the GUI**:
+![screenshot/switch.gif](screenshot/switch.gif)
+
+
+
+### ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH (only with legacy version)
 If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home. Additionally, if you have a shared folder, you can use this command to update the folder list. To improve performance, the folder list is stored in a .pkl file [~/.irods_collection_save.pkl] so that it doesn't have to be recalculated every time the command is run. However, this can be a limitation when multiple users need access to the same folder list. To overcome this limitation, you can create a symlink for each user from their local ~/.irods_collection_save.pkl file to a common file that can be accessed by all users.
+
+
 
 
 **With the GUI**:
 
 ![screenshot/add_path.gif](screenshot/add_path.gif)
 
-
 ## To-Do List
 - [ ] create an explorer for the irods side 
-- [ ] allow multiple zone acces (change or multiple .easicmd.info/etc)
+- [X] allow multiple zone acces (change or multiple .easicmd.info/etc)
 - [X] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)

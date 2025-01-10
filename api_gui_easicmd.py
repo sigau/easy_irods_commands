@@ -2087,6 +2087,100 @@ def theme_gui():
     radiobutton_2.pack(padx=20, pady=10)
     radiobutton_3.pack(padx=20, pady=10)
 
+################################################################################################################################################################################################################################################################################
+## switch user 
+################################################################################################################################################################################################################################################################################
+
+def switch_add_user():
+    win_switchadd = customtkinter.CTkToplevel()
+    win_switchadd.title("warning switch/add user")
+
+    # Get screen width and height
+    screen_width = win_switchadd.winfo_screenwidth()
+    screen_height = win_switchadd.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_switchadd.geometry(f"500x200+{x_position}+{y_position}")
+
+    message = "Do you want to add or switch user"
+    customtkinter.CTkLabel(win_switchadd, text=message).pack()
+    customtkinter.CTkButton(
+        win_switchadd,
+        text="ADD NEW USER",
+        command=lambda: [create_user_gui(),
+            win_switchadd.destroy(),
+        ],
+    ).pack(side=LEFT)
+    customtkinter.CTkButton(
+        win_switchadd,
+        text="SWITCH USER",
+        command=lambda: [switch_user_gui(), win_switchadd.destroy()],
+    ).pack(side=RIGHT)
+
+def create_user_gui():
+
+    create_and_wait_for_config()
+
+    create_and_wait_for_password()
+
+    save_dict = os.path.expanduser(pickle_meta_dictionary_path)
+
+    easicmd.initialise_irods_collection()
+
+    easicmd.irods_collection()
+
+    easicmd.building_attributes_dictionnary()
+
+    easicmd.git_add_file()
+    showwarning(
+                title="creating new user",
+                message=f"It's done\nthanks for waiting",
+            )
+
+
+def switch_user_gui():
+    gitrepo=Repo(config_folder)
+    repo = gitrepo
+    win_theme = customtkinter.CTkToplevel()
+    win_theme.title("Switch user")
+
+    # Get screen width and height
+    screen_width = win_theme.winfo_screenwidth()
+    screen_height = win_theme.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_theme.geometry(f"500x200+{x_position}+{y_position}")
+
+    message = "Switch to :"
+    customtkinter.CTkLabel(win_theme, text=message).pack()
+
+    list_branch = []
+    for branch in repo.heads:
+        list_branch.append(branch.name)
+
+    # Add a combobox for branch selection
+    selected_branch = StringVar(value=list_branch[0] if list_branch else "No branches available")
+    combobox = customtkinter.CTkComboBox(win_theme, values=list_branch, variable=selected_branch)
+    combobox.pack(pady=10)
+
+    # Add a button to confirm the selection
+    def on_confirm():
+        chosen_branch = selected_branch.get()
+        print(f"Selected branch: {chosen_branch}")
+        repo.git.checkout(chosen_branch)
+        # Here you can add code to switch to the selected branch if necessary
+        win_theme.destroy()
+
+    confirm_button = customtkinter.CTkButton(win_theme, text="Confirm", command=on_confirm)
+    confirm_button.pack(pady=10)
+    
+
 
 ################################################################################################################################################################################################################################################################################
 ## FILL IRODS CONFIG FILE
@@ -2154,6 +2248,8 @@ def CREATE_IRODS_INFO_GUI():
     }
     with open(irods_info_files, "w") as f:
         json.dump(irods_config_gui, f)
+
+    easicmd.git_newbranch(f"{username_gui.get()}_{zone_gui.get()}_{port_gui.get()}")
 
 
 def create_and_wait_for_config():
@@ -2284,9 +2380,9 @@ class Test(Text):  ###allow control c/v/x in tkinter
         self.insert("insert", text)
 
 
-try:
-    easicmd.get_irods_info()
 
+try:
+    
     ##########################################################################################################################################################################################################################################################################################
     #### number of threads to used
     ##########################################################################################################################################################################################################################################################################################
@@ -2299,259 +2395,314 @@ try:
     root.title("easicmd : easy irods commands graphical edition")
 
     ##################################################################################################
-    ### Work with data (push,pull,imkdir,irm)
+    ### Work with data (push, pull, imkdir, irm)
     ##################################################################################################
-    # data = LabelFrame(root, text="Work with DATA", padx=30, pady=30)
     data = customtkinter.CTkFrame(root)
-    data.pack(fill="both", expand="yes")
+    data.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
     customtkinter.CTkLabel(
         data,
         text="Here you can work with your data like send it to irods, recover it from irods, create ifolders or delete data on irods",
         font=("", 15),
-    ).pack()
+    ).grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
-    ##PUSH DATA TO IRODS
+    ## PUSH DATA TO IRODS
     push_frame = customtkinter.CTkFrame(data, width=200, height=150)
-    push_frame.pack(fill="both", expand="yes", side=LEFT)
+    push_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    push_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        push_frame, text="\n\n\n\n\n\n\n\nSend local data to irods", font=("", 15)
-    ).pack()
-    push_bouton = customtkinter.CTkButton(
+        push_frame, text="Send local data to irods", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
         push_frame, text="PUSH", command=GUIPUSH
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## PULL DATA TO IRODS
+
+   ## PULL DATA TO IRODS
     pull_frame = customtkinter.CTkFrame(data, width=200, height=150)
-    pull_frame.pack(fill="both", expand="yes", side=LEFT)
+    pull_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    pull_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        pull_frame,
-        text="\n\n\n\n\n\n\n\nGet data from irods to a local folder",
-        font=("", 15),
-    ).pack()
-    pull_bouton = customtkinter.CTkButton(
+        pull_frame, text="Get data from irods to a local folder", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
         pull_frame, text="PULL", command=GUIPULL
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
     ## CREATE A DIRECTORY IN IRODS
     imkdir_frame = customtkinter.CTkFrame(data, width=200, height=150)
-    imkdir_frame.pack(fill="both", expand="yes", side=LEFT)
+    imkdir_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+    imkdir_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        imkdir_frame, text="\n\n\n\n\n\n\n\nCreate a ifolder in irods", font=("", 15)
-    ).pack()
-    imkdir_bouton = customtkinter.CTkButton(
+        imkdir_frame, text="Create a ifolder in irods", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
         imkdir_frame, text="IMKDIR", command=GUIIMKDIR
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## REMOVE A DATA FROM IRODS
+    ## REMOVE DATA FROM IRODS
     irm_frame = customtkinter.CTkFrame(data, width=200, height=150)
-    irm_frame.pack(fill="both", expand="yes", side=LEFT)
+    irm_frame.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
+    irm_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        irm_frame, text="\n\n\n\n\n\n\n\nRemove data frome Irods", font=("", 15)
-    ).pack()
-    irm_bouton = customtkinter.CTkButton(irm_frame, text="IRM", command=GUIIRM).pack(
-        pady=15, side=BOTTOM
-    )
+        irm_frame, text="Remove data from irods", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        irm_frame, text="IRM", command=GUIIRM
+    ).grid(row=1, column=0, pady=10, sticky="n")
+
 
     ##################################################################################################
-    ### Work with metadata (add_meta,rm_meta,show_meta)
+    ### Work with metadata (add_meta, rm_meta, show_meta)
     ##################################################################################################
     metadata = customtkinter.CTkFrame(root)
-    metadata.pack(fill="both", expand="yes")
+    metadata.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+
     customtkinter.CTkLabel(
         metadata,
-        text="Here you can work with the metadata associated with your data on irods such as add, delete,see metadate or edit the metadata dictionary",
+        text="Here you can work with metadata associated with your data on irods.",
         font=("", 15),
-    ).pack()
+    ).grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
-    ## ADD METADATA TO DATA ALREADY ON IRODS
+    ## ADD METADATA
     addmeta_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
-    addmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    addmeta_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    addmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        addmeta_frame,
-        text="\n\n\n\n\n\n\n\nAdd metadata to a data (file or folder) \nalready present on irods",
-        font=("", 15),
-    ).pack()
-    addmeta_bouton = customtkinter.CTkButton(
-        addmeta_frame, text="addmeta", command=INIT_ADD_META
-    ).pack(pady=15, side=BOTTOM)
+        addmeta_frame, text="Add metadata to data already on irods", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(addmeta_frame, text="Add Meta", command=INIT_ADD_META).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## REMOVE METADATA TO DATA ALREADY ON IRODS
+    ## REMOVE METADATA
     rmmeta_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
-    rmmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    rmmeta_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    rmmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        rmmeta_frame,
-        text="\n\n\n\n\n\n\n\nRemove metadata to a data (file or folder) \nalready present on irods",
-        font=("", 15),
-    ).pack()
-    rmmeta_bouton = customtkinter.CTkButton(
-        rmmeta_frame, text="remove meta", command=INIT_RM_META
-    ).pack(pady=15, side=BOTTOM)
+        rmmeta_frame, text="Remove metadata from data on irods", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(rmmeta_frame, text="Remove Meta", command=INIT_RM_META).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## SHOW METADATA ASSOCIATE WITH A DATA
+    ## SHOW METADATA
     showmeta_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
-    showmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    showmeta_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+    showmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        showmeta_frame,
-        text="\n\n\n\n\n\n\n\nShow metadata to a data (file or folder) \nalready present on irods",
-        font=("", 15),
-    ).pack()
-    showmeta_bouton = customtkinter.CTkButton(
-        showmeta_frame, text="show meta", command=INIT_SHOW_META
-    ).pack(pady=15, side=BOTTOM)
+        showmeta_frame, text="Show metadata associated with data", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(showmeta_frame, text="Show Meta", command=INIT_SHOW_META).grid(row=1, column=0, pady=10, sticky="n")
 
     ## EDIT METADATA DICTIONARY
     edit_frame = customtkinter.CTkFrame(metadata, width=200, height=150)
-    edit_frame.pack(fill="both", expand="yes", side=LEFT)
+    edit_frame.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
+    edit_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
-        edit_frame,
-        text="\n\n\n\n\nedit metadata autocompletion dictionary\n\ncreate : create a new attribut key \nthen you can add value to this new attribut\n\nediting : modify(add/remove) the \nvalues associated with an existing attribute\n\ndelete : remove an attribut AND all \nhis value from the dictionary",
-        font=("", 15),
-    ).pack()
-    edit_bouton = customtkinter.CTkButton(
-        edit_frame, text="edit", command=INIT_EDIT
-    ).pack(pady=15, side=BOTTOM)
+        edit_frame, text="Edit metadata autocompletion dictionary", font=("", 15)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(edit_frame, text="Edit Meta", command=INIT_EDIT).grid(row=1, column=0, pady=10, sticky="n")
 
     ##################################################################################################
-    ### Get info on data (serach_by_meta,search_by_name,idush,ichmod)
+    ### Configuration des lignes et colonnes principales pour permettre une adaptation
+    ##################################################################################################
+    root.grid_rowconfigure((0, 1), weight=1)
+    root.grid_columnconfigure(0, weight=1)
+
+    data.grid_rowconfigure(1, weight=1)
+    data.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+    metadata.grid_rowconfigure(1, weight=1)
+    metadata.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+
+    ##################################################################################################
+    ### Get info on data (search_by_meta, search_by_name, idush, ichmod)
     ##################################################################################################
     infodata = customtkinter.CTkFrame(root)
-    infodata.pack(fill="both", expand="yes")
+    infodata.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+
     customtkinter.CTkLabel(
         infodata,
-        text="Here you can search for data present on irods from their name or associated metadata, get the size that a folder occupied on irods or allow to give/remove rights to other users on your data on irods",
+        text="Here you can search for data present on irods from their name or associated metadata, get the size that a folder occupies, or manage user permissions.",
         font=("", 15),
-    ).pack()
+    ).grid(row=0, column=0, columnspan=5, padx=10, pady=10)
 
-    ## SEARCH A DATA BY USING METADATA
+    ## SEARCH BY METADATA
     searchmeta_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
-    searchmeta_frame.pack(fill="both", expand="yes", side=LEFT)
+    searchmeta_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+    searchmeta_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         searchmeta_frame,
-        text="\n\n\n\n\nSearch for data from the \nassociated metadata (SQL-like)",
+        text="Search data by metadata (SQL-like)",
         font=("", 15),
-    ).pack()
-    # searchmeta_bouton=customtkinter.CTkButton(searchmeta_frame, text="search_by_meta", command=INIT_SEARCH_META).pack(pady=15,side=BOTTOM)
-    searchmeta_bouton = customtkinter.CTkButton(
-        searchmeta_frame, text="not_workin_yet"
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        searchmeta_frame, text="Not Working Yet", command=None
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## SEARCH A DATA BY IT'S NAME
+    ## SEARCH BY NAME
     searchname_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
-    searchname_frame.pack(fill="both", expand="yes", side=LEFT)
+    searchname_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+    searchname_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         searchname_frame,
-        text="\n\n\n\n\nSearch for data based on their name",
+        text="Search data by name",
         font=("", 15),
-    ).pack()
-    searchname_bouton = customtkinter.CTkButton(
-        searchname_frame, text="search_by_name", command=INIT_SEARCH_NAME
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        searchname_frame, text="Search by Name", command=INIT_SEARCH_NAME
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## GET THE SIZE OF A IFOLDER
+    ## GET SIZE OF IRODS FOLDER (IDUSH)
     idush_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
-    idush_frame.pack(fill="both", expand="yes", side=LEFT)
+    idush_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+    idush_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         idush_frame,
-        text="\n\n\n\n\nGet the size that a folder occupied on irods\n(AN IRODS EQUIVALENT TO du -sh)",
+        text="Get folder size on irods (IDUSH)",
         font=("", 15),
-    ).pack()
-    idush_bouton = customtkinter.CTkButton(
-        idush_frame, text="idush", command=INIT_IDUST
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        idush_frame, text="IDUSH", command=INIT_IDUST
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## GIVE ACCES TO THE DATA TO OTHER USER
+    # MANAGE USER PERMISSIONS (ICHMOD)
     ichmod_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
-    ichmod_frame.pack(fill="both", expand="yes", side=LEFT)
+    ichmod_frame.grid(row=1, column=3, padx=10, pady=10, sticky="nsew")
+    ichmod_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         ichmod_frame,
-        text="\n\n\n\n\nWith this command you can give \n(or remove with null) write/read/owner right\n to another iRODS user or group",
+        text="Manage user permissions (ICHMOD)",
         font=("", 15),
-    ).pack()
-    ichmod_bouton = customtkinter.CTkButton(
-        ichmod_frame, text="ichmod", command=INIT_ICHMOD
-    ).pack(pady=15, side=BOTTOM)
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        ichmod_frame, text="ICHMOD", command=INIT_ICHMOD
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ##  EDIT ADDITIONAL PATH TO ICOLLECTION
-    # addpath_frame=customtkinter.CTkFrame(infodata, width=200, height=150)
-    # addpath_frame.pack(fill="both", expand="yes", side=LEFT)
-    # customtkinter.CTkLabel(addpath_frame, text="\n\n\n\nWith this command you can edit path \nto the list of your irods collection\ne.g : not my home but a common folder for a project\n(write in a file for later)\nCan also be use to update the \ncollection list when multiple users use it ", font=("",15)).pack()
-    # addpath_bouton=customtkinter.CTkButton(addpath_frame, text="edit path", command=INIT_ADD_PATH).pack(pady=15,side=BOTTOM)
-
-    ##UPDATE IRODS COLLECTION
+    ## UPDATE IRODS COLLECTION
     updpath_frame = customtkinter.CTkFrame(infodata, width=200, height=150)
-    updpath_frame.pack(fill="both", expand="yes", side=LEFT)
+    updpath_frame.grid(row=1, column=4, padx=10, pady=10, sticky="nsew")
+    updpath_frame.grid_columnconfigure(0, weight=1)
     customtkinter.CTkLabel(
         updpath_frame,
-        text="\n\n\n\nUpdate the irods collection, \ne.g : someone give you acces to a folder that\n wasn't in your local list\nor\nyou have work on IRODS from an other computer",
+        text="Update the irods collection, e.g.: someone gave you access to a folder that wasn't in your local list, or you worked on IRODS from another computer.",
         font=("", 15),
-    ).pack()
-    updpath_button = customtkinter.CTkButton(
-        updpath_frame, text="update", command=INIT_UPD_PATH
-    ).pack(pady=15, side=BOTTOM)
+        wraplength=300,  # Limite la largeur du texte à 300 pixels
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="n")
+    customtkinter.CTkButton(
+        updpath_frame, text="Update", command=INIT_UPD_PATH
+    ).grid(row=1, column=0, pady=10, sticky="n")
 
-    ## EXIT
-    quit_bouton = customtkinter.CTkButton(root, text="quit", command=root.quit).pack(
-        anchor="e", side=BOTTOM
-    )
 
-    ##HELP
-    help_bouton = customtkinter.CTkButton(root, text="help", command=help_gui)
-    help_bouton.pack(anchor="center", side=BOTTOM)
+    ##################################################################################################
+    ### Footer Buttons (Help, Theme, User Switch)
+    ##################################################################################################
+    footer_frame = customtkinter.CTkFrame(root)
+    footer_frame.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
-    ## CHANGE THEME
-    theme_bouton = customtkinter.CTkButton(root, text="theme", command=theme_gui)
-    theme_bouton.pack(pady=10, anchor="w", side=BOTTOM)
+    # Configure columns to have equal weight for uniform distribution
+    footer_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
-    ## If no irods config info file create one
-    if not os.path.isfile(irods_info_files):
-        showwarning(
-            title="missing irods config file",
-            message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}",
-        )
-        create_and_wait_for_config()
+    customtkinter.CTkButton(
+        footer_frame, text="Help", command=help_gui
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
-    ## if no irods password
-    if not os.path.isfile(irods_password_path):
-        create_and_wait_for_password()
+    customtkinter.CTkButton(
+        footer_frame, text="Theme", command=theme_gui
+    ).grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
-    ### IF no metadata dictionary found create it
-    save_dict = os.path.expanduser(pickle_meta_dictionary_path)
-    if not os.path.isfile(save_dict):
-        showwarning(
-            title="missing dictionary",
-            message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
-        )
-        easicmd.building_attributes_dictionnary()
-        # print("easicmd.building_attributes_dictionnary()")
-        showwarning(
-            title="missing dictionary", message=f"It's done\nthanks for waiting"
-        )
+    customtkinter.CTkButton(
+        footer_frame, text="Switch/Add User", command=switch_add_user
+    ).grid(row=0, column=2, padx=10, pady=10, sticky="ew")
 
-    ### If no collection pickle create one
-    pickles_path = os.path.expanduser(pickle_irods_path_path)
-    if not os.path.isfile(pickles_path):
-        showwarning(
-            title="missing collection file",
-            message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
-        )
-        easicmd.get_irods_collection()
-        showwarning(
-            title="missing collection file", message=f"It's done\nthanks for waiting"
-        )
+    customtkinter.CTkButton(
+        footer_frame, text="Quit", command=root.quit
+    ).grid(row=0, column=3, padx=10, pady=10, sticky="ew")
 
-    ### If no irods addin path file create one
-    pickles_additionals_path = os.path.expanduser(pickle_additional_path_path)
-    if not os.path.isfile(pickles_additionals_path):
-        showwarning(
-            title="missing irods addin path file",
-            message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
-        )
-        easicmd.get_irods_addin_path()
-        showwarning(
-            title="missing irods addin path file",
-            message=f"It's done\nthanks for waiting",
-        )
+    ##################################################################################################
+    ### Configuration des lignes et colonnes principales
+    ##################################################################################################
+    root.grid_rowconfigure((0, 1, 2, 3), weight=1)
+    root.grid_columnconfigure(0, weight=1)
 
+    data.grid_rowconfigure(1, weight=1)
+    data.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+    metadata.grid_rowconfigure(1, weight=1)
+    metadata.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+    infodata.grid_rowconfigure(1, weight=1)
+    infodata.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+
+
+##########################################################################################################################################################################################################################################################################################
+#### First time verification
+##########################################################################################################################################################################################################################################################################################
+    file_paths = [
+        pickle_meta_dictionary_path,
+        pickle_irods_path_path,
+        pickle_additional_path_path,
+        irods_key_path,
+        irods_password_path,
+        irods_info_files
+    ]
+    missing_files = [file for file in file_paths if not os.path.exists(file)]
+    if missing_files:
+        print("missing files")
+        ## If no irods config info file create one
+        if not os.path.isfile(irods_info_files):
+            showwarning(
+                title="missing irods config file",
+                message=f"We need to configure irods, you will be asked to provide : \nhost\nport\nuser\nzone\nI'm creating it in {irods_info_files}",
+            )
+            create_and_wait_for_config()
+
+        ## if no irods password
+        if not os.path.isfile(irods_password_path):
+            create_and_wait_for_password()
+
+        ### IF no metadata dictionary found create it
+        save_dict = os.path.expanduser(pickle_meta_dictionary_path)
+        if not os.path.isfile(save_dict):
+            showwarning(
+                title="missing dictionary",
+                message=f"You're missing the attribute/values dictionary need for metadata autocompletion \nI'm creating it in {save_dict}\n It can take some time if you have many files\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
+            )
+            easicmd.building_attributes_dictionnary()
+            # print("easicmd.building_attributes_dictionnary()")
+            showwarning(
+                title="missing dictionary", message=f"It's done\nthanks for waiting"
+            )
+
+        ### If no collection pickle create one
+        pickles_path = os.path.expanduser(pickle_irods_path_path)
+        if not os.path.isfile(pickles_path):
+            showwarning(
+                title="missing collection file",
+                message=f"You're missing the irods collection file need for autocompletion \nI'm creating it in {pickles_path}\n It can take some time if you have many files.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
+            )
+            easicmd.get_irods_collection()
+            showwarning(
+                title="missing collection file", message=f"It's done\nthanks for waiting"
+            )
+
+        ### If no irods addin path file create one
+        pickles_additionals_path = os.path.expanduser(pickle_additional_path_path)
+        if not os.path.isfile(pickles_additionals_path):
+            showwarning(
+                title="missing irods addin path file",
+                message=f"You're missing the irods addin path file need for autocompletion \nI'm creating it in {pickles_additionals_path}.\nI'm doing it only the first time you use the program\nPLEASE WAIT FOR THE SECOND POP UP",
+            )
+            easicmd.get_irods_addin_path()
+            showwarning(
+                title="missing irods addin path file",
+                message=f"It's done\nthanks for waiting",
+            )
+        
+        git_add_file()
+
+##########################################################################################################################################################################################################################################################################################
+#### 
+##########################################################################################################################################################################################################################################################################################
+    easicmd.get_irods_info()
     root.mainloop()
 
 except TclError:
