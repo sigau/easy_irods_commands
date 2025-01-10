@@ -35,9 +35,9 @@
   - [IDUSH : AN IRODS EQUIVALENT TO du -sh](#idush--an-irods-equivalent-to-du--sh)
   - [ICHMOD : SHARE YOUR DATA DIRECTLY IN IRODS](#ichmod--share-your-data-directly-in-irods)
   - [EDITING THE AUTOCOMPLETION DICTIONARY](#editing-the-autocompletion-dictionary)
-  - [ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH](#add-to-the-list-of-collection-an-additional-path)
   - [ADD A NEW USER](#add-a-new-user)
   - [SWITCH BETWEEN USERS](#switch-between-users)
+  - [ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH (only with legacy version)](#add-to-the-list-of-collection-an-additional-path-only-with-legacy-version)
 - [To-Do List](#to-do-list)
 - [Known Issues](#known-issues)
 - [Function Dependency View](#function-dependency-view)
@@ -666,17 +666,6 @@ You can edit it with this function, you can create a new key/attribut and add va
 
 ![screenshot/editing_remove.webm.gif](screenshot/editing_remove.webm.gif)
 
-
-### ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH
-If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home. Additionally, if you have a shared folder, you can use this command to update the folder list. To improve performance, the folder list is stored in a .pkl file [~/.irods_collection_save.pkl] so that it doesn't have to be recalculated every time the command is run. However, this can be a limitation when multiple users need access to the same folder list. To overcome this limitation, you can create a symlink for each user from their local ~/.irods_collection_save.pkl file to a common file that can be accessed by all users.
-
-
-
-
-**With the GUI**:
-
-![screenshot/add_path.gif](screenshot/add_path.gif)
-
 ### ADD A NEW USER
 If you have several irods accounts (for example on several zones) you can add them in easicmd and switch from one to the other easily.
 As with the first use, you will have to fill in the configuration information for the irods account (host, port, user, zone and password). 
@@ -722,6 +711,18 @@ switch to rods_tempZone_5590
 
 **With the GUI**:
 ![screenshot/switch.gif](screenshot/switch.gif)
+
+
+
+### ADD TO THE LIST OF COLLECTION AN ADDITIONAL PATH (only with legacy version)
+If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home. Additionally, if you have a shared folder, you can use this command to update the folder list. To improve performance, the folder list is stored in a .pkl file [~/.irods_collection_save.pkl] so that it doesn't have to be recalculated every time the command is run. However, this can be a limitation when multiple users need access to the same folder list. To overcome this limitation, you can create a symlink for each user from their local ~/.irods_collection_save.pkl file to a common file that can be accessed by all users.
+
+
+
+
+**With the GUI**:
+
+![screenshot/add_path.gif](screenshot/add_path.gif)
 
 ## To-Do List
 - [ ] create an explorer for the irods side 
