@@ -2087,6 +2087,100 @@ def theme_gui():
     radiobutton_2.pack(padx=20, pady=10)
     radiobutton_3.pack(padx=20, pady=10)
 
+################################################################################################################################################################################################################################################################################
+## switch user 
+################################################################################################################################################################################################################################################################################
+
+def switch_add_user():
+    win_switchadd = customtkinter.CTkToplevel()
+    win_switchadd.title("warning switch/add user")
+
+    # Get screen width and height
+    screen_width = win_switchadd.winfo_screenwidth()
+    screen_height = win_switchadd.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_switchadd.geometry(f"500x200+{x_position}+{y_position}")
+
+    message = "Do you want to add or switch user"
+    customtkinter.CTkLabel(win_switchadd, text=message).pack()
+    customtkinter.CTkButton(
+        win_switchadd,
+        text="ADD NEW USER",
+        command=lambda: [create_user_gui(),
+            win_switchadd.destroy(),
+        ],
+    ).pack(side=LEFT)
+    customtkinter.CTkButton(
+        win_switchadd,
+        text="SWITCH USER",
+        command=lambda: [switch_user_gui(), win_switchadd.destroy()],
+    ).pack(side=RIGHT)
+
+def create_user_gui():
+
+    create_and_wait_for_config()
+
+    create_and_wait_for_password()
+
+    save_dict = os.path.expanduser(pickle_meta_dictionary_path)
+
+    easicmd.initialise_irods_collection()
+
+    easicmd.irods_collection()
+
+    easicmd.building_attributes_dictionnary()
+
+    easicmd.git_add_file()
+    showwarning(
+                title="creating new user",
+                message=f"It's done\nthanks for waiting",
+            )
+
+
+def switch_user_gui():
+    gitrepo=Repo(config_folder)
+    repo = gitrepo
+    win_theme = customtkinter.CTkToplevel()
+    win_theme.title("Switch user")
+
+    # Get screen width and height
+    screen_width = win_theme.winfo_screenwidth()
+    screen_height = win_theme.winfo_screenheight()
+
+    # Calculate the position to center the window
+    x_position = (screen_width - 500) // 2
+    y_position = (screen_height - 200) // 2
+
+    win_theme.geometry(f"500x200+{x_position}+{y_position}")
+
+    message = "Switch to :"
+    customtkinter.CTkLabel(win_theme, text=message).pack()
+
+    list_branch = []
+    for branch in repo.heads:
+        list_branch.append(branch.name)
+
+    # Add a combobox for branch selection
+    selected_branch = StringVar(value=list_branch[0] if list_branch else "No branches available")
+    combobox = customtkinter.CTkComboBox(win_theme, values=list_branch, variable=selected_branch)
+    combobox.pack(pady=10)
+
+    # Add a button to confirm the selection
+    def on_confirm():
+        chosen_branch = selected_branch.get()
+        print(f"Selected branch: {chosen_branch}")
+        repo.git.checkout(chosen_branch)
+        # Here you can add code to switch to the selected branch if necessary
+        win_theme.destroy()
+
+    confirm_button = customtkinter.CTkButton(win_theme, text="Confirm", command=on_confirm)
+    confirm_button.pack(pady=10)
+    
+
 
 ################################################################################################################################################################################################################################################################################
 ## FILL IRODS CONFIG FILE
@@ -2284,6 +2378,7 @@ class Test(Text):  ###allow control c/v/x in tkinter
     def paste(self, event):
         text = self.selection_get(selection="CLIPBOARD")
         self.insert("insert", text)
+
 
 
 try:
@@ -2503,21 +2598,24 @@ try:
     footer_frame = customtkinter.CTkFrame(root)
     footer_frame.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
+    # Configure columns to have equal weight for uniform distribution
+    footer_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
     customtkinter.CTkButton(
         footer_frame, text="Help", command=help_gui
-    ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+    ).grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
     customtkinter.CTkButton(
         footer_frame, text="Theme", command=theme_gui
-    ).grid(row=0, column=1, padx=10, pady=10, sticky="w")
+    ).grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
     customtkinter.CTkButton(
-        footer_frame, text="Switch/Add User", command=theme_gui
-    ).grid(row=0, column=2, padx=10, pady=10, sticky="e")
+        footer_frame, text="Switch/Add User", command=switch_add_user
+    ).grid(row=0, column=2, padx=10, pady=10, sticky="ew")
 
     customtkinter.CTkButton(
         footer_frame, text="Quit", command=root.quit
-    ).grid(row=0, column=3, padx=10, pady=10, sticky="e")
+    ).grid(row=0, column=3, padx=10, pady=10, sticky="ew")
 
     ##################################################################################################
     ### Configuration des lignes et colonnes principales

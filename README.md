@@ -671,18 +671,61 @@ You can edit it with this function, you can create a new key/attribut and add va
 If you're using an irods folder that isn't descendants of your irods home it won't show by default with easicmd. For that you need to add the full path to this folder by using the command easicmd.py **add_path** or use the **add additional path** wih the gui. These commands can be usefull if your working on a project with other people and have a commun folder not in your home. Additionally, if you have a shared folder, you can use this command to update the folder list. To improve performance, the folder list is stored in a .pkl file [~/.irods_collection_save.pkl] so that it doesn't have to be recalculated every time the command is run. However, this can be a limitation when multiple users need access to the same folder list. To overcome this limitation, you can create a symlink for each user from their local ~/.irods_collection_save.pkl file to a common file that can be accessed by all users.
 
 
-### ADD A NEW USER
 
-### SWITCH BETWEEN USERS
 
 **With the GUI**:
 
 ![screenshot/add_path.gif](screenshot/add_path.gif)
 
+### ADD A NEW USER
+If you have several irods accounts (for example on several zones) you can add them in easicmd and switch from one to the other easily.
+As with the first use, you will have to fill in the configuration information for the irods account (host, port, user, zone and password). 
+
+
+```
+$ ./api_easicmd.py new_user
+creation d'un nouvel utilsateur
+creating the irods config file in /home/gdebaeck/.easicmd_config/.easicmd.info (equivalent to irods_environment.json with icommand/iinit)
+host: ccirods.in2p3.fr
+port: 5596
+user: gdebaeck
+zone: tempZone
+Checked out new branch 'gdebaeck_tempZone_5596'
+ENTER YOUR IRODS PASSWORD : *************
+Do you want to save it for later (the password will be encrypt and stock in /home/gdebaeck/.easicmd_config/.easicmd.psw [Y/N] : Y
+create a file with all the irods folder to save time later
+if you already have some irods folder it can take a bit of time 
+a list or your irods collection have been save 
+Dictionary have been save in /home/gdebaeck/.easicmd_config/.easicmd_irods_metadata_local_save.pkl
+Initial commit created with specified files.
+new user create
+```
+
+**With the GUI**:
+![screenshot/new_user.gif](screenshot/new_user.gif)
+
+### SWITCH BETWEEN USERS
+
+
+
+```
+$./api_easicmd.py switch_user
+switch to (tab to list) :rods_tempZone_5590
+                          gdebaeck_fits_5555      
+                          gdebaeck_tempZone_5590  
+                          rods_tempZone_5590      
+                          tga_tempZone_5590       
+
+switch to rods_tempZone_5590
+
+```
+
+**With the GUI**:
+![screenshot/switch.gif](screenshot/switch.gif)
 
 ## To-Do List
 - [ ] create an explorer for the irods side 
-- [ ] allow multiple zone acces (change or multiple .easicmd.info/etc)
+- [X] allow multiple zone acces (change or multiple .easicmd.info/etc)
 - [X] Add an option for graphical user interface (Tkinter or other)
 - [ ] Auto-parsing function to add automatically metadata to object like date/format/author/etc
 - [ ] Replace auto-completion with something closer to unix autocompletion (e.g : https://typer.tiangolo.com/typer-cli/)
