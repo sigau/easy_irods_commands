@@ -65,6 +65,7 @@ The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions tha
 ## Dependancies
 
 - **tkinter** (Linux : sudo apt-get install python3-tk | windows : during the installation process of Python ensure that you select the option to install Tcl/Tk and Tkinter  )
+
 All the other dependencies are listed in the requirements.txt file.
 
 You can also create a python virtualenv with the following command line (on windows it will be create when using the .bat):
