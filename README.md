@@ -77,7 +77,7 @@ You can also create a python virtualenv with the following command line (on wind
 ```
 python -m venv env_easicmd
 source env_easicmd/bin/activate
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 This will create a virtualenv with all the dependencies installed and not interact with your main environement/installation
 
