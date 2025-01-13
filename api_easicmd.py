@@ -18,8 +18,6 @@
 
 
 import sys, os, time, queue, threading
-import subprocess
-import pkg_resources
 import pickle
 import platform
 import json
