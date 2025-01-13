@@ -64,16 +64,10 @@ The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions tha
 
 ## Dependancies
 
-- ~~Irods icommands (in your path + iinit already done at least once)~~ no longer necessary if you use the api version (apieasicmd.py and api_gui_easicmd.py)
-- **python 3.7** or more for the f-string (the script can be rewritten for older version of python by replacing f-string by str.format()) and subprocess (capture_output)
-- [prompt_toolkit](https://python-prompt-toolkit.readthedocs.io/en/master/) (the script install it the first time you run it if it's not already install)
-
-For graphical user interface
-- **tkinter** (Linux : sudo apt-get install python3-tk | windows : during the installation process of Python ensure that you select the option to install Tcl/Tk and Tkinter  )
-- [ttkwidgets](https://ttkwidgets.readthedocs.io/en/latest/installation.html) (for the autocompletion in the GUI, the script install it the first time you run it if it's not already install)
-- [CustomTkinter](https://customtkinter.tomschimansky.com/) (the script install it the first time you run it if it's not already install)
+All the dependencies are listed in the requirements.txt file.
 
 You can also create a python virtualenv with the following command line (on windows it will be create when using the .bat):
+
 ```
 python -m venv env_easicmd
 source env_easicmd/bin/activate
