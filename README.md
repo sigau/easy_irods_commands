@@ -11,7 +11,7 @@
 
 
 - [Short description](#short-description)
-- [Requirements for easicmd.py and gui_easicmd.py:](#requirements-for-easicmdpy-and-gui_easicmdpy)
+- [Requirements for easicmd.py and gui_easicmd.py (obsolete only for the leagcy version):](#requirements-for-easicmdpy-and-gui_easicmdpy-obsolete-only-for-the-leagcy-version)
 - [Upgraded Versions: api_easicmd.py and api_gui_easicmd.py](#upgraded-versions-api_easicmdpy-and-api_gui_easicmdpy)
 - [Dependancies](#dependancies)
 - [COMMAND LINE OR GRAPHICAL USER INTERFACE (GUI)](#command-line-or-graphical-user-interface-gui)
@@ -55,7 +55,7 @@ We're aware of a screen scaling issue on Windows systems that may cause script w
 2. Under "Scale and layout," set "Size of text, apps, and other items" to a maximum of 100%.
 This adjustment should prevent windows from extending beyond the screen until a permanent resolution is implemented.
 
-## Requirements for easicmd.py and gui_easicmd.py:
+## Requirements for easicmd.py and gui_easicmd.py (obsolete only for the leagcy version):
 The easicmd.py and gui_easicmd.py scripts require the icommand to be in your system's path. These scripts are compatible with Linux and Mac operating systems, provided the icommand is accessible through the system path.
 
 ## Upgraded Versions: api_easicmd.py and api_gui_easicmd.py

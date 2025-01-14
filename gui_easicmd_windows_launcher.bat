@@ -21,7 +21,7 @@ if not exist "%ENV_PATH%" (
     call "%ENV_PATH%\Scripts\activate.ps1"
 
     REM Installez les dépendances à partir du fichier requirements.txt
-    pip install -r requirement.txt
+    pip install -r requirements.txt
 )
 
 REM Activez l'environnement virtuel
