@@ -43,4 +43,4 @@ The api_easicmd.py and api_gui_easicmd.py scripts represent updated versions tha
 
 
 # wiki 
-For more details or help on how to use the script and its various functions, you can have a look at the project's [wiki section](../../wiki). 
+For more details or help on how to use the script and its various functions, you can have a look at the project's [wiki section](../../wiki/home). 
