@@ -29,7 +29,6 @@ call "%ENV_PATH%\Scripts\activate.ps1"
 
 pyinstaller --noconfirm --log-level=WARN ^
     --onefile --nowindow ^
-    --add-data="easy_irods_commands.wiki:." ^
     --distpath="./executable/windows" ^
     --hidden-import=irods.auth.native ^
     --icon="screenshot/eic.ico" ^
