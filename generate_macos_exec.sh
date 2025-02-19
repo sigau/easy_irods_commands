@@ -4,6 +4,6 @@ pyinstaller --noconfirm --log-level=WARN \
 --distpath="./executable/macOS" \
 --onefile \
 --hidden-import=irods.auth.native \
---nowindow \
+--windowed \
 --icon="screenshot/eic.ico" \
 api_gui_easicmd.py
