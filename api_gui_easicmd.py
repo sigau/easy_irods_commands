@@ -2173,8 +2173,8 @@ def switch_user_gui():
     def on_confirm():
         chosen_branch = selected_branch.get()
         print(f"Selected branch: {chosen_branch}")
+        easicmd.git_add_file()
         repo.git.checkout(chosen_branch)
-        # Here you can add code to switch to the selected branch if necessary
         win_theme.destroy()
 
     confirm_button = customtkinter.CTkButton(win_theme, text="Confirm", command=on_confirm)

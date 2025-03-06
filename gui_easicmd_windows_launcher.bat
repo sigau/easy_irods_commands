@@ -18,14 +18,14 @@ if not exist "%ENV_PATH%" (
     python -m venv "%ENV_PATH%"
 
     REM Activez l'environnement virtuel
-    call "%ENV_PATH%\Scripts\activate.ps1"
+    call "%ENV_PATH%\Scripts\activate.bat"
 
     REM Installez les dépendances à partir du fichier requirements.txt
     pip install -r requirements.txt
 )
 
 REM Activez l'environnement virtuel
-call "%ENV_PATH%\Scripts\activate.ps1"
+call "%ENV_PATH%\Scripts\activate.bat"
 
 REM Exécutez le script Python
 python api_gui_easicmd.py
