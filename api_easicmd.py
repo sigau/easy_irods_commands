@@ -127,7 +127,7 @@ def SWITCH_USER_CLI():
 
     branch_completer = WordCompleter(list_branch)
     bascule_branch = prompt("switch to (tab to list) :", completer=branch_completer)
-
+    git_add_file()
     repo.git.checkout(bascule_branch)
     print(f"switch to {bascule_branch}")
 
@@ -159,16 +159,16 @@ def NEW_USER():
 
     ## Recuperation de la config irods + creation de la branche
     get_irods_config_info()
-    ##recuperation du password 
+    ## recuperation du password 
     get_irods_password(new_branch=True)
     irods_config["password"] = PASSWORD
     ## Creation d'un nouveau easicmd_irods_collection_save.pkl 
     initialise_irods_collection() 
     ## Creation d'un nouveau easicmd_irods_additional_path_save.pickle
     irods_collection()
-    ##creation du dictionnaire
+    ## creation du dictionnaire
     building_attributes_dictionnary()
-    ##add and commit the config files
+    ## add and commit the config files
     git_add_file()
     
     print("new user create")
@@ -679,6 +679,7 @@ def update_irods_collection2(action, path):
     with open(pickles_path, "wb") as f:
         pickle.dump(list_of_icollection, f)
     print("your irods collecion pickle have been updated ")
+    ## ici git commit
 
 
 def list_ifile(ifolder):
@@ -881,6 +882,7 @@ def get_irods_addin_path():
         with open(new_path_file, "wb") as f:
             pickle.dump(list_new_path, f)
         print("irods list of path updated")
+        # ici git commit
 
 
 def copy_folder_to_irods(
@@ -1141,6 +1143,7 @@ def ADD_META(iobject):
         with open(file_name, "wb") as f:
             pickle.dump(dico_attribute, f)
         print(f"Dictionary have been update in {file_name}")
+    # ici git commit
 
 
 def IRM_META(iobject):
