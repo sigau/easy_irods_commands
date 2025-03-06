@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>easicmd_gui</string>
+	<key>CFBundleExecutable</key>
+	<string>easicmd_gui</string>
+	<key>CFBundleIconFile</key>
+	<string>generated-2512b3a4492d192475b7d5d69691d2736a3bd5991b427549036c1cefcbebb3d2.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>easicmd_gui</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>easicmd_gui</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>
