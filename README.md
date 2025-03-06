@@ -5,6 +5,12 @@
 Easicmd is a user-friendly Python script that provides a graphical interface for interacting with irods. It simplifies the usage of icommands by generating intuitive commands, making it ideal for new users or individuals who prefer a graphical interface over the command line. With Easicmd, you can effortlessly perform common tasks such as uploading and downloading data from irods, creating directories, managing metadata, searching for data by name or metadata, and retrieving essential information like directory size. Additionally, it streamlines the process of sharing data access with other users or groups. Enjoy a hassle-free irods experience with Easicmd!
 
 # Install 
+## Get the executable 
+ If you don't want to run the script via the terminal, you can simply download the executable for the adapted platform.
+ - [Windows](./executable/windows/api_gui_easicmd.exe)
+ - [MacOS](./executable/macOS/easicmd_gui.app)
+ - [Linux](./executable/linux/easicmd_gui) 
+
 ## Get the script
 You can clone the reposatory with the following command 
 ```
