@@ -28,7 +28,7 @@ REM Activez l'environnement virtuel
 call "%ENV_PATH%\Scripts\activate.bat"
 
 pyinstaller --noconfirm --log-level=WARN ^
-    --windowed ^
+    --onefile --windowed ^
     --distpath="./executable/windows" ^
     --hidden-import=irods.auth.native ^
     --icon="screenshot/eic.ico" ^
