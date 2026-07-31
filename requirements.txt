@@ -1,6 +1,6 @@
 customtkinter==6.0.0
 darkdetect==0.8.0
-Pillow==12.2.0
+Pillow==12.3.0
 prompt-toolkit==3.0.53
 ttkwidgets==0.13.0
 wcwidth==0.8.2
