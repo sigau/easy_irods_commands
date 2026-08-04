@@ -7,4 +7,4 @@ wcwidth==0.8.2
 python-irodsclient==3.3.0
 cryptography==50.0.0
 GitPython==3.1.57
-pyinstaller==6.20.0
+pyinstaller==6.21.0
